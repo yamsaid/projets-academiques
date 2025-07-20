@@ -1,144 +1,151 @@
 # 📚 Portfolio de Projets Académiques
 
-## 🎯 À propos
+## 🎯 Présentation
 
-Ce repository contient une collection de projets académiques réalisés dans le cadre de mes études en statistique, économétrie, analyse de données et développement web. Ces projets démontrent mes compétences dans l'analyse de données, la modélisation statistique, la programmation et la visualisation.
+Ce repository contient une collection complète de projets académiques réalisés dans le cadre de formations en statistiques, économétrie, programmation et analyse de données. Chaque projet démontre des compétences spécifiques et des applications pratiques dans différents domaines.
 
-## 🚀 Projets
+## 📊 Projets Inclus
 
-### 📊 **Analyse Statistique et Économétrie**
+### 📈 Analyse Statistique
+- **ANOVA** - Analyse de variance et double différence
+- **R** - Analyse statistique et visualisation
+- **SPSS** - Analyse statistique avancée
+- **STATA** - Analyse économétrique et données PMA
+- **Sondage** - Techniques d'échantillonnage
 
-#### [ANOVA - Impact des Écoles Secondaires](./ANOVA/)
-- **Technologies** : R, R Markdown, LaTeX
-- **Compétences** : Analyse de variance, Tests statistiques, Méthode de double différence
-- **Description** : Évaluation de l'impact de la construction d'écoles secondaires sur l'achèvement de l'école primaire
+### 🏠 Économétrie
+- **Économétrie des variables quantitatives** - Modélisation des prix immobiliers
+- **Économétrie des variables qualitatives** - Modélisation des choix
+- **Économétrie des séries temporelles** - Modélisation de la volatilité
 
-#### [Économétrie des Variables Quantitatives](./Econometrie%20des%20variables%20quantitatives/)
-- **Technologies** : R, tidyverse, lmtest, car
-- **Compétences** : Régression linéaire, Tests économétriques, Traitement des données
-- **Description** : Modélisation des prix immobiliers avec analyse des variables explicatives
+### 🗺️ Analyse Spatiale
+- **QGIS** - Analyse spatiale et cartographie
 
-#### [Économétrie des Variables Qualitatives](./Econometrie%20des%20variables%20qualitatives/)
-- **Technologies** : R, R Markdown, LaTeX
-- **Compétences** : Modèles logit/probit, Variables qualitatives, Analyse discriminante
-- **Description** : Analyse des variables qualitatives dans les modèles économétriques
+### 💻 Développement
+- **bibliotheque** - Application Django de gestion de bibliothèque
+- **Acces** - Base de données et VBA
 
-#### [Économétrie des Séries Temporelles](./Econometrie%20des%20séries%20temporelles/)
-- **Technologies** : R, Python (Jupyter), LaTeX
-- **Compétences** : Modèles ARCH/GARCH, Séries temporelles, Analyse de volatilité
-- **Description** : Modélisation de la volatilité des prix du coton au Burkina Faso
+### 📊 Business Intelligence
+- **Excel-Tableau de Bord** - Tableaux de bord et BI
 
-### 🗺️ **Systèmes d'Information Géographique**
+### 📱 Collecte de Données
+- **CSPRO** - Application de collecte de données
+- **Pratique d'enquête** - Méthodologie de recherche
 
-#### [QGIS - Cartographie Sanitaire](./QGIS/)
-- **Technologies** : QGIS, Shapefiles, Cartographie thématique
-- **Compétences** : SIG, Cartographie, Analyse spatiale, Visualisation géographique
-- **Description** : Création de cartes thématiques pour l'analyse sanitaire et démographique
+### 📈 Analyse Spécialisée
+- **TP d'analyse de Survie** - Analyse de survie
 
-### 💻 **Développement Web**
+## 🛠️ Technologies Maîtrisées
 
-#### [Bibliothèque Django](./bibliotheque/)
-- **Technologies** : Python, Django, HTML/CSS, JavaScript, SQLite
-- **Compétences** : Développement web, Framework Django, Base de données, Interface utilisateur
-- **Description** : Application web de gestion de bibliothèque avec authentification et CRUD
+### Langages de Programmation
+- **R** : Analyse statistique, visualisation, modélisation
+- **Python** : Django, analyse de données, Jupyter
+- **VBA** : Automatisation Excel et Access
+- **SQL** : Gestion de bases de données
 
-### 📈 **Analyse de Données et Visualisation**
-
-#### [R - Statistiques Inférentielles](./R/)
-- **Technologies** : R, R Markdown, Quarto
-- **Compétences** : Statistiques descriptives, Tests d'hypothèses, Visualisation
-- **Description** : Analyse statistique et création de rapports dynamiques
-
-#### [Excel - Tableaux de Bord](./Excel-Tableau%20de%20Bord/)
-- **Technologies** : Excel, Power Query, Tableaux croisés dynamiques
-- **Compétences** : Business Intelligence, Tableaux de bord, Analyse financière
-- **Description** : Création de tableaux de bord pour l'analyse des indicateurs économiques
-
-### 🔬 **Logiciels Statistiques**
-
-#### [SPSS - Analyse Statistique](./SPSS/)
-- **Technologies** : SPSS, Syntaxe SPSS
-- **Compétences** : Analyse statistique, Tests paramétriques et non-paramétriques
-- **Description** : Analyses statistiques avancées avec SPSS
-
-#### [STATA - Économétrie](./STATA/)
-- **Technologies** : STATA, Do-files
-- **Compétences** : Économétrie, Modélisation statistique, Programmation STATA
-- **Description** : Analyses économétriques et traitement de données avec STATA
-
-### 📋 **Enquêtes et Sondages**
-
-#### [Pratique d'Enquête](./Pratique%20d'enquete/)
-- **Technologies** : R, ODK, Excel
-- **Compétences** : Méthodologie d'enquête, Collecte de données, Analyse d'enquêtes
-- **Description** : Conception et analyse d'enquêtes avec traitement statistique
-
-#### [Sondage - Méthodes d'Échantillonnage](./Sondage/)
-- **Technologies** : SPSS, Excel
-- **Compétences** : Échantillonnage, Estimation, Intervalles de confiance
-- **Description** : Études de sondage avec méthodes d'échantillonnage
-
-### 🗄️ **Bases de Données**
-
-#### [Access - Gestion de Services](./Acces/)
-- **Technologies** : Microsoft Access, VBA, SQL
-- **Compétences** : Bases de données, Programmation VBA, Interface utilisateur
-- **Description** : Application de gestion de services avec interface graphique
-
-### 📊 **Analyse de Survie**
-
-#### [TP d'Analyse de Survie](./TP%20d'analyse%20de%20Survie/)
-- **Technologies** : R, R Markdown
-- **Compétences** : Analyse de survie, Courbes de Kaplan-Meier, Modèles de Cox
-- **Description** : Analyse de données de survie et modélisation des risques
-
-## 🛠️ **Compétences Techniques**
-
-### **Langages de Programmation**
-- **R** : Analyse statistique, économétrie, visualisation
-- **Python** : Développement web (Django), analyse de données
-- **SQL** : Requêtes et gestion de bases de données
-- **VBA** : Automatisation Excel/Access
-
-### **Logiciels Statistiques**
-- **SPSS** : Analyses statistiques avancées
-- **STATA** : Économétrie et modélisation
+### Logiciels Statistiques
+- **SPSS** : Analyse statistique avancée
+- **STATA** : Économétrie et analyse de données
 - **QGIS** : Systèmes d'information géographique
-- **Excel** : Tableaux de bord et analyses
 
-### **Outils de Développement**
-- **Django** : Framework web Python
-- **HTML/CSS/JavaScript** : Développement frontend
-- **Git** : Gestion de versions
-- **LaTeX** : Rédaction de rapports académiques
+### Outils de Collecte
+- **CSPRO** : Collecte de données électroniques
+- **ODK** : Open Data Kit
+- **Excel** : Tableaux de bord et BI
 
-### **Méthodologies**
-- **Économétrie** : Régression, séries temporelles, variables qualitatives
-- **Statistiques** : Tests d'hypothèses, ANOVA, analyse de survie
-- **SIG** : Cartographie et analyse spatiale
-- **Enquêtes** : Méthodologie d'échantillonnage et collecte de données
+### Documentation
+- **LaTeX** : Rédaction académique
+- **R Markdown** : Documents dynamiques
+- **Quarto** : Publication scientifique
 
-## 📈 **Domaines d'Expertise**
+## 📸 Exemples Visuels
 
-- **Analyse de Données** : Nettoyage, exploration et visualisation
-- **Économétrie** : Modélisation et inférence causale
-- **Statistiques Appliquées** : Tests et analyses multivariées
-- **Développement Web** : Applications web et bases de données
-- **Business Intelligence** : Tableaux de bord et reporting
-- **Géomatique** : Cartographie et analyse spatiale
+### Graphiques Statistiques
+![Graphique R](images/example_r_plot.png)
+*Exemple de visualisation créée avec R*
 
-## 🎓 **Formation**
+### Tableaux de Bord
+![Dashboard Excel](images/example_excel_dashboard.png)
+*Tableau de bord Excel avec Power Query*
 
-Ces projets ont été réalisés dans le cadre de formations en :
-- Statistique et Économétrie
-- Analyse de Données
-- Systèmes d'Information Géographique
-- Développement Web
+### Cartes QGIS
+![Carte QGIS](images/example_qgis_map.png)
+*Analyse spatiale avec QGIS*
 
-## 📞 **Contact**
+### Interface Django
+![Application Django](images/example_django_app.png)
+*Interface de l'application bibliothèque*
 
-Pour plus d'informations sur ces projets ou pour discuter de collaborations, n'hésitez pas à me contacter.
+## 🎯 Compétences Développées
+
+### Statistiques et Économétrie
+- **Tests statistiques** : ANOVA, régression, tests d'hypothèses
+- **Modélisation** : Régression linéaire, logistique, séries temporelles
+- **Échantillonnage** : Stratification, grappes, pondération
+- **Analyse de survie** : Kaplan-Meier, modèles de Cox
+
+### Programmation et Développement
+- **Développement web** : Django, HTML, CSS, JavaScript
+- **Bases de données** : SQL, Access, modélisation
+- **Automatisation** : VBA, scripts R/Python
+- **Visualisation** : ggplot2, matplotlib, QGIS
+
+### Méthodologie de Recherche
+- **Design d'enquêtes** : Conception de questionnaires
+- **Collecte de données** : Terrain, électronique, validation
+- **Analyse qualitative** : Entretiens, focus groups
+- **Documentation** : Rapports, publications, présentations
+
+## 📈 Applications Professionnelles
+
+### Secteur Public
+- **Instituts statistiques** : Recensements, enquêtes
+- **Ministères** : Évaluation de politiques publiques
+- **Organisations internationales** : ONU, Banque mondiale
+- **Collectivités** : Planification territoriale
+
+### Secteur Privé
+- **Consulting** : Études de marché, évaluation
+- **Finance** : Gestion des risques, modélisation
+- **Industrie** : Contrôle qualité, optimisation
+- **Services** : Satisfaction client, performance
+
+### Recherche Académique
+- **Universités** : Recherche, enseignement
+- **Centres de recherche** : Projets de recherche
+- **Publications** : Articles scientifiques, thèses
+- **Conférences** : Présentations, communications
+
+## 🚀 Améliorations Futures
+
+### Technologies Émergentes
+- **Machine Learning** : Modèles prédictifs avancés
+- **Big Data** : Traitement de grands volumes
+- **Cloud Computing** : Déploiement d'applications
+- **API** : Intégration de données en temps réel
+
+### Développement Personnel
+- **Certifications** : SAS, Tableau, Power BI
+- **Formations** : Cours en ligne, ateliers
+- **Collaborations** : Projets internationaux
+- **Publications** : Articles dans des revues
+
+## 📚 Documentation
+
+Chaque projet contient :
+- **README détaillé** avec objectifs et méthodologie
+- **Code source** commenté et documenté
+- **Rapports** et présentations
+- **Données** et résultats d'analyses
+
+## 🤝 Contact
+
+Pour plus d'informations sur ces projets ou pour des opportunités de collaboration :
+
+- **Email** : [votre-email@example.com]
+- **LinkedIn** : [votre-profil-linkedin]
+- **GitHub** : [votre-profil-github]
 
 ---
 
-*Ce portfolio démontre une approche interdisciplinaire combinant statistique, économétrie, informatique et géomatique pour résoudre des problèmes complexes d'analyse de données.* 
+*Ce portfolio démontre une expertise complète en analyse de données, statistiques et développement, avec des applications pratiques dans divers domaines professionnels.* 

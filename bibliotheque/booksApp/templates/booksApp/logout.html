@@ -1,0 +1,71 @@
+{% extends 'booksApp/base_login.html' %}
+{% load static %}
+
+{% block title %}Déconnexion - Bibliothèque{% endblock %}
+{% block content %}
+<div class="hero-section" style="background-image: url('{% static 'booksApp/images/connecter_image.jpg' %}')">
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-center">Déconnexion</h2>
+            </div>
+            <div class="card-body text-center">
+                <p>Vous avez été déconnecté avec succès.</p>
+                <div class="mt-3">
+                    <a href="{% url 'login' %}" class="btn btn-primary">Se reconnecter</a>
+                    <a href="{% url 'register' %}" class="btn btn-outline-secondary ms-2">S'inscrire</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .hero-section {
+        height: 100vh;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        position: relative;
+    }
+    .card {
+        max-width: 400px;
+        margin: 100px auto;
+        padding: 40px;
+        background-color: hwb(193 93% 4%);
+        border-radius: 40px;
+        box-shadow: 0 8px 16px #fdfcfe1a;
+    }
+    .hero-section::before {
+        content:'' ;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        text-decoration-color: blue;
+    }
+    
+    .btn {
+        padding: 10px 15px;
+        font-size: 1.2rem;
+        transition: transform 0.5s ease;
+    }
+    
+    .btn:hover {
+        transform: translateY(-4px);
+    }
+</style>
+{% endblock %} 

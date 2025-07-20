@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OGRVRTDataSource>
+    <OGRVRTLayer name="pROJETDATA">
+        <SrcDataSource relativeToVRT="1">Base.xlsx</SrcDataSource>
+        <!--Header=False-->
+        <SrcLayer>Base_Finalisee</SrcLayer>
+        <Field name="Region" src="Region" type="String"/>
+        <Field name="Province" src="Province" type="String"/>
+        <Field name="Id_province" src="Id_province" type="Integer"/>
+        <Field name="Pop Totale" src="Pop Totale" type="Integer"/>
+        <Field name="Moins de 5 ans " src="Moins de 5 ans " type="Integer"/>
+        <Field name="Ratio habitant/CSPS" src="Ratio habitant/CSPS" type="Integer"/>
+        <Field name="0 - 4km" src="0 - 4km" type="Real"/>
+        <Field name="Prop Decès néo-natal(%)" src="Prop Decès néo-natal(%)" type="Real"/>
+        <Field name="Incidence" src="Incidence" type="Real"/>
+        <Field name="Nombre de femmes ayant bénéficié d'un&#10;TPI3" src="Nombre de femmes ayant bénéficié d'un&#10;TPI3" type="Integer"/>
+        <Field name="Proportion de Femmes vues au premier trimestre de la grossesse (%)" src="Proportion de Femmes vues au premier trimestre de la grossesse (%)" type="Real"/>
+        <Field name="nb deces" src="nb deces" type="Integer"/>
+        <Field name="Field13" src="Field13" type="String"/>
+    </OGRVRTLayer>
+</OGRVRTDataSource>

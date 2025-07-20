@@ -1,0 +1,394 @@
+---
+title: "Survie"
+format: pdf
+editor: visual
+---
+
+Analyse de survie
+
+Installer les packages survival survminer GGally broom
+
+```{r}
+#install.packages(c("survival","survminer","GGally","broom"))
+```
+
+# I- Traitement des données
+
+##### 1- Charger le jeu de données fecondite fourni par l’extension questionr.
+
+```{r}
+library(questionr)
+ data(fecondite)
+```
+
+##### Visualiser
+
+```{r}
+lookfor(menages)
+
+```
+
+```{r}
+lookfor(femmes)
+```
+
+```{r}
+freq(femmes$test)
+```
+
+```{r}
+lookfor(enfants)
+
+```
+
+```{r}
+library(dplyr)
+library(labelled)
+```
+
+### 2. Création de variables
+
+créer un jeu de données enfants1 : qui contient les caractéristiques des enfants et l'identifiant de la maman de chaque enfant et de la date d'entretien puis vous aller créer une variable duree_observation (temps passé entre la date de naissance de l'enfant et la date d'entretien de l'étude en mois) Utiliser le package lubridate, voir l'aide de la fonction time_length
+
+```{r}
+library(lubridate)
+```
+
+```{r}
+enfants1 <- enfants %>%
+    left_join(
+        femmes %>% dplyr::select(id_femme, date_entretien),
+        by = "id_femme"
+    ) %>%
+    mutate(duree_observation = lubridate::time_length(
+        interval(date_naissance, date_entretien), 
+        unit = "months"
+    ))
+```
+
+Nous allons décaler d'un mois la date d'entretien pour les 11 enfants dont la date de naissance est postérieure à la date d'entretien intitale
+
+```{r}
+enfants1$date_entretien[enfants1$duree_observation < 0] <-enfants1$date_entretien[enfants1$duree_observation < 0] %m+% months(1)
+
+
+```
+
+```{r}
+enfants1 <- enfants1 %>%
+  mutate(duree_observation = time_length(
+    interval(date_naissance, date_entretien), 
+    unit = "months"
+  ))
+```
+
+# L'âge au décès est en mois révolus (sans valeur décimale).
+
+#Nous allons imputer un âge au décès exact en distribuant aléatoirement les décès suivant une loi uniforme (pour la partie décimale uniquement). set.seed(212) age_deces_impute
+
+```{r}
+set.seed(212)
+enfants1=enfants1%>%
+          mutate(age_deces_impute= age_deces+ runif(1584, min = 0, max = 1))
+          enfants1$age_deces_imput <- enfants1$age_deces + runif(nrow(enfants1), 0, 1)
+
+```
+
+### créer la variable deces en 0 si l'enfant est en vie et 1 sinon
+
+Créer une variable time qui nous donne : la durée à laquelle survient l’évènement étudié pour ceux ayant vécu l’évènement et la durée d’observation pour ceux n’ayant pas vécu l’évènement
+
+```{r}
+enfants1 <- enfants1 %>%
+  mutate(deces = if_else(survie == 0, 1, 0)) %>%  
+set_variable_labels(deces = "Est décédé ?") %>%  
+set_value_labels(deces = c(non = 0, oui = 1)) %>%  
+mutate(time = if_else(deces == 1, age_deces_impute, duree_observation))
+
+```
+
+# I- Approche non paramétrique
+
+### Kaplan Neier
+
+```{r}
+library(survival)
+km_all <- survfit(Surv(time, deces) ~ 1, data = enfants1)
+km_all
+
+```
+
+```{r}
+
+library(survminer)
+ggsurvplot(km_all)
+```
+
+```{r}
+ggsurvplot(km_all, fun = "event", risk.table = TRUE, surv.scale = "percent")
+
+
+
+```
+
+```{r}
+
+km_sexe <- survfit(Surv(time, deces) ~ sexe, data = enfants1)
+km_sexe
+
+```
+
+```{r}
+fit_sexe <-survfit(Surv(time, deces) ~ sexe, data = enfants1)
+summary(fit_sexe)
+
+
+```
+
+```{r}
+ggsurvplot(
+  fit_sexe,                     # objet obtenu après estimation de kM
+  pval = TRUE,             # afficher la pvalue du test de log-rank
+  conf.int = TRUE,         # Afficher les intervalles de confiance
+  xlab = "Temps en jours",   # Renommer l'axe des abcisses
+  ylab="Courbe de survie",# renommer l'axe des ordonnées
+  break.time.by = 4,     #Afficher le temps par pas de 4jours.
+  surv.median.line = "hv",  # Afficher la médiane .
+  legend.labs = 
+    c("Hommes", "Femmes"),    # changer la légende
+ )
+```
+
+```{r}
+#Stat de logRank
+survdiff(Surv(time, deces) ~ sexe, data = enfants1)
+
+
+
+```
+
+
+III- Recodage des variables explicatives pour le modèle de Cox
+
+1) Intégrer à la table enfants1, les variables venant des tables femmes et ménages. 
+
+Ce sont les variables : 
+
+-milieu de résidence,
+
+- niveau d'éducation de la mère
+
+- date de naissance de la mère que vous renommer date_naissance_mum
+
+- nombre idéal d'enfants 
+
+- structure démographique du ménage
+
+- Niveau de vie
+
+
+
+
+```{r}
+f2=femmes
+```
+
+
+```{r}
+enfants2 <- menages %>%
+    dplyr::select( id_menage,structure,richesse) %>%
+  
+    left_join(femmes %>%
+    rename(date_naissance_mum =date_naissance),
+   dplyr::select(id_femme,milieu ,educ, nb_enf_ideal,date_naissance_mum ),
+     by = "id_menage" ) %>%
+  
+    right_join( enfants1, by = "id_femme" ) 
+```
+
+Combien de ménages et combien de mères avons nous dans la base enfants1? 
+
+```{r} 
+enfants2%>%
+  count(id_femme
+        )
+enfants2%>%
+  count(id_menage
+  )
+```
+  ou 
+
+```{r}
+library(skimr)
+n_unique(enfants1$id_femme)
+n_unique(enfants1$id_menage)
+```
+2) Convertir les variables catégorielles en facteurs (sexe,richesse,structure)
+
+```{r}
+library(labelled)
+enfants1 <- enfants2 %>%
+    mutate(sexe = to_factor(sexe), richesse = to_factor(richesse),structure=to_factor(structure))
+    
+```
+
+
+
+3) Examiner la variable structure.
+
+```{r}
+levels(enfants1$structure)
+
+```
+```{r}
+library(questionr)
+freq(enfants1$structure)
+
+
+```
+
+
+
+- Que remarquer vous pour la variable pas d'adulte? 
+
+- La supprimer si cela est nécessaire "pas d'adultes" puis mettre "deux adultes de sexe opposé" comme référence 
+
+```{r}
+enfants1 <- enfants1[enfants1$structure != "pas d'adulte", ]
+enfants1$structure <- relevel(enfants1$structure, ref = "deux adultes de sexe opposé")
+
+```
+
+
+- mettre "deux adultes de sexe opposé" comme référence
+
+
+
+4)  Regardons la variable educ.
+ 
+ Regrouper la modalité supérieur  avec la modalité secondaire
+```{r}
+freq(enfants1$educ_rec)
+```
+```{r}
+enfants1$educ_rec <- as.character(enfants1$educ)
+enfants1$educ_rec[enfants1$educ ==3] <- "2"
+```
+ 
+ ou 
+ 
+```{r}
+ enfants1 <- enfants1 %>%
+  mutate(educ2 = ifelse(educ == 3, 2, educ)) %>% 
+ set_value_labels(educ2 = c(    "aucun" = 0,    "primaire" = 1,    "secondaire ou plus" = 2  )) %>%  mutate(educ2 = to_factor(educ2))
+ freq(enfants1$educ2)
+    
+```
+ 
+ 
+```{r}
+enfants1$educ_rec = to_factor(enfants1$educ_rec)
+```
+
+5) Calculer l’âge de la mère à la naissance de l’enfant 
+et découpons le en groupes d’âges : 
+"19 ou moins", "20-29", "30 et plus" et choisir "20-29",
+comme modalité de référence. 
+
+```{r}
+enfants1 <- enfants1 %>%  
+mutate( age_mere_naissance = time_length( interval(date_naissance_mum, date_naissance), 
+ unit = "years"  ),
+gpage_mere_naissance = cut(age_mere_naissance,include.lowest = TRUE, 
+right = FALSE,   breaks=c(13, 20, 30, 50)  ) )
+
+```
+
+```{r}
+levels(enfants1$gpage_mere_naissance) <- c("19 ou moins","20-29","30 etplus")
+```
+
+```{r}
+
+enfants1$gpage_mere_naissance <- relevel(enfants1$gpage_mere_naissance, "20-29")
+
+freq(enfants1$gpage_mere_naissance)
+
+```
+
+
+IV- Modèle de Cox (variable explicatives = sexe, milieu, richesse,structure,educ2,gpage_mere_naissance)
+ 
+ 1) Utiliser la fonction coxph du package survival pour une régression de Cox. 
+ On l'appelera mod1
+ 
+```{r}
+library(survival)
+
+```
+
+```{r}
+model_cox <- coxph(Surv(time,deces) ~ sexe+milieu+richesse+structure+educ2+gpage_mere_naissance, data=enfants1, ties="exact")
+
+summary(model_cox)
+```
+
+```{r}
+model1<-step( model_cox )
+summary(model1)
+```
+
+
+```{r}
+
+```
+ 
+ 
+ 2) Faites une sélection de modèle selon le BIC que vous appelerez mod2. 
+ 
+ 3) Quel est le modèle final? 
+ 
+ 4) Afficher les coefficients du modèle avec la fonction tidy de l’extension broom
+ 
+ ,la fonction ggcoef_model de l’extension GGally et la fonction ggforest de l'extension
+survminer 
+
+```{r}
+ library(broom)
+ tidy(model1,exponentiate=TRUE)
+ 
+ library(GGally)
+ ggcoef_model(model1, exponentiate = TRUE)
+
+
+```
+
+
+ # Hypothèse de proportionalité des risques
+ 
+ test <- cox.zph(mod2)
+test
+
+```{r}
+ # Hypothèse de proportionalité des risques
+ 
+ test <- cox.zph(model1)
+test
+```
+
+
+```{r}
+?cox.zph
+```
+
+representation graphique
+
+```{r}
+library(survminer)
+```
+
+```{r}
+ggcoxzph(test)
+```
+
+

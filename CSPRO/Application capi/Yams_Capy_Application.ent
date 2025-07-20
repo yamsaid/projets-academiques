@@ -1,0 +1,23 @@
+﻿[CSPro Application]
+Version=CSPro 7.7
+Label=YAMS_CAPY_APPLICATION
+Name=YAMS_CAPY_APPLICATION
+AppType=DataEntry
+OperatorID=No
+CAPI=Yes
+CreateListing=No
+CreateLog=No
+ShowErrorMessageNumbers=No
+ComboBoxShowOnlyDiscreteValues=Yes
+ParadataCollection=AllEvents
+ParadataDeviceStateMinutes=5
+[AppCode]
+File=.\Yams_Capy_Application.ent.apc
+[Message]
+File=.\Yams_Capy_Application.ent.mgf
+[Help]
+File=.\Yams_Capy_Application.ent.qsf
+[Forms]
+File=.\Yams_Capy_Application.fmf
+[Dictionary Types]
+Dict-Type=.\Data.dcf,Input,.\Yams_Capy_Application.fmf

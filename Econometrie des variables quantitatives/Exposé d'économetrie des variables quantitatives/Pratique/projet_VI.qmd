@@ -1,0 +1,273 @@
+---
+title: "Modele_IV"
+author: "groupe 1"
+format: pdf
+editor: visual
+---
+
+# Formulation de la modelisation
+
+Nous voulons estimer l'effet de l'éducation sur les salaires en utilisant un appareil différent - la proximité géographique des collèges. Ces données proviennent de l'étude de David Card de 1995 où il a fait la même chose, et elle est disponible dans la bibliothèque «wooldridge» comme card.
+
+### Description des variables
+
+**lwage** : Salaire annuel (formulaire journalier)
+
+**educ** : Années d'éducation
+
+**nearc4** : Vivre à proximité de l'université (1 dollar) ou loin de l'université (0 dollar)
+
+**smsa66** : Vivant dans la zone métropolitaine (no 1) ou non (-0)
+
+**exper** : Années d'expérience
+
+**expersq** : Années d'expérience (terme de marché)
+
+**black** : Noir (no 1), pas noir (-0)
+
+**south66** : Vivant dans le sud (no 1) ou non (0)
+
+Les variables **`smsa66, exper, expersq , black, south66`** sont des variables de contrôle (C' est - à- dire que le salaire est expliqué en plus de l'éducation par ces variables).
+
+Par contre dans la réalité nous constatons que l'éducation même est influencée par d'autres variables comme l'approximité de l'université.
+
+**`Nous soupçonnons donc la variable explicative éducation d'être endogène`**.
+
+## Les packages
+
+```{r}
+#library(tidyverse)  # ggplot(), mutate(), and friends
+library(broom)  # Convert models to data frames
+library(modelsummary)  # Create side-by-side regression tables
+library(kableExtra)  # Add fancier formatting to tables
+library(estimatr)  # Run 2SLS models in one step with iv_robust()
+library(dplyr)
+library(AER) # Pour les models instrumentaux (iv)
+library(plm) #Pour le test de hausman
+library(ggplot2)
+# install.packages("ggdag")
+library(ggdag) # 
+```
+
+# Importation de la base de données
+
+```{r}
+base <- read.csv("base_educ.csv", sep = ",") %>%
+  select(all_of(c("lwage", "educ", "nearc4", "exper", "expersq", "black", "south66"))) %>%
+  rename(
+    salaire = lwage,
+    education = educ,
+    proximite = nearc4,
+    experience = exper,
+    exper_marche = expersq,
+    race_noir = black,
+    sud = south66
+  ) %>%
+  na.omit()
+
+      
+```
+
+# Vérification de l'endogénéité de la variable explicative (education)
+
+Comme formuler plus haut nous supçonnons la variable education d'être endogène, pour cela nous allons faire le test de Hausman pour verifier cela en considerant l'approximité comme la variable instrumentale.
+
+## Etape 1: Le modèle naïf : c'est le modèle structurel
+
+### L'équation du modèle naïf s'écrit :
+
+$$
+\texttt{salaire} = \beta_0 + \beta_1 \cdot \texttt{education} + \beta_2 \cdot \texttt{sud} + \beta_3 \cdot \texttt{race_noir} + \beta_4 \cdot \texttt{exper_marche} + \beta_5 \cdot \texttt{experience}+ u_i
+$$
+
+```{r}
+model_naif <- lm(salaire ~ education + sud + race_noir + exper_marche + experience , data = base)
+
+summary(model_naif)
+
+```
+
+## Etape 2 : Le modèle instrumental (MI) (avec proximite comme instrument)
+
+```{r}
+iv_model <- AER::ivreg(salaire ~ education + sud +race_noir + exper_marche + experience |
+                            proximite + sud + race_noir + exper_marche + experience ,
+                  data = base)
+
+
+#summary(iv_model)
+
+```
+
+## Etape 3 : Test de Hauman
+
+**H0**: Pas d'endogénéité. Les estimateurs MCO et 2SLS sont proches. L'estimateur MCO est convergent.
+
+**H1** : Présence d'endogénéité. Les estimateurs MCO et 2SLS sont significativement différents. L'estimateur MCO est biaisé et inconsistent.
+
+La statistique est donnée par :
+
+$$
+H = (\hat{\beta}_{\text{2SLS}} - \hat{\beta}_{\text{MCO}})' 
+\left[
+\text{Var}(\hat{\beta}_{\text{2SLS}}) - \text{Var}(\hat{\beta}_{\text{MCO}})
+\right]^{-1}
+(\hat{\beta}_{\text{2SLS}} - \hat{\beta}_{\text{MCO}})
+$$
+
+**Décision**
+
+-   Si la statistique $H$ est faible (valeur-p \> 5%) : On ne rejette pas $H_0$. Donc pas d'endogénéité et le modèle de MCO est acceptable.
+
+-   Si la statistique $H$ est élevée (valeur-p \< 5%) : On rejette $H_0$. Présence d'endogénéité. Préférer l'estimateur 2SLS.
+
+**Le test**
+
+```{r}
+summary(iv_model, diagnostics = TRUE)
+```
+
+La p-value du test de Hausman est **`6.04e-06`** (largement inferieure à 5%). Donc on rejete **HO** et il y a **présence d'endogénéité.** Nous utiliserons dans ce cas le modèle de régression linéaire à variable instrumentale.
+
+# Les conditions de validité de l'instrument (proximité)
+
+Pour qu'un instrument soit valable, il doit répondre essentiellement deux critères:
+
+**Pertinence (inclusion)**: l'instrument est corrélé à la variable de education
+
+**Exclusion** (**Exogénité** ): L'instrument n'est corrélé avec le résultat que via la variable education. Autrement l’instrument ( $proximite$ ) ne doit **influencer** la variable expliqué ( $salaire$ ) *que* via la variable $education$ .
+
+## 1. Pertinence (condition d'inclusion)
+
+```{r}
+
+check_pertinence<- lm(education ~ proximite + sud  + exper_marche + experience + race_noir,
+                      data = base)
+tidy(check_pertinence)
+
+glance(check_pertinence)
+
+```
+
+**Décision :**
+
+-   La variable proximite explique significativement la variable education ( **p-value = 2.094877e-08** ) . En plus le test est globalement significatif ( **p-value \~\~ 0)**
+
+-   La statistique F est nettement supérieure à 20 ( **535,2301**), d'après **la règle empirique de Stock-Yogo, l'intrument est fort**.
+
+-   **`On peut conclure que l'instrument est pertinent`**
+
+## 2. Exclusion
+
+Pour vérifier l'exclusion, nous devons voir s'il y a une relation entre l'éducation et les salaires qui ne se produit que grâce à l'éducation. Malheureusement il n'existe pas un test statistique pour détecter l'exclusion.
+
+```{r}
+
+dag <- dagify(
+  salaire ~ education + experience + race_noir + sud ,
+  education ~ proximite + experience + race_noir + sud ,
+  exposure = "education",
+  outcome = "salaire"
+)
+
+ggdag(dag, layout = "circle") +
+  theme_dag()
+
+```
+
+Maintenant que l'instrument est valide, nous allons passer à l'estimation des parametres du modèle par la Double Moindre Carrée.
+
+# Estimation des paramètres par le DMCO
+
+## Etape 1 :Régression auxiliaire
+
+$$
+\texttt{education} = \gamma_0 + \gamma_1 \cdot \texttt{proximite} + \gamma_2 \cdot \texttt{sud} + \gamma_3 \cdot \texttt{race_noir} + \gamma_4 \cdot \texttt{exper_marche} + \gamma_5 \cdot \texttt{experience} + \varepsilon_i
+$$
+
+```{r}
+model_aux <- lm(education ~ proximite + sud + race_noir + exper_marche + experience, data = base)
+tidy(model_aux)
+```
+
+Nous pouvons alors extraire l'éducation prévue et l'ajouter à notre modèle structurel ensemble de données, rebaptisant le .fitted variable à quelque chose de plus utile en cours de route:
+
+```{r}
+base_avec_predit <- augment_columns(model_aux, base) |>
+  rename(education_estim = .fitted)
+```
+
+## Etape 2 : Estimation avec l'education estimée
+
+Enfin, nous pouvons utiliser l'éducation prévue pour estimer l'effet exogène de l'éducation sur les salaires:
+
+```{r}
+model2 <- lm(salaire ~ education_estim +sud + race_noir + exper_marche + experience,
+                   data = base_avec_predit)
+tidy(model2)
+
+```
+
+# Reprenons avec l'estimation en une seule étape
+
+```{r}
+model_2sls <- iv_robust(salaire ~ education + sud  + exper_marche + experience + race_noir  |
+                            proximite + sud + race_noir + exper_marche + experience ,
+                        data = base, diagnostics = TRUE)
+tidy(model_2sls)
+```
+
+## Comparaison des resultats
+
+```{r}
+modelsummary(
+  list("OLS" = model_naif, "2SLS (automatic)" = model_2sls),
+  gof_omit = "IC|Log|Adj|p\\.value|statistic|se_type",
+  stars = TRUE,
+  output = "gt"
+) |>
+  gt::tab_style(
+    style = gt::cell_fill(color = "#FF3"),
+    locations = gt::cells_body(rows = c(3, 5))
+  )
+
+```
+
+## Visualisation
+
+```{r}
+
+# Suppose que tu as un data.frame 'base' avec salaire et education
+ggplot(base, aes(x = education, y = salaire)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = "lm", se = FALSE, color = "blue", linetype = "dashed") +  # OLS
+  geom_abline(intercept = 2.06, slope = 0.2359, color = "red") +  # IV estimée
+  labs(
+    title = "Effet de l'éducation sur le salaire : OLS vs IV",
+    subtitle = "Ligne bleue : OLS (biaisée) | Ligne rouge : IV (effet causal)",
+    x = "Années d'éducation",
+    y = "Salaire"
+  )
+```
+
+# Interpretation
+
+Avec la regression (mco), Une année d’éducation augmente le salaire de 7,9% Avec la correction de l'endogénéité par la variable instrumentale, Une année d’éducation augmente le salaire de 23.6%
+
+# Diagnostique
+
+```{r}
+summary(model_2sls)
+```
+
+-   Test des instruments faibles: L'instrument est fort car F-Stat \> 10 (32,93)
+
+-   Test de Hausman (endogénéité) On rejette H0 d'exogénéité de la variable education. (p-value : 4.73e-06)
+
+-   Test de sur-identification
+
+Ce test n'a pas été éffectué car le modèle est juste identifié (nombre de variable explicative = nombre de variables instrumentales)
+
+### En resumé :
+
+Nous avons utilisé la proximité d'une université comme instrument pour corriger l'endogénéité du niveau d'éducation dans l’explication du salaire. Le test de Hausman confirme l’endogénéité, justifiant le modèle IV. Les tests indiquent que l’instrument est valide (fort), et nous observons qu'une année supplémentaire d'éducation augmente le salaire d’environ 23,6 %, toutes choses égales par ailleurs.

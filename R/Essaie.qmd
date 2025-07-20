@@ -1,0 +1,1456 @@
+---
+title: "Essaie"
+author: "Yams"
+date: today
+format: 
+  html:
+    toc: true             # Table des matières automatique
+    toc-depth: 3          # Profondeur de la table des matières
+    number-sections: true # Numérotation des sections
+    theme: cosmo          # Thème visuel (cosmo, united, journal, flatly, etc.)
+    code-fold: true       # Permet de replier les blocs de code
+    code-tools: true      # Ajouter bouton "copier le code"
+    smooth-scroll: true   # Défilement doux
+    df-print: paged       # Jolis tableaux paginés
+lang: fr
+editor: visual
+---
+
+## Shiny Documents
+
+This Quarto document is made interactive using Shiny. Interactive documents allow readers to modify parameters and see the results immediately. Learn more about Shiny interactive documents at <https://quarto.org/docs/interactive/shiny/>.
+
+
+
+# Introduction
+
+Bienvenue dans ce rapport interactif. Ce document est généré avec **Quarto** au format **HTML**.
+
+# Objectifs
+
+## Objectif principal
+
+Mettre en valeur les résultats d'analyse avec une mise en page professionnelle.
+
+## Objectifs spécifiques
+
+- Générer un rapport responsive.
+- Intégrer du code R et ses résultats.
+- Produire un contenu agréable à lire.
+
+# Méthodologie
+
+::: {.callout-tip}
+Méthodologie rigoureuse pour assurer la qualité des résultats.
+:::
+````{r}
+dat=iris
+
+```
+
+
+INDEXING
+
+
+LES LISTES
+
+Les listes sont parmi les objets les plus utilisés. Dans une liste on a
+
+{
+
+nom1: element 1, element2 ...
+
+nom2: element1, element2, ...
+
+\+
+
+}
+
+list\$nom1 = list\[ \[index de nom1\] \]: donne la liste des éléments de nom1
+
+list\$nom1\[1\] = list\[ \[index de nom1\] \]\[1\] : recuperer l'élément 1 de la liste nom1
+
+```{r}
+data=list(nom=c("Paul","Jacq"),age=c(42,39))
+data[1]
+data$nom
+
+```
+
+DataFrame
+
+definition: data.frame(...)
+
+type : mixte
+
+format ligne x colonne.
+
+indexing : dat\[plage lige, plage variable\]
+
+les variables peuvent etre indexées de trois façons:
+
+par \$ : data\$x
+
+par index : data\[, 1\] si x est la première var
+
+par le nom de var : data\[ , "x"\] : beaucoup davantage si plusieurs var ont un meme prefix
+
+```{r}
+data=data.frame(x=c(1,2,3),y=c(5,6,8),z=c('Homme','Femme','Femme'))
+data$x
+data[,1]
+data[,"x"]
+```
+
+FACTOR
+
+definition :factor(vecteur)
+
+fonction: categorisé des variables categorielles comme le niveau d'appreciation ...
+
+les modalités sont appelées levels
+
+```{r}
+
+vecteur = c('neutre','plus','moins','plus','neutre','plus','neutre','neutre','plus')
+facteur=factor(vecteur)
+facteur
+```
+
+On peut renommer les noms des modalités (par exemple moins à négatif) avec l'option label= vecteur de nom
+
+```{r}
+facteur2 = factor(facteur,labels = c("négatif","neutre","positf"))
+facteur2
+```
+
+afficher uniquement les labels
+
+```{r}
+levels(facteur)
+```
+
+Supprimer des éléments d'un facteur
+
+```{r}
+
+facteur3=facteur2[-c(2,6)]
+facteur3
+droplevels(facteur3)
+```
+
+Reordoner les modalités
+
+```{r}
+relevel(facteur,'neutre')
+```
+
+Conversion en numeric: pour un facteur, convertissez d'abord en character(pour supprimer les levels) puis en numeric
+
+```{r}
+x= factor(c(9,12,23,83,37,20))
+as.numeric(as.character(x))
+```
+
+Super affectation: rend la variable globale
+
+```{r}
+
+fct1 <- function(x) {
+x_increment <- x+1
+return(x_increment)
+}
+
+
+fct1(38)
+
+
+fct2 <- function(x){
+x_increment <<- x+1
+return(x_increment)
+}
+
+
+fct2(38)
+x_increment
+
+```
+
+Fonction de sequence
+
+1.  seq(min,max, nb_d'elements) repartition égale entre les bornes
+
+```{r}
+seq(0, 1, length.out = 10)
+
+```
+
+2.  duplication d'un ou d'une place n fois
+
+    rep(plage ou élément, nbfois)
+
+```{r}
+rep(1:3,8)
+
+```
+
+3.  dupliquer chaque caractère n fois
+
+    ```{r}
+    rep(1:3, rep(8,3))
+
+    ```
+
+4.  f
+
+    ```{r}
+    rep(rep(1:4, rep(2,4)), 3)
+
+    ```
+
+5
+
+```{r}
+gl(5,10)
+
+
+```
+
+6.  Sequence de lettres
+
+    ```{r}
+    letters[5:10]
+    LETTERS[5:10] 
+    ```
+
+Tirage aléatoire (normale)
+
+pour avoir les memes resultats, on fixe le seed
+
+```{r}
+set.seed(1200)
+data= data.frame(x=1:3,y=rnorm(3,2,1))
+data
+```
+
+\# Quelques fonctions de calcul
+
+set.seed(1200)
+
+data=data.frame(x=1:3, y=rnorm(3,2,1))
+
+1- Afficher : 
+
+le minimum : min(data)
+
+le maximum :  max(data)
+
+la somme de tous les chiffres : sum(data)
+
+2-
+
+créer une variable z dans data qui correspond 
+
+à la somme cumulée de la variable x
+
+z\<-cumsum(data\$x)
+
+créer une variable w dans data qui correspond au 
+
+produit cumulé de la variable y
+
+w\<-cumprod(data\$y)
+
+3-Trouver les fonctions permettant d'obtenir ces résultats : 
+
+      x        y 
+
+2.000000 1.699651    (moyenne de chaque colonne) :  colMeans(data)
+
+apply(data,2,mean)
+
+1.075981 1.976156 2.497340   (moyenne chaque ligne) :  rowMeans(data)
+
+6.000000 5.098952  (somme de chaque colonne) : colSums(data)
+
+2.151961 3.952312 4.994680 (somme de chaque ligne) : rowSums(data)
+
+ou apply(data,1,sum)
+
+data=data.frame(x=rep(letters\[1:4\],3),y=rep(letters\[10:11\],rep(6,2)),z=rnorm(12))
+
+tapply(data\$z,data\$x,mean)
+
+tapply(data\$z,list(data\$x,data\$y),mean) 
+
+?aggregate
+
+aggregate(data\$z, list(x=data\$x,y=data\$y),sum) 
+
+\# Liste des packages à télécharger
+
+questionr
+
+dplyr
+
+nycflights13
+
+ggplot2
+
+gridextra
+
+esquisse
+
+readxl
+
+factoextra
+
+Factominer
+
+corrplot
+
+purrr
+
+janitor
+
+forcats
+
+\# Quelques fonctions de base utiles
+
+v=c(7,16,9,14,26,3)
+
+diff(v)
+
+diff(v, lag=3) 
+
+```{r}
+v=c(7,16,9,14,26,3)
+
+diff(v)
+
+diff(v, lag=3)
+diff(v, lag=3)
+
+```
+
+Fonctions de concordance
+
+data=data.frame(x=rep(letters\[1:4\],3), y=rep(letters\[10:11\],rep(6,2)),z=rnorm(12)) 
+
+```{r}
+set.seed(200)
+data=data.frame(x=rep(letters[1:4],3), y=rep(letters[10:11],rep(6,2)),z=rnorm(12))
+y=rep(letters[10:11],rep(6,2),z=rnorm(12))
+```
+
+y=rep(letters\[10:11\],rep(6,2)),z=rnorm(12)) 
+
+```{r}
+y=rep(letters[10:11],rep(6,2),z=rnorm(12))
+```
+
+data\[is.element(data\$x, c("a","b")),\]
+
+data\[data\$x %in% c("a","b"),\] 
+
+match(5, c(2,7,5,3))
+
+match(5, c(2,7,8,3))
+
+match(5, c(2,7,8,3), nomatch=0) 
+
+```{r}
+match(5, c(2,7,5,3))
+
+match(5, c(2,7,8,3))
+
+match(5, c(2,7,8,3), nomatch=-1)
+```
+
+Enfin ifelse est une fonction permettant de remplir, ligne par ligne, une colonne conditionnellement à la valeur d’une ou plusieurs autres colonnes :
+
+data\[,2\]=ifelse(data\[,"x"\]\<0,0,1) 
+
+#Fonctions d'unicité
+
+x=c(1,1,1,2,3,4,4,5,6,7,7,7,8,8,9)
+
+unique(x) : elimine les doublons
+
+```{r}
+x=c(1,1,1,2,3,4,4,5,6,7,7,7,8,8,9)
+
+unique(x)
+```
+
+duplicated(x) : produit un masque de (true/false) si la valeur est dupliqué ou non
+
+```{r}
+x=c(1,1,1,2,3,4,4,5,6,7,7,7,8,8,9)
+duplicated(x)
+```
+
+rle(x)
+
+```{r}
+rle(x)
+```
+
+rle(x)\$lengths 
+
+```{r}
+rle(x)$lengths
+```
+
+# **\# Fonctions pour chaine de caractères**
+
+paste(c("X","Y"),1:4,sep="",collapse="+")
+
+```{r}
+?paste(c("X","Y"),1:4,sep="",collapse="+")
+
+```
+
+paste("X","Y",sep="")
+
+```{r}
+paste("X","Y",sep="")
+```
+
+substring(c("#UKI\*\*","#JLK\*","#FGT\*"),2,4) 
+
+```{r}
+?substring(c("#UKI**","#JLK*","#FGT*"),2,4)
+```
+
+# Exo 1
+
+1\) fixer une graine de 112
+
+```{r}
+set.seed(112)
+```
+
+2\) créer une liste que vous nommerez maliste qui contient trois élements : 
+
+E1=rnorm(10)
+
+E2 =  1: 10
+
+E3 = runif(10)
+
+```{r}
+set.seed(112)
+maliste <- list(E1=rnorm(10),E2 = 1: 10,E3 = runif(10))
+```
+
+3)  afficher la liste
+
+```{r}
+maliste
+```
+
+4\) pour chaque élement de la liste, calculer la moyenne
+
+```{r}
+mean(maliste$E1)
+mean(maliste$E2)
+mean(maliste$E3)
+```
+
+```{r}
+lapply(maliste,mean)
+```
+
+5\) En utilisant l'aide de la fonction quantile, calculer le 
+
+premier, la médiane et le troisième quantile pour chaque élement
+
+ de maliste
+
+```{r}
+Q=quantile(maliste$E1, probs = seq(0, 1, 0.25), na.rm = FALSE,
+         names = TRUE)
+quantile(maliste$E2, probs = seq(0, 1, 0.25), na.rm = FALSE,
+         names = TRUE)
+quantile(maliste$E3, probs = seq(0, 1, 0.25), na.rm = FALSE,
+         names = TRUE)
+```
+
+```{r}
+lapply(maliste,quantile,probs = c(0.25, 0.5, 0.75))
+```
+
+```{r}
+ lapply(maliste,quantile,probs=(1:3)/4)
+```
+
+6\) Sortez les résultats obtenus sous la forme d'un vecteur
+
+Vector
+
+```{r}
+  vecteur <- unlist(lapply(maliste, quantile, probs = c(0.25, 0.5, 0.75)))
+```
+
+Forme matricielle
+
+```{r}
+ sapply(maliste,quantile,prob=c(0.25,0.5,0.75))
+```
+
+```{s}
+```
+
+7\) Combiner la fonction summary avec lapply sur maliste
+
+```{r}
+lapply(maliste,summary)
+```
+
+------------------------------------------------------------------------
+
+# Exo 2 
+
+1\) Charger le jeu de données iris et créer un dataframe iriss 
+
+correspondant
+
+```{r}
+iriss = data.frame(iris)
+iriss
+```
+
+2\) calculer la moyenne des longueurs de sépale pour chaque espèce 
+
+d'iris
+
+```{r}
+tapply(iriss$Sepal.Length, iriss$Species, mean) 
+```
+
+```{r}
+
+```
+
+```{r}
+
+by(iriss$Sepal.Length,iriss$Species, mean ) 
+with(iriss, tapply(Sepal.Length, Species, mean)) 
+```
+
+3\) Je souhaite avoir un aperçu des données 
+
+(minimum, moyenne, médiane, quartile, maximum)  pour les 
+
+observations 15 à 30 du tableau iriss avec la fonction adéquate
+
+```{r}
+
+summary(iriss[15:30,-5])
+```
+
+```{r}
+
+summary(iriss[15:30,1:4])
+```
+
+------------------------------------------------------------------------
+
+# Exo 3 
+
+set.seed(1104)
+
+data=data.frame(x=rnorm(100))
+
+```{r}
+set.seed(1104)
+
+data=data.frame(x=rnorm(100))
+
+
+```
+
+créer une varibale Recod qui recode la variable x tel que mentionné:
+
+si c'est inférieur ou égal à 0.01 = 0
+
+si c'est compris entre 0.2 à 0.5 = 2
+
+reste = 1
+
+Cetye variable s'appellera recode
+
+```{r}
+data[,"recode"]=ifelse(data[,"x"]<=0.01,0,ifelse(data[,"x"]<=0.5 & data[,"x"]>=0.2,2,1))
+
+```
+
+```{r}
+data
+```
+
+Supprimer toutes les variables
+
+```{r}
+rm(list=ls())
+```
+
+```{r}
+library(dplyr)
+```
+
+```{r}
+iriss=as_tibble(iris)
+
+```
+
+```{r}
+#Un tibble c'est une sorte de dataframe avec une présentation plus coniviale des données
+
+#Ffilter
+#Fontion filter
+filter(iriss, Species == "setosa", Petal.Length >= 1.5)
+filter(iriss, Species == "setosa" & Petal.Length >= 1.5)
+filter(iriss, Species == "setosa" | Petal.Length >= 1.5) 
+filter_all(iriss, all_vars(. != "NA"))
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+#Fonction arrange
+arrange(iriss, Species, Petal.Length)
+arrange(iriss, Species, desc(Petal.Length)) 
+
+
+```
+
+```{r}
+
+```
+
+# \### Package dplyr
+
+iriss=as_tibble(iris) 
+
+#Un tibble c'est une sorte de dataframe avec une présentation plus coniviale des données
+
+## #Ffilter
+
+Fontion filter
+
+\*filter(iriss, Species == "setosa", Petal.Length \>= 1.5)
+
+filter(iriss, Species == "setosa" & Petal.Length \>= 1.5)
+
+filter(iriss, Species == "setosa" \| Petal.Length \>= 1.5) 
+
+filter_all(iriss, all_vars(. != "NA"))
+
+## #Fonction arrange
+
+arrange(iriss, Species, Petal.Length)
+
+arrange(iriss, Species, desc(Petal.Length)) 
+
+## #Fonction select
+
+ select(iriss, Species, Petal.Length)
+
+select(iriss, Sepal.Length :Petal.Width)
+
+select(iriss, -(Petal.Length :Petal.Width)) 
+
+select(iriss, Especes=Species) 
+
+select(iriss, starts_with("Petal"))
+
+ select(iriss, ends_with("Width"))
+
+```{r}
+
+#Fonction select
+
+select(iriss, Species, Petal.Length)
+select(iriss, Sepal.Length :Petal.Width)
+select(iriss, -(Petal.Length :Petal.Width)) 
+select(iriss, Especes=Species) 
+select(iriss, starts_with("Petal"))
+select(iriss, ends_with("Width"))
+ 
+```
+
+```{r}
+#Fonction rename
+rename(iriss, Longueur_Sepal=Sepal.Length) 
+
+```
+
+```{r}
+#Fonctions mutate et transmute
+#mutate(iriss, frac=Sepal.Length/Sepal.Width, exp = frac*100)
+transmute(iriss, Species, frac=Sepal.Length/Sepal.Width, exp = frac*100) 
+
+ 
+
+
+```
+
+\# Utilisation du pipe %\>% (il permet d'enchainer des opérations dans dplyr)
+
+créons un df 
+
+1-qui s'appelle :  tabg , qui ne contiendra que les colonnes
+
+species, Sepal.Length, Sepal.Width
+
+2- créer les variables frac et exp
+
+le pipe permet d'anchainer des operations. Dans les operations qui suivent on a mentionne plus le nom de la base
+
+```{r}
+#proposition avec le pipe
+tabg=iriss%>%
+select(Species, Sepal.Length, Sepal.Width)%>%
+mutate(frac=Sepal.Length/Sepal.Width, exp = frac*100)
+```
+
+```{r}
+tabg
+```
+
+```{r}
+by_cyl <- iriss %>% group_by(Species)
+by_cyl
+by_cyl %>% summarise(
+  moyenne_petal = mean(Petal.Length),
+  moyenne_sepal = mean(Petal.Length),
+  max = mean(Petal.Length),
+  min = min(Sepal.Length)
+)
+```
+
+ 
+
+```{r}
+iris %>%
+  group_by(Species) %>%
+  summarise(
+    min_sepal = min(Sepal.Length),
+    max_sepal = max(Sepal.Length),
+    mean_petal_length = mean(Petal.Length),
+    mean_petal_width = mean(Petal.Width)
+  )
+```
+
+fonction count()
+
+Tableau de frequences
+
+```{r}
+table(iriss$Species)
+```
+
+# package questionr
+
+```{r}
+library(questionr)
+
+```
+
+```{r}
+freq(iriss$Species)
+```
+
+Jointure dans R
+
+package :dplyr
+
+```{r}
+personnes <- tibble(
+nom = c("Donatien", "Donatien", "Ange", "Ernest", "Leyla", "Leyla"),
+animaux = c("Chien", "Chat", "Oiseau", "Tortue", "Chien", "Singe")
+)
+
+Especes <- tibble(
+Animaux = c("Chien", "Chat", "Singe", "Tortue", "Ane"),
+poids = c("140", "280", "160", "85", "160")
+)
+```
+
+```{r}
+Especes=rename(Especes,animaux=Animaux)
+```
+
+```{r}
+
+Especes
+```
+
+```{r}
+left_join(personnes,Especes)
+
+
+```
+
+```{r}
+?left_join
+```
+
+```{r}
+right_join(Especes,personnes)
+```
+
+```{r}
+full_join(Especes,personnes)
+```
+
+```{r}
+full_join(personnes,Especes)
+```
+
+```{r}
+semi_join(personnes,Especes)
+```
+
+```{r}
+inner_join(personnes,Especes)
+```
+
+```{r}
+anti_join(personnes,Especes)
+```
+
+```{r}
+anti_join(Especes,personnes)
+```
+
+table1 \<- left_join(personnes,Especes)
+
+table1
+
+table2 \<- left_join(Especes,Especes)
+
+table2
+
+table3 \<- right_join(Especes,personnes)
+
+table3
+
+table4 \<- right_join(personnes,Especes)
+
+table4
+
+table5 \<- semi_join(personnes,Especes)
+
+tale5
+
+table6 \<- anti_join(personnes,Especes)
+
+table6
+
+table7 \<- anti_join(Especes,personnes)
+
+table7
+
+y=data.frame(x1=LETTERS\[1 :3\],x2=1 :3)
+
+z=data.frame(x1=LETTERS\[2 :4\],x2=2 :4)
+
+intersect(y,z) 
+
+union(y,z)
+
+setdiff(y,z) 
+
+# Fonction distinct
+
+iriss %\>%
+
+select(Species) %\>%
+
+distinct 
+
+```{r}
+iriss=data.frame(iris)
+iriss %>%
+
+select(Species) %>%
+
+distinct
+
+```
+
+# \# Fonctions lead et lag
+
+```{r}
+lead(iriss,2)
+```
+
+x \<- runif(5)
+
+cbind(ahead = lead(x), x, behind = lag(x))
+
+cbind(ahead = lead(x,2L), x, behind = lag(x,3L)) 
+
+# **Application package dplyr**
+
+Nous allons utiliser les données du jeu de données nycflights13, contenu dans le package nycflights13. Celui-ci correspond aux données de tous les vols au départ d’un des trois aéroports de New-York en 2013. Il a la particularité d’être réparti en trois tables : 
+
+• flights contient des informations sur les vols : date, départ, destination, horaires, retard… 
+
+• airports contient des informations sur les aéroports 
+
+• airlines contient des données sur les compagnies aériennes
+
+**Travail à faire**
+
+1)     Charger les trois tables du jeu de données : flights, airports et airlines ;
+
+```{r}
+library(nycflights13)
+```
+
+```{r}
+vol = nycflights13::flights
+aeroport =nycflights13::airports
+line=nycflights13::airlines
+```
+
+```{r}
+airlines
+```
+
+2)     Afficher  uniquement les vols avec un retard au départ (variable dep_delay) compris entre 10 et 15 minutes ;
+
+```{r}
+vol[vol$dep_delay>=10 & vol$dep_delay<=15,]
+```
+
+3)     Afficher les vols qui parcourent la plus grande distance ;
+
+```{r}
+vol[vol$distance==max(vol$distance),]
+```
+
+#### Filter filtre en fonction d'une condition
+
+```{r}
+vols_plus_grande_distance <- flights %>%
+  filter(distance == max(distance, na.rm = TRUE))
+```
+
+4)     Afficher toutes les variables de type character de la table flights ;
+
+```{r}
+Filter(is.character, flights)
+
+# ou
+
+flights %>% 
+  select(where(is.character))
+```
+
+5)     Réordonner les colonnes de la table airport qui doivent commencer par les variables « name» et « tzone » ;
+
+```{r}
+aeroport %>% relocate(name,tzone)
+```
+
+6)     En considérant la table flights, renommer les variables : 
+
+-         "dep-delay " en retard départ
+
+-        "arr-delay " en retard arrivée
+
+7)     Trouver les trois vols ayant eu le plus de retard ;
+
+```{r}
+vol[vol$dep_delay==min(vol$dep_delay),]
+```
+
+8)     En considérant la table flights : 
+
+-        Créer deux variables : « distance_km » qui convertit la distance en km et « vitesse_km» qui calcule la vitesse en km/h. 
+
+-        Créer une variable qui mentionne si le vol a : 
+
+·         un  retard au départ et à l’arrivée 
+
+·        uniquement un retard au départ 
+
+·        uniquement un retard à l’arrivée
+
+·        aucun retard
+
+-        Créer une variable de type facteur qui recode les mois en « jan », « fev », « mar », « dec »
+
+9)     Calculer pour chaque mois le retard maximum, le retard minimum et le retard moyen
+
+10)  Calculer l’écart entre le r
+
+# \## Lundi 28/04/2025
+
+### Visualisation d'un jeu de donées 
+
+1\) charger le jeu de données hdv2003 dans un df appelé d
+
+```{r}
+
+data(package = .packages(all.available = TRUE))
+
+```
+
+```{r}
+library(questionr)
+```
+
+```{r}
+data(hdv2003)
+```
+
+2\) Que représente ce jeu de données? 
+
+```{r}
+library(skimr)
+```
+
+```{r}
+skim(hdv2003)
+```
+
+3\) Quelles sont les fonctions que vous pouvez utiliser pour visualiser votre jeu de données d?
+
+str(d)
+
+names(d)
+
+Viiewd))
+
+```{r}
+# Création d'une variable quantitative
+age <- c(0, 20, 21, 40, 41, 60, 61, 80, 81, )
+
+# Découpage en 3 classes avec des bornes à 30, 50 et 100
+age_cat <- cut(age, breaks = c(0, 30, 50, 100))
+
+# Résultat
+print(age_cat)
+
+```
+
+#Nous allons considérer la variable age
+
+Recoder la variable age en age_rec pour les tranches suivantes : 
+
+    0-20
+
+    21-40
+
+    61-80
+
+    81 et plus
+
+✂️ La fonction icut(d\$age) : permet de decouper une variable quanti en de classe
+
+```{r}
+icut(d$age)
+
+```
+
+```{r}
+d$age_rec <- cut(d$age,
+  include.lowest = TRUE,
+  right = TRUE,
+  dig.lab = 3,
+  breaks = c(0, 20, 40, 60, 80, 100))
+```
+
+✂️ irec(d\$qualif) : recoder une variable quali
+
+```{r}
+## Recodage de d$qualif en d$qualif_rec
+d$qualif_rec <- as.character(d$qualif)
+d$qualif_rec[d$qualif == "Ouvrier specialise"] <- "man"
+d$qualif_rec[d$qualif == "Ouvrier qualifie"] <- "man"
+d$qualif_rec[d$qualif == "Profession intermediaire"] <- "cat2"
+d$qualif_rec[d$qualif == "Cadre"] <- "cat3"
+d$qualif_rec[d$qualif == "Employe"] <- "cat2"
+d$qualif_rec[is.na(d$qualif)] <- "refus"
+```
+
+```{r}
+dta = data.frame(read.csv('dirty_data.csv',sep = ";"))
+
+```
+
+# package janitor
+
+```{r}
+library(janitor)
+```
+
+```{r}
+dta2=dta
+```
+
+La fonction clean_names(base) : harmonise les noms des variable : . -\> \_ ; Maj -\> min
+
+```{r}
+dta2=clean_names(dta)
+```
+
+```{r}
+str(dta)
+```
+
+```{r}
+str(dta2)
+```
+
+# package stringr
+
+```{r}
+library(stringr)
+```
+
+La fonction str_to_upper() : en Majuscule
+
+```{r}
+str_to_upper(names(dta2))
+```
+
+La fonction str_to_lower(): -\> minuscule
+
+```{r}
+str_to_lower(names(dta2))
+```
+
+La fonction str_to_title() : -\> premiere en maj
+
+Conversion de caractere en factore la variable gender
+
+```{r}
+dta2$gender<-factor(dta2$gender)
+```
+
+```{r}
+levels(dta2$gender)
+```
+
+La fonction str_trim(txt, side=""#both : deux cotes;#right;#left) : supprime les espaces
+
+```{r}
+
+dta2$gender=factor(str_trim(str_to_lower(dta2$gender)))
+  
+
+
+```
+
+```{r}
+levels(dta2$gender)
+```
+
+ str_replace(names(dta2),"\_","." ) : remplace
+
+#  package tidyr
+
+```{r}
+library(tidyr)
+```
+
+ 
+
+```{r}
+dta2 %>%
+
+separate(nom_prenom,c("nom", "prenom"), sep="_")
+```
+
+```{r}
+replace(d$NOM_Prenom,"_"," ")
+```
+
+# package data.table
+
+#Le fonctionnement de la librairie repose sur l’écriture suivante :
+
+#DT\[i, j, by\] 
+
+\# – DT désigne un data.table ;
+
+\# – la sélection de lignes s’opère suivant i ;
+
+\# – l’exécution d’une ou plusieurs opérations se fait suivant j ;
+
+\# – les résultats peuvent être groupés suivant by.
+
+```{r}
+library(data.table)
+```
+
+```{r}
+iris2=data.table(iris)
+```
+
+```{r}
+View (iris2)
+```
+
+sélectionner les iris dont la longueur de sépales est \<5  en utilisant 
+
+  #  -les fonctions de base de R
+
+    - dplyr
+
+    -datatable
+
+```{r}
+iris3=iris
+```
+
+On remarque qu'avec les fonctions de bases, la virgule est obligatoire pour separer les lignes des colonnes
+
+```{r}
+
+
+  iris3[iris3$Sepal.Length<5,]
+```
+
+sélectionner les iris dont la longueur de sépales est \<5 : 
+
+    - dplyr
+
+```{r}
+  filter(iris, iris$Sepal.Length <5 )
+```
+
+    -datatable
+
+Avec les objets de type data.table la selection se fait sur les lignes
+
+```{r}
+data.table(iris)[iris$Sepal.Length < 5]
+```
+
+\# je veux sélectionner les variables  Sepal.Length, Sepal.Width avec datable 
+
+```{r}
+iris2<-data.table(iris)
+```
+
+```{r}
+iris2[,list(Sepal.Length, Sepal.Width)]
+```
+
+```{r}
+
+```
+
+Je veux créer  une variable : 
+
+     n_obs qui me donne le nombre d'observations de iris2 ; 
+
+     min_sepal  qui me donne la largeur minimale des sépales
+
+     max_sepal  qui me donne la largeur maximale des sépales
+
+```{r}
+iris2[, .(min_sepal = min(Sepal.Width),max_sepal = max(Sepal.Width),
+          n_obs = .N)]
+```
+
+```{r}
+iris2
+```
+
+iris2\[, .(Espece = Species, Aire_petal = Petal.Length \* Petal.Width)\]
+
+```{r}
+iris2[, .(Espece = Species, Aire_petal = Petal.Length * Petal.Width)]
+```
+
+        iris3=copy(iris2)
+
+```{r}
+iris3=copy(iris2)
+iris3[,c("Sepal.Length","Sepal.Width") :=NULL] 
+```
+
+iris3\[,c("Sepal.Length","Sepal.Width") :=NULL\]
+
+ Créer dans iris2, une variable character qui s'appelle group et qui prend la valeur A
+
+pour toutes les observations, 
+
+```{r}
+iris2[, .group := 'A']
+```
+
+puis la variable groupe prendra B comme valeur uniqement pour les espèces
+
+de type virginica
+
+```{r}
+iris2[Species == "virginica", group := "B"]
+```
+
+Je veux créer une variable n_obs2 qui me donne le nombre d'observations par espèces
+
+```{r}
+
+iris2[, .n_obs := .N , by =Species]
+```
+
+On peut creer plusieurs variables à la fois , il suffit de :
+
+iris2\[ , c("RatioSepal","RatioPetal") :=list(Sepal.Length/Sepal.Width,
+
+Petal.Length/Petal.Width)\]
+
+possibilité d'enchainner les commandes
+
+```{r}
+(iris2[, .(petal_area = Petal.Width * Petal.Length, Species)]
+[,.(min_petal_area = min(petal_area)),by = Species][order(-min_petal_area)]) 
+
+```
+
+#Requête par groupe : 
+
+    iris2\[, .(moyenne = mean(Sepal.Length, na.rm = TRUE)), by = Species\]
+
+\# Fonctions lead et lag
+
+DT=data.table(A=1 :5)
+
+DT\[, X := shift(A, 1, type="lag")\]
+
+DT\[, Y := shift(A, 1, type="lead")\]
+
+DT 
+
+ # Ordonner les lignes suivant une ou plusieurs colonnes
+
+ setorder(iris2,-Groupe,Sepal.Length)
+
+#Réalisation de graphiques
+
+#  I- ackage ggplot2
+
+library(ggplot2)
+
+```{r}
+library(ggplot2)
+```
+
+library(gridExtra) 
+
+```{r}
+library(gridExtra)
+```
+
+#Les composantes clés d’un graphique produit avec ggplot2 sont :
+
+#– data : un data frame ;
+
+#– aes : la carte esthétique du graphique (couleur, taille…) ;
+
+#– geom : les objets géométriques (points, lignes, courbes…) ;
+
+#– stat : les transformations statistiques (quantiles, lissage…) ;
+
+#– scales : l’échelle de la carte esthétique (par exemple mâle = bleu,
+
+femelle = rouge) ;
+
+#– coord : le système des coordonnées ;
+
+#– facet : les graphiques conditionnels 
+
+```{r}
+p=ggplot(data=iris, aes(x=Sepal.Length, y=Sepal.Width))
+
+p+geom_point()
+```
+
+#Il est possible de mettre à jour un graphique après modification des données d’entrées :
+
+   
+
+```{r}
+p=ggplot(data=iris, aes(x=Sepal.Length, y=Sepal.Width)) + geom_point()
+
+dsqrt=transform(iris, Sepal.Length=sqrt(Sepal.Length))
+
+q=p %+% dsqrt
+
+q+geom_point()
+```
+
+##   \# Les paramètres esthétiques, sont fournis au travers de la commande aes
+
+  – colour : la couleur ;
+
+– shape : la forme ;
+
+– size : la taille ;
+
+– alpha : la transparence ;
+
+– fill : le remplissage. 
+
+```{r}
+ggplot(data=iris, aes(x=Sepal.Length, y=Sepal.Width, colour=Species)) +
+
+geom_point()
+
+```
+
+### \# syntaxe équivalente
+
+ggplot(data=iris, aes(x=Sepal.Length, y=Sepal.Width)) +
+
+geom_point(aes(colour=Species)) 
+
+```{r}
+# syntaxe équivalente
+
+ggplot(data=iris, aes(x=Sepal.Length, y=Sepal.Width)) +
+geom_point(aes(colour=Species)) 
+  
+     
+```
+
+```{r}
+# syntaxe équivalente
+
+ggplot(data=iris, aes(x=Sepal.Length, y=Sepal.Width)) +
+geom_point(aes(shape=Species, color=Species)) 
+  
+     
+```
+
+     ggplot(iris, aes(Sepal.Length,Petal.Length)) + geom_point() +
+
+aes(colour=Sepal.Width \> 3) +
+
+(scale_colour_discrete(name ="Largeur du sépal",
+
+labels=c("inférieure ou égale à 3 cm" , "supérieure à 3 cm"))) 
+
+```{r}
+ggplot(iris, aes(Sepal.Length,Petal.Length)) + geom_point() +
+aes(colour=Sepal.Width > 3) +
+(scale_colour_discrete(name ="Largeur du sépal",
+labels=c("inférieure ou égale à 3 cm" , "supérieure à 3 cm"))) 
+
+
+
+```

@@ -1,0 +1,29 @@
+{
+  "fileType": "Application Deployment Specification",
+  "version": "7.7",
+  "name": "Yams_Capy_Application",
+  "description": "",
+  "buildTime": "2025-06-07T19:07:55Z",
+  "files": [
+    {
+      "path": ".\\Yams_Capy_Application.pen",
+      "signature": "5FCEEB8E9748E494743BC0CEE5A9BA13"
+    },
+    {
+      "path": ".\\Yams_Capy_Application.pff",
+      "signature": "98F91AE83CE4D0B62BF2B7D31C31DAF9"
+    }
+  ],
+  "dictionaries": [
+    {
+      "path": ".\\Data.dcf",
+      "uploadForSync": true
+    }
+  ],
+  "deployment": {
+    "type": "LocalFolder",
+    "cswebUrl": "http:\/\/",
+    "ftpUrl": "ftp:\/\/",
+    "localFolderPath": "..\\Application capi"
+  }
+}

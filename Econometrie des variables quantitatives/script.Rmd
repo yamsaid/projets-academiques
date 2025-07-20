@@ -1,0 +1,1118 @@
+---
+output: 
+  pdf_document:
+    latex_engine: xelatex  
+    number_sections: true
+    toc: true
+    toc_depth: 2
+    includes:
+      in_header: preamble.tex
+      before_body: titlepage.tex
+fontsize: 11pt
+geometry: margin=2.5cm
+lang: fr
+---
+
+
+
+
+
+## Introduction
+
+Le développement urbain rapide que connaissent de nombreuses villes africaines s’accompagne d’une pression croissante sur les ressources foncières. À Ouagadougou, la capitale du Burkina Faso, cette dynamique se traduit par une intensification des transactions foncières et une augmentation progressive du coût des parcelles. Face à cette évolution, il devient crucial pour les acteurs publics et privés, notamment les aménageurs et les autorités locales, de disposer d’outils de mesure fiables permettant de suivre l’évolution des prix du foncier.
+
+L'évaluation de l'évolution des prix des parcelles immobilières constitue un enjeu majeur pour les acteurs économiques, les décideurs politiques et les investisseurs, permettant de mieux comprendre les dynamiques du marché immobilier et d'orienter les stratégies d'investissement ou de régulation. Dans ce contexte, la période s'étendant de 2018 à 2024 offre un cadre pertinent pour analyser les fluctuations des prix, marquées par des événements économiques et sociaux significatifs.
+
+Cependant, la construction d’un tel indicateur pose plusieurs défis. Une simple comparaison des prix moyens d’une année à l’autre ne permet pas de distinguer les variations réelles des prix de celles liées à des changements dans la nature des parcelles vendues (localisation, superficie, usage, statut administratif, etc.). Autrement dit, il est essentiel de neutraliser l’effet qualité pour isoler la variation purement temporelle des prix.
+
+C’est dans ce cadre que s’inscrit la méthode hédonique, utilisée dans de nombreux pays pour la construction d’indices immobiliers ajustés. Cette méthode repose sur l’idée que le prix d’un bien est fonction de ses caractéristiques observables. Elle permet ainsi de modéliser la contribution individuelle de chaque attribut (par exemple : superficie, quartier, usage prévu) à la formation du prix, et de construire un indice de prix corrigé des effets de composition.
+
+
+
+
+```{r , message=FALSE, warning=FALSE, echo=FALSE}
+## Chargement des packages
+library(readr) # Pour importer la base
+library(tidyverse)  # Pour la manipulation des données
+library(lubridate)  # Pour les dates
+library(lmtest)     # Pour les tests économétriques
+library(car)        # Pour le VIF
+library(VIM)        #Visualisation des valeurs manquantes
+library(psych)      # Statistique descriptives
+library(corrplot)   # pour la matrice de correlation
+library(dplyr)       # pour les traitements
+library(car)        # pour les tests
+library(xgboost)
+library(Matrix)
+library(caret)
+library(e1071)
+library(FactoMineR)
+library(factoextra)
+library(gridExtra)
+library(rcompanion)
+library(tibble)
+library(knitr)
+library(kableExtra)
+library(scales)
+library(ggplot2)
+library(mgcv)
+
+
+
+```
+
+
+
+```{r, warning = FALSE, message = FALSE, echo = FALSE}
+## Importation des données
+sonatur <- read_delim("Sonatur_csvf.csv", delim = ";", escape_double = FALSE, 
+                       trim_ws = TRUE)
+
+col = c( "Numero","Ville" , "Site",
+         "Usage", "Superficie", "Cout_m2",
+         "COUT", "Taxe_Jouissance", "Type_option",
+         "Date_vente", "Date_fin_contrat","attestation_etablie",
+         "plan_etablie", "Presence_ONEA","Presence_SONABEL" 
+)
+
+names(sonatur)<- col
+
+#Convertir en factor
+sonatur <- sonatur %>%
+  mutate(across(where(is.character), as.factor))
+
+```
+
+## Présentation des données
+
+###  Sources de données 
+
+Les données utilisées dans cette étude proviennent de la Société Nationale d’Aménagement des Terrains Urbains (SONATUR). Elles portent sur l’ensemble des parcelles vendues à Ouagadougou entre 2018 et 2024, issues de différents sites d’aménagement. Chaque enregistrement correspond à une parcelle individuelle pour laquelle diverses caractéristiques ont été renseignées.
+
+La base de données comprend 1811 d’observations et 15 variables et couvre aussi bien des zones périphériques que des quartiers plus centraux. Elle constitue une source précieuse pour analyser l’évolution des prix fonciers et modéliser la valeur des terrains à partir de leurs attributs.
+
+
+###  Analyse descriptive préliminaire
+
+Avant de procéder à la construction des variables synthétiques et à la modélisation, une analyse descriptive des données a été réalisée pour explorer les caractéristiques des parcelles et identifier les relations potentielles entre les variables.
+
+#### - Variables quantitatives
+
+Le tableau ci-dessous présente les indicateurs statistiques clés moyenne, médiane, écart-type, minimum, maximum et asymétrie pour variables quantitatives : le cout par m2 (Cout_m2),le coût total de parcelles (COUT), la superficie (superficie) et le taxe de jouissance (Taxe_Jouissance).
+
+
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+# Variables sélectionnées
+quanti_vars <- c("Cout_m2", "COUT", "Superficie", "Taxe_Jouissance")
+
+data_check <- sonatur %>%
+  select(all_of(quanti_vars))
+
+# Fonction de résumé pour une variable
+resumer_variable <- function(v) {
+  c(Moyenne = mean(v, na.rm = TRUE),
+    Mediane = median(v, na.rm = TRUE),
+    Ecart_type = sd(v, na.rm = TRUE),
+    Minimum = min(v, na.rm = TRUE),
+    Maximum = max(v, na.rm = TRUE),
+    Asymetrie = skewness(v, na.rm = TRUE))
+}
+
+# Appliquer à chaque variable
+summary_quanti <- data.frame(t(sapply(data_check, resumer_variable)))
+summary_quanti <- tibble::rownames_to_column(summary_quanti, var = "Variable")
+
+# Affichage du tableau
+kable(summary_quanti, digits = 2, caption = "Résumé statistique des variables quantitatives") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE, font_size = 10)
+
+```
+
+Le résumé statistique des variables quantitatives met en évidence des disparités notables entre les indicateurs observés. Le coût par m2 (Cout_m2), le coût total (COUT) et les taxes de jouissance (Taxe_Jouissance) présente une moyenne élevée respectivement 27349.66 FCFA, 16068350.47 FCFA, 514.77 FCFA, mais une forte asymétrie positive respectivement 1.68, 11.13, 2.89 indiquant la présence de valeurs extrêmes vers le haut, ce que confirme l’écart important entre le minimum respectivement 0, 0, 0 et le maximum respectivement 190000 FCFA, 722376000 FCFA,3000 FCFA. Quant à la superficie, on remarque également une forte asémetrie (9,84) temoignant un étalement vers la droite.
+
+On note une incohérence dans les données via ces variables: des parcelles qui coûtent 0 FCFA.
+
+```{r, echo=FALSE, warning=FALSE, results='hide'}
+
+plots_hist <- lapply(quanti_vars, function(var) {
+  ggplot(sonatur, aes_string(x = var)) +
+    geom_histogram(bins = 30, fill = "#69b3a2", color = "white") +
+    labs(title = paste("Histogramme de", var), x = var, y = "Effectif") +
+    theme_minimal()
+})
+
+# Afficher les 4 histogrammes ensemble
+#do.call(grid.arrange, c(plots_hist, ncol = 2))
+
+```
+
+
+```{r, echo=FALSE, warning=FALSE, results='hide'}
+plots_box <- lapply(quanti_vars, function(var) {
+  ggplot(sonatur, aes_string(y = var)) +
+    geom_boxplot(fill = "#ffa07a", color = "black") +
+    labs(title = paste("Boxplot de", var), y = var) +
+    theme_minimal()
+})
+
+# Afficher les 4 boxplots ensemble
+#do.call(grid.arrange, c(plots_box, ncol = 2))
+
+```
+
+#### - Variables qualitatives
+
+```{r, echo=FALSE, warning=FALSE}
+
+
+#  Variables qualitatives à résumer
+qual_vars <- c("Ville", "Site", "Usage", "Type_option",
+               "attestation_etablie", "plan_etablie", 
+               "Presence_ONEA", "Presence_SONABEL")
+
+# Resumé personnalisé
+resumer_categorielle <- function(v) {
+  v <- as.character(v)
+  tab <- table(v)
+  prop <- prop.table(tab)
+  mode <- names(tab)[which.max(tab)]
+  mode_freq <- max(tab)
+  mode_pct <- round(100 * max(prop), 1)
+  na_count <- sum(is.na(v))
+  n_modalites <- length(tab)
+  
+  c(Nb_modalites = n_modalites,
+    Modalite_dominante = mode,
+    Effectif = mode_freq,
+    Pourcentage = mode_pct,
+    Valeurs_manquantes = na_count)
+}
+
+# Appliquer la fonction à chaque variable
+summary_quali <- t(sapply(sonatur[qual_vars], resumer_categorielle)) %>% 
+  as.data.frame() %>%
+  tibble::rownames_to_column(var = "Variable")
+
+# Affichage avec kable
+kable(summary_quali, caption = "Résumé descriptif des variables qualitatives") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE, font_size = 11)
+
+
+```
+
+L’exploration descriptive des variables qualitatives met en évidence plusieurs caractéristiques structurelles de l’échantillon étudié.
+
+Tout d’abord, la variable Ville présente une seule modalité, à savoir Ouagadougou, qui regroupe l’intégralité des observations. Cette homogénéité territoriale est cohérente avec le périmètre de l’étude, centré exclusivement sur la capitale burkinabè.
+
+La variable Site, quant à elle, comprend six modalités, reflétant les différents sites d’aménagement couverts par la SONATUR. Toutefois, on observe une forte concentration des ventes sur un seul site, SILMIOUGOU, qui représente à lui seul 64,6% de l’échantillon. Cette surreprésentation peut résulter d’un programme d’aménagement massif ou d’une politique de commercialisation prioritaire menée dans cette zone.
+
+S’agissant de la variable Usage, dix types d’usages ont été identifiés, mais la catégorie "Habitation" domine très largement, représentant 64,5% des parcelles. Cette configuration met en évidence l’orientation résidentielle majoritaire des projets fonciers, traduisant la forte demande en logements dans le contexte urbain ouagalais.
+
+La variable Type_option regroupe trois modalités relatives aux modalités de paiement ou d’attribution. La modalité "ACOMPTE 30%" est de loin la plus fréquente (75,4%), ce qui semble indiquer une stratégie commerciale prédominante privilégiant les paiements échelonnés avec acompte initial.
+
+Les variables administratives attestation_etablie et plan_etablie présentent un profil similaire : la modalité "NON DÉFINI" est la plus fréquente, représentant respectivement 72,1% et 75,0% des cas. Cette prédominance suggère soit un défaut de saisie d’information dans les bases de la SONATUR, soit une absence généralisée de formalisation documentaire au moment de la vente.
+
+Enfin, les variables relatives à la présence des réseaux d’eau potable (ONEA) et d’électricité (SONABEL) indiquent que 100% des parcelles disposent de ces services. Ce constat témoigne d’un certain niveau d’aménagement des terrains commercialisés, et suggère que l’accès aux infrastructures de base est garanti pour l’ensemble de l’échantillon
+
+### Traitement de la base
+
+```{r, echo=FALSE, warning=FALSE,results='hide'}
+
+
+sonatur$Date_fin_contrat <- as.Date(sonatur$Date_fin_contrat,format = "%d/%m/%Y")
+sonatur$Date_vente <- as.Date(sonatur$Date_vente,format = "%d/%m/%Y")
+
+# Convertir Date vente en format date et extraire l'année
+sonatur$Annee <- year(sonatur$Date_vente)
+sonatur$Annee <- as.factor(sonatur$Annee)
+```
+
+Nous avons créé la variable Annee (les années ) à partir de la date de vente. Nous avons appliqué la fonction logarithme sur les variables quantitatives (Cout_m2, COUT, Superficie et Taxe_Jouissance) pour facilité l'interpretation des resultats.
+
+#### - Gestion des valeurs observations incohérentes et les valeurs manquantes
+
+- La base a une seule valeur manquante ce qui nous permet de la supprimer sans compromettre nos analyses.
+```{r, echo=FALSE, warning=FALSE, results='hide'}
+
+sum(is.na(sonatur))
+sonatur <- na.omit(sonatur)
+```
+- Les observations incohérentes
+Dans notre base il existe des contrats comptant 30% (l'acquéreur a réglé 30% du prix total de la parcelle immédiatement, comme acompte.) avec une date de fin de contrat égale à la date de debut.Ce qui est incoherent. Nous remarquons également que les parcelles dont le coût est de 0 FCFA sont liées à ces observations. Nous allons donc les supprimer.
+
+```{r, , echo=FALSE, warning=FALSE, results='hide'}
+# correction des incoherrences 
+sonatur <- sonatur[ - which((sonatur$Date_vente==sonatur$Date_fin_contrat) & sonatur$Type_option != "COMPTANT"), ]
+
+```
+
+
+
+### Recodage des variables
+
+Les variables Site et Usage contiennent des modalités très peu representées. 
+
+```{r, echo=FALSE, warning=FALSE}
+
+# 🔹 Fonction pour générer un tableau de fréquences
+table_frequence <- function(data, variable) {
+  data %>%
+    count(!!sym(variable)) %>%
+    mutate(Pourcentage = round(100 * n / sum(n), 1)) %>%
+    rename(Modalité = !!sym(variable), Effectif = n)
+}
+
+# 🔹 Tableau pour Site
+site_freq <- table_frequence(sonatur, "Site")
+
+# 🔹 Tableau pour Usage
+usage_freq <- table_frequence(sonatur, "Usage")
+
+# 🔹 Affichage avec kable
+kable(site_freq, caption = "Effectif par modalité pour la variable 'Site'") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE, font_size = 11)
+
+kable(usage_freq, caption = "Effectif par modalité pour la variable 'Usage'") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE, font_size = 11)
+
+
+```
+
+Pour une stabilité dans la modélisation nous avons regrouper les modalités à faible effectif en utilisant l'Analyse en Composantes Multiples (ACM) pour identifier les groupes homogènes.
+
+
+```{r, echo=FALSE, warning=FALSE,results='hide'}
+# Sous-ensemble des données
+
+acm_data <- sonatur %>%
+  select(Site) %>%
+  filter(!is.na(Site))  # important pour ACM
+
+res_acm1 <- MCA(acm_data, graph = FALSE)
+
+# Graphique des modalités (individus = parcelles non montrés ici)
+
+
+acm_data <- sonatur %>%
+  select(Usage) %>%
+  filter(!is.na(Usage))  # important pour ACM
+
+res_acm <- MCA(acm_data, graph = FALSE)
+
+
+# Crée les deux objets graphiques
+plot1 <- fviz_mca_var(res_acm1, repel = TRUE, ggtheme = theme_minimal(),
+                      title = "Projection des modalités (ACM 1)")
+
+plot2 <- fviz_mca_var(res_acm, repel = TRUE, ggtheme = theme_minimal(),
+                      title = "Projection des modalités (ACM 2)")
+
+# Affichage côte à côte
+
+ 
+```
+
+
+Nous avons identifier pour la variable Usage, trois classes : "COMMERCE ANGLE 2 VOIES", "COMMERCE ANGLE 1 BITUME", "COMMERCE" classe 1, "STATION SERVICE", "HABITATION ANGLE", "COMMUNAUTAIRE" classe 2 et "HABITATION", "COMMERCE ORDINAIRE ANGLE", "COMMERCE  A L'ANGLE" classe 3. La nouvelle variable est nommée Usage_rec.
+
+Quant à la variable Site, on a fait un regroupement des modalités "CISSIN 2020 - SITE G", "OUAGA 2000 - SITE A", "SECTEUR 16 OUAGA" en "SITE GROUPE"
+
+```{r, echo=FALSE, warning=FALSE,results='hide'}
+## Recodage de donnees$Site en donnees$Site_rec
+sonatur$Site_rec <- sonatur$Site |>
+  fct_recode(
+    "SITE GROUPE" = "CISSIN 2020 - SITE G",
+    "SITE GROUPE" = "OUAGA 2000 - SITE A",
+    "SITE GROUPE" = "SECTEUR 16 OUAGA"
+  )## Recodage de donnees$Usage en donnees$Usage_rec
+sonatur$Usage_rec <- sonatur$Usage |>
+  fct_recode(
+    "1" = "COMMERCE",
+    "3" = "COMMERCE  A L'ANGLE",
+    "2" = "COMMERCE ANGLE",
+    "1" = "COMMERCE ANGLE 1 BITUME",
+    "1" = "COMMERCE ANGLE 2 VOIES",
+    "3" = "COMMERCE ORDINAIRE ANGLE",
+    "2" = "COMMUNAUTAIRE",
+    "3" = "HABITATION",
+    "2" = "HABITATION ANGLE",
+    "2" = "STATION SERVICE"
+  )
+
+```
+
+### Transformation des variables (log)
+
+Dans cette étude, la transformation logarithmique a été appliquée aux variables quantitatives. Cette démarche répond à plusieurs objectifs :
+- Stabiliser la variance et limiter les effets d’hétéroscédasticité dans les résidus du modèle.
+- Réduire l’asymétrie des distributions (souvent très étalées à droite), afin de rapprocher les variables de la normalité.
+- Mieux interpréter économiquement les coefficients, notamment en termes d’élasticité ou de variation en pourcentage.
+- Diminuer l’impact des valeurs extrêmes, qui pourraient fausser les résultats du modèle linéaire.
+Ainsi, la transformation logarithmique contribue à améliorer la qualité, la robustesse et l’interprétabilité du modèle économétrique.
+
+```{r, echo=FALSE, warning=FALSE, results='hide'}
+# log des variables quanti
+sonatur$Cout_m2 <- log(sonatur$Cout_m2)
+sonatur$Superficie <- log(sonatur$Superficie)
+sonatur$Taxe_Jouissance <- log(sonatur$Taxe_Jouissance)
+sonatur$COUT <- log(sonatur$COUT)
+
+```
+
+### Choix des variables
+
+```{r, , echo=FALSE, warning=FALSE}
+
+#  Variables qualitatives à résumer
+qual_vars <- c("Ville", "Site_rec", "Usage_rec", "Type_option",
+               "attestation_etablie", "plan_etablie", 
+               "Presence_ONEA", "Presence_SONABEL")
+
+# Resumé personnalisé
+resumer_categorielle <- function(v) {
+  v <- as.character(v)
+  tab <- table(v)
+  prop <- prop.table(tab)
+  mode <- names(tab)[which.max(tab)]
+  mode_freq <- max(tab)
+  mode_pct <- round(100 * max(prop), 1)
+  na_count <- sum(is.na(v))
+  n_modalites <- length(tab)
+  
+  c(Nb_modalites = n_modalites,
+    Modalite_dominante = mode,
+    Effectif = mode_freq,
+    Pourcentage = mode_pct,
+    Valeurs_manquantes = na_count)
+}
+
+# Appliquer la fonction à chaque variable
+summary_quali <- t(sapply(sonatur[qual_vars], resumer_categorielle)) %>% 
+  as.data.frame() %>%
+  tibble::rownames_to_column(var = "Variable")
+
+# Affichage avec kable
+kable(summary_quali, caption = "Résumé descriptif des variables qualitatives") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE, font_size = 11)
+
+
+```
+
+En observant le tableau ci-dessus, nous constatons que certaines variables telles que la ville (Ville), la presence de la SONABEL (Presence_SONABEL) et la presence d'ONEA (Presence_ONEA) sont des constantes ( une seule modalité) elles n'apportent donc pas d'information; ce qui nous permet de les ignorer simplement.
+
+La variable COUT (le cout total de la parcelle) est également ignorée dans cette étude. En effet COUT = Cout_m2 * Superficie, elle est donc une correlée avec la superficie.
+
+Quant aux variables "attestation_etablie", "plan_etablie", "Type_option" et "Usage_rec", elles sont peu diversifiées (les modes representent respectivements 66.1% , 69.6% , 70.2% et 72.8% du nombre total d'observations des variables respectives). 
+Neamoins la variable Usage_rec traduit la destination légale ou prévue du terrain, ce qui peut influencer directement sur son attractivité économique. Les variables administratives telles que plan_etablie et attestation_etablie rendent compte du niveau de formalisation et de la sécurité juridique des parcelles, deux dimensions qui influencent les comportements d’achat.
+La variable "Type_option" renseigne sur le mode de paiement appliqué lors de la transaction (paiement comptant, acompte 30%, acompte 50%).Ce mode contractuel a un effet direct sur la formation du prix, dans la mesure où le paiement différé peut inclure une prime de financement ou refléter un coût d’opportunité. À l’inverse, un paiement comptant peut entraîner une décote.
+
+Le variable Site_rec avec 4 modalités, est un peu diversifié au regard du mode (56.9% des observations) ce qui est prometteuse en matière d'information. Par ailleurs La variable Site_rec capture les effets spatiaux liés à la localisation du terrain, un facteur largement reconnu comme déterminant dans la valorisation foncière.
+
+La variable Annee est la variable temporelle pour la construction de l'indice.
+
+La variable dépendante retenue est le coût par mètre carré (Cout_m2). Ce choix se justifie d’une part par la nécessité de comparer les parcelles sur une base équivalente, indépendamment de leur superficie, et d’autre part par le fait que cette variable constitue un indicateur synthétique du prix unitaire du foncier. Elle permet ainsi de quantifier la valeur implicite des caractéristiques intrinsèques et extrinsèques du terrain, tout en facilitant la construction d’un indice de prix homogène au cours du temps.
+
+Nous allons valider le choix de ces variables par le test de multicolinéarité (VIF).
+
+```{r, echo=FALSE, warning=FALSE}
+
+vars_exp = c("Superficie","Type_option", "Annee", "Site_rec", "Taxe_Jouissance", "plan_etablie", "Usage_rec", "attestation_etablie")
+ 
+df <- sonatur %>%
+  select(all_of(vars_exp))
+
+model <- lm( Superficie ~ . , data = df)
+vif(model)
+
+```
+
+L’analyse de la multicolinéarité a été conduite à l’aide du GVIF (Generalized Variance Inflation Factor). Les résultats montrent que toutes les variables présentent un GVIF^(1/(2*Df)) inférieur à 2.5, seuil généralement admis pour détecter une colinéarité préoccupante. Bien que les variables Site_rec (2.08) et Taxe_Jouissance (2.03) affichent des valeurs légèrement supérieures à 2, elles restent dans une zone de vigilance acceptable, ne compromettant pas la stabilité des coefficients du modèle. Nous retenons donc ces variables pour la modélisation.
+
+
+## Méthodologie
+
+Cette section décrit la démarche adoptée pour estimer un indice d’évolution des prix des parcelles entre 2018 et 2024 en utilisant une approche hédonique.
+
+### Approche générale
+
+L’objectif de cette étude est d’estimer un **indice d’évolution des prix des parcelles** situées dans la ville de Ouagadougou entre 2018 et 2024. Pour ce faire, nous utilisons la **méthode hédonique**, qui repose sur l’idée que le prix d’un bien peut être expliqué par ses caractéristiques observables (localisation, usage, superficie, etc.).
+
+### Spécification du modèle hédonique
+
+La variable dépendante retenue est le **coût au mètre carré** (`Cout_m2`), ce qui permet de neutraliser l’effet de la superficie. Le modèle hédonique inclut :
+
+- des variables quantitatives continues : `Superficie`, `Taxe_Jouissance` ;
+- des variables qualitatives en facteurs : `Site_rec`, `Usage_rec`, `Type_option`, `plan_etablie`, `attestation_etablie` ;
+- des variables temporelles représentées par des **dummies annuelles** (`Annee`), afin de capturer l’effet de l’année dans l’évolution du prix.
+
+Le modèle s’écrit alors :
+
+$$
+\log(Cout\_m2_i) = \alpha + \sum_k \beta_k X_{ik} + \sum_t \gamma_t D_{it} + \varepsilon_i
+$$
+
+où :
+- \( X_{ik} \) représente les caractéristiques du bien \( i \) ;
+- \( D_{it} \) sont des indicatrices (dummies) temporelles ;
+- \( \gamma_t \) est le coefficient représentant l’effet de l’année \( t \) ;
+- \( \varepsilon_i \) est le terme d’erreur.
+
+### Vérification des hypothèses du modèle linéaire
+
+Avant de valider le modèle, plusieurs hypothèses ont été testées :
+
+- **Linéarité** entre les variables explicatives et la variable expliquée (via graphiques de résidus) ;
+- **Normalité des résidus** (`shapiro.test`) ;
+- **Homoscedasticité** des erreurs (`bptest`) ;
+- **Absence de multicolinéarité** (`vif`) ;
+- **Bonne spécification du modèle** (`linktest`).
+
+### Limites et recours à des modèles alternatifs
+
+Des tests ont révélé :
+
+- une **non-normalité persistante** des résidus ;
+- des soupçons d’**hétéroscédasticité** ;
+- des relations **non linéaires** avec certaines variables.
+
+En réponse, deux modèles alternatifs ont été mobilisés :
+
+#### Modèle GAM (Generalized Additive Model)
+
+Le **GAM** permet d'introduire des effets non linéaires sur certaines variables quantitatives (notamment `Superficie`) tout en gardant des effets paramétriques sur les variables qualitatives.
+
+Le modèle prend la forme :
+
+$$
+\log(Cout\_m2_i) = \alpha + s_1(Superficie_i) + Taxe\_Jouissance_i + \sum_j \beta_j Z_{ij} + \varepsilon_i
+$$
+
+où \( s_1 \) est une fonction de lissage spline.
+
+#### Modèle XGBoost avec dummies temporelles
+
+Un **modèle XGBoost** a ensuite été construit afin de :
+
+- mieux capter les non-linéarités complexes et interactions ;
+- réduire l’impact des valeurs extrêmes (outliers) ;
+- et intégrer les années comme **variables indicatrices** pour construire un **indice d’évolution des prix**.
+
+La **validation croisée** a été utilisée pour évaluer la performance prédictive du modèle, notamment en calculant des métriques comme le **RMSE** et le **R²** pour chaque année.
+
+
+## Modélisation
+
+### Modèle linéaire classique
+Pour construire un modèle hédonique de base, nous utilisons une régression linéaire multiple, une méthode statistique simple et largement utilisée. L’idée est que le prix d’une parcelle peut être exprimé comme une combinaison linéaire de ses caractéristiques, ajustée par des effets temporels. 
+Les dummies temporelles capturent les variations des prix d’une année à l’autre. Le modèle est estimé avec la fonction `lm` en R, et les prédictions sont agrégées par année pour calculer un indice, normalisé à 100 pour 2018:
+
+$$ \text{Indice}_t = \exp(\hat{\delta}_t) \times 100 $$
+
+#### - Estimation
+
+Construction du modèle
+```{r, echo=TRUE, warning=FALSE}
+# Construire le modèle linéaire hédonique
+models_data <- sonatur %>%
+  dplyr::select(dplyr :: all_of(c("Cout_m2",vars_exp)))
+
+model_linear <- lm(Cout_m2 ~ . , data = models_data )
+# Afficher le résumé du modèle
+#summary(model_linear)
+```
+
+Indices estimés :
+```{r, echo=FALSE, warning=FALSE}
+# Calculer les prédictions
+sonatur$pred_linear <- predict(model_linear, newdata = sonatur)
+
+# Calculer l'indice (normalisé par 2018)
+indice_linear <- aggregate(pred_linear ~ Annee, data = sonatur, FUN = mean)
+indice_linear$indice <- (indice_linear$pred_linear / indice_linear$pred_linear[indice_linear$Annee == "2018"]) * 100
+
+
+# Données de départ
+df <- tibble::tibble(
+  Annee = as.factor(indice_linear$Annee),
+  indice = indice_linear$indice)
+
+
+# Ajouter la variation en pourcentage (année par rapport à l’année précédente)
+df <- df %>%
+  arrange(Annee) %>%
+  mutate(Variation = c(NA, round((indice[-1] / indice[-length(indice)] - 1) * 100, 2)))
+        
+# Creation du tableau kable
+kable(df, digits = 2,
+      caption = "Indice des prix des parcelles predit par le modèle linéaire",
+      col.names = c("Année", "Indice (base 100 en 2018)", "Variation annuelle (%)")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = FALSE,
+                font_size = 12)
+
+
+```
+
+#### - Verification des hypothèses
+```{r, echo=FALSE, warning=FALSE}
+
+
+# Fonction de diagnostic
+diagnostic_linear_model <- function(model, data, target_var, feature_vars) {
+  # Préparer les résidus et prédictions
+  residuals <- residuals(model)
+  fitted_values <- fitted(model)
+  
+  # 1. Test de linéarité
+  linearity_plot <- "Graphique des résidus vs prédictions (voir ci-dessous)"
+  linearity_result <- "Visuel (pas de test statistique formel)"
+  linearity_interp <- if (any(abs(residuals) > mean(abs(residuals)) * 3)) 
+    "Présence possible de motifs non linéaires (écarts notables)" 
+    else "Aucun motif évident de non-linéarité"
+
+  # 2. Test d'homoscédasticité (Breusch-Pagan)
+  bp_test <- bptest(model)
+  bp_result <- paste("p-value =", round(bp_test$p.value, 4))
+  bp_interp <- if (bp_test$p.value < 0.05) 
+    "Rejet de l'homoscédasticité (variance non constante)" 
+    else "Hypothèse d'homoscédasticité non rejetée"
+
+  # 3. Test de normalité des résidus (Shapiro-Wilk)
+  shapiro_test <- shapiro.test(residuals)
+  shapiro_result <- paste("p-value =", round(shapiro_test$p.value, 4))
+  shapiro_interp <- if (shapiro_test$p.value < 0.05) 
+    "Rejet de la normalité des résidus" 
+    else "Normalité des résidus non rejetée"
+
+  # 4. Test d'absence de multicolinéarité (VIF)
+  vif_values <- as.data.frame(vif(model))
+  vif_result <- paste("VIF max =", round(max(vif_values$`GVIF^(1/(2*Df))`), 2))
+  vif_interp <- if (max(vif_values$`GVIF^(1/(2*Df))`) > 5) 
+    "Multicolinéarité problématique détectée (VIF > 5)" 
+    else "Aucune multicolinéarité significative"
+
+  # Créer un data frame avec les résultats
+  results_df <- data.frame(
+    "Type de test" = c("Linéarité", "Homoscédasticité", "Normalité des résidus", "Multicolinéarité"),
+    "Résultats" = c(linearity_result, bp_result, shapiro_result, vif_result),
+    "Interprétation" = c(linearity_interp, bp_interp, shapiro_interp, vif_interp)
+  )
+
+ # Creation du tableau kable
+  
+  kable_table<- kable(as.data.frame(results_df), digits = 2,
+      caption = "Résumé des diagnostics du modèle lm",
+      col.names = c("Type de test", "Résultat", "Interprétation")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = FALSE,
+                font_size = 12)
+  
+  # Retourner le tableau
+  return(kable_table)
+}
+
+# Appliquer la fonction
+target_var <- "Cout_m2"
+diagnostic_result <- diagnostic_linear_model(model_linear, sonatur, target_var, vars_exp)
+
+# affichage des resultats
+diagnostic_result
+```
+ 
+ 
+```{r, echo=FALSE,warning=FALSE}
+residuals <- residuals(model_linear)
+  fitted_values <- fitted(model_linear)
+plt <- plot(fitted_values, residuals, xlab = "Prédictions", ylab = "Résidus",
+       main = "Résidus vs Prédictions (Linéarité)")
+  abline(h = 0, col = "red")
+```
+ 
+Le diagnostic visuel des résidus en fonction des valeurs ajustées (graphique Résidus vs Prédictions) met en évidence une violation de l’hypothèse de linéarité. En effet, la distribution des résidus montre une structure incurvée, suggérant que la relation entre les variables explicatives et la variable expliquée n’est pas strictement linéaire. Ce résultat plaide en faveur de l'exploration de modèles alternatifs plus flexibles ou robustes, comme la régression quantile, les splines ou les modèles non paramétriques.
+
+Compte tenu de la non-linéarité et l'hétéroscédasticité détectée dans le modèle linéaire classique, une alternative a été proposée via la modélisation additive généralisée (GAM). Ce modèle permet d’estimer de manière flexible les effets des variables continues comme la superficie et l’année, sans imposer une forme fonctionnelle stricte. Les résultats montrent une amélioration de l’ajustement et confirment la pertinence de cette approche pour modéliser la formation des prix fonciers.
+
+
+### Le modèle additif généralisé (GAM)
+#### - Estimation
+Construction du modèle
+```{r, echo=TRUE,warning=FALSE}
+
+# Modèle avec GAM
+# On applique une fonction lisse (spline) à Superficie et à Annee
+modele_gam <- gam(Cout_m2 ~ s(Superficie) + Taxe_Jouissance + Annee + Type_option +
+                    Usage_rec + Site_rec + plan_etablie +attestation_etablie, 
+                  data = sonatur)
+```
+
+#### - Vérification des hypothèses 
+```{r,fig.width=6, fig.height=4, out.width="\\linewidth", fig.align="center", echo=FALSE, warning=FALSE}
+diagnostic_modele_gam_complet <- function(modele) {
+  # Résidus et prédictions
+  res <- residuals(modele)
+  yhat <- fitted(modele)
+
+  # 1. Normalité des résidus
+  test_norm <- shapiro.test(res)
+  norm_result <- c(
+    "Test de normalité des résidus (Shapiro-Wilk)",
+    paste0("W = ", round(test_norm$statistic, 3), ", p = ", format.pval(test_norm$p.value, digits = 3)),
+    ifelse(test_norm$p.value < 0.05, "Résidus non normalement distribués", "Résidus normalement distribués")
+  )
+
+  # 2. Hétéroscédasticité
+  bp_test <- tryCatch({
+    bptest(gam(formula(modele), data = modele$model, method = "ML"))
+  }, error = function(e) NULL)
+
+  hetero_result <- if (!is.null(bp_test)) {
+    c("Test de Breusch-Pagan (hétéroscédasticité)",
+      paste0("BP = ", round(bp_test$statistic, 3), ", p = ", format.pval(bp_test$p.value, digits = 3)),
+      ifelse(bp_test$p.value < 0.05, "Présence d'hétéroscédasticité", "Homoscédasticité"))
+  } else {
+    c("Test de Breusch-Pagan", "N/A", "Non applicable au modèle GAM directement")
+  }
+
+  # 3. Skewness
+  skew <- moments::skewness(res)
+  skew_result <- c(
+    "Asymétrie des résidus",
+    paste("Skewness =", round(skew, 2)),
+    ifelse(abs(skew) > 1, "Résidus fortement asymétriques", "Asymétrie modérée ou nulle")
+  )
+
+  # 4. Effets lissés
+  k_check <- summary(modele)$s.table
+  lin_result <- c(
+    "Test de linéarité (edf des splines)",
+    paste0("edf = ", paste(round(k_check[,"edf"], 2), collapse = ", ")),
+    ifelse(any(k_check[,"edf"] > 1.5), "Non-linéarité détectée", "Effets proches du linéaire")
+  )
+
+  linktest_result <- c("Test de spécification (Link test)", "N/A", "Non applicable au modèle GAM")
+
+  tableau <- rbind(norm_result, hetero_result, skew_result, lin_result, linktest_result)
+  colnames(tableau) <- c("Type de test", "Résultat", "Interprétation")
+
+  kable_table<- kable(as.data.frame(tableau), digits = 2,
+      caption = "Résumé des diagnostics du modèle GAM",
+      col.names = c("Type de test", "Résultat", "Interprétation")) %>%
+  kable_styling(latex_options = c("striped", "scale_down"), font_size = 12)
+  
+  return(kable_table)
+}
+
+#Appel de la fonction de diagnostique
+diagnostic_modele_gam_complet(modele_gam)
+```
+
+
+
+```{r, echo=FALSE, warning=FALSE}
+res <- residuals(modele_gam)
+yhat <- fitted(modele_gam)
+##  Graphiques combinés
+par(mfrow = c(2, 2), mar = c(4, 4, 2, 1))  # 2x2 grille, marges
+
+# 1. Résidus vs prédictions
+plot(yhat, res, 
+     main = "Résidus vs Prédictions", xlab = "Prédictions", ylab = "Résidus", col = "blue", pch = 20)
+abline(h = 0, col = "red")
+
+# 2. Histogramme des résidus
+hist(res, breaks = 20, main = "Histogramme des résidus", xlab = "Résidus", col = "lightblue")
+
+# 3. QQ-plot
+qqnorm(res, main = "QQ-plot des résidus", pch = 20, col = "blue")
+qqline(res, col = "red")
+
+# 4. Premier effet spline
+plot(modele_gam, select = 1, shade = TRUE, main = "Effet spline : 1er terme")
+
+# Réinitialiser
+par(mfrow = c(1, 1))
+```
+
+Les diagnostics réalisés sur le modèle GAM ont mis en évidence certaines limites dans la validité des hypothèses classiques de la régression. En particulier, les résidus présentent une distribution asymétrique et des écarts aux quantiles théoriques, remettant en cause l’hypothèse de normalité. De plus, l’effet de la superficie sur le prix au mètre carré n’est pas linéaire, mais a pu être modélisé adéquatement via un effet spline. Ces résultats confirment la pertinence d’un modèle semi-paramétrique tel que le GAM, mais suggèrent également que des approches plus flexibles et robustes pourraient mieux capturer les structures complexes et les éventuelles interactions non linéaires présentes dans les données.
+
+  Afin de pallier les limites observées dans le modèle précédent, notamment en ce qui concerne les hypothèses de normalité, de linéarité et d'héteroscedasticité, nous avons opté pour une modélisation alternative reposant sur des techniques d’apprentissage automatique. 
+
+### Méthode des dummies temporelles avec le modèle d’amplification de gradient (Gradient Boosting)
+
+#### - Présentation du modèle
+Face aux limites des modèles linéaires, une alternative plus robuste est adoptée : le modèle d’amplification de gradient (Gradient Boosting) avec XGBoost. Cette méthode d’apprentissage automatique est choisie pour sa capacité à capturer des relations non linéaires et des interactions complexes entre les variables, sans exiger les mêmes hypothèses strictes que la régression linéaire. Le processus comprend :
+- **Entraînement** : Le modèle XGBoost est entraîné sur toutes les données avec les mêmes variables explicatives, en utilisant la fonction `xgb.train` en R. Les hyperparamètres (nombre d’itérations, profondeur des arbres, taux d’apprentissage) sont optimisés via une recherche par grille avec `caret`.
+- **Construction de l’indice** : Les prédictions du modèle sont agrégées par année, et un indice est calculé en normalisant par rapport à 2018, similaire à l’approche linéaire.
+- **Validation** : La performance est évaluée avec une validation croisée temporelle et globale, calculant la RMSE et le $$( R^2 )$$ pour mesurer la précision et la généralisation. La robustesse est testée en perturbant légèrement les caractéristiques (10 % de `Superficie`) pour évaluer la sensibilité de l’indice. 
+
+#### - La construction du modèle
+Le code étant long, nous avons ignoré cette partie dans ce rapport mais vous pouvez retrouver l'integralité de cette partie dans le script Rmd.
+```{r, results='hide', message=FALSE, warning=FALSE, echo=FALSE}
+
+feature_vars <- vars_exp
+prepare_xgb_data <- function(df, feature_vars, model_feature_names = NULL) {
+  design_matrix <- model.matrix(~ . -1, data = df[, feature_vars, drop = FALSE])
+  
+  #design_matrix <- design_matrix[, model_feature_names]
+  return(design_matrix)
+}
+
+# Préparation des données d'entraînement
+
+# --- Création de la matrice de features sans intercept
+#feature_vars = c( "Superficie","Taxe_Jouissance", "plan_etablie","Usage_rec", "Annee")
+#dmat <- sparse.model.matrix(~ Superficie + Taxe_Jouissance + plan_etablie + Usage_rec + Annee - 1, data = sonatur)
+
+dmat <- prepare_xgb_data(sonatur, feature_vars)
+
+# 2. Enregistrer les noms des variables/features utilisées
+model_features <- colnames(dmat)
+
+# 3. Enregistrer dans un fichier .rds (vous pouvez changer le chemin)
+saveRDS(model_features, "xgb_model_features.rds")
+
+y <- sonatur$Cout_m2 # 
+x <- as.data.frame(as.matrix(dmat)) # les labels
+
+# --- Création du DMatrix XGBoost
+dtrain <- xgb.DMatrix(data = as.matrix(dmat), label = sonatur$Cout_m2)
+
+# --- Paramètres XGBoost
+# --- Paramètres XGBoost
+params <- list(
+  booster = "gbtree",
+  objective = "reg:squarederror",
+  eval_metric = "rmse",
+  eta = 0.1,
+  max_depth = 6,
+  subsample = 0.8,
+  colsample_bytree = 0.8
+)
+
+set.seed(42)
+
+# --- Validation croisée
+cv_model <- xgb.cv(
+  params = params,
+  data = dtrain,
+  nrounds = 1000,
+  nfold = 5,
+  early_stopping_rounds = 10,
+  verbose = 1
+)
+
+best_nrounds <- cv_model$best_iteration
+cat("Nombre optimal de boosting rounds :", best_nrounds, "\n")
+
+
+# --- Entraînement final
+xgb_model <- xgboost(
+  data = dtrain,
+  params = params,
+  nrounds = best_nrounds,
+  verbose = 0
+)
+
+# --- Prédictions
+pred_log <- predict(xgb_model, dtrain)
+
+sonatur$pred_log <- pred_log
+
+residuals <- pred_log - sonatur$Cout_m2
+
+```
+
+#### - Calcul de l'indice de prix base 2018
+
+```{r, echo=FALSE, warning=FALSE}
+
+# --- Calcul de l’indice hédonique
+indice_td <- aggregate(pred_log ~ Annee, data = sonatur, FUN = mean)
+
+# --- Vérification de l’année de référence
+if (!"2018" %in% indice_td$Annee) {
+  stop("L'année de référence 2018 n'est pas présente dans les données.")
+}
+
+# --- Transformation en base 100 (année 2018)
+indice_td$indice <- exp(indice_td$pred_log - indice_td$pred_log[indice_td$Annee == "2018"]) * 100
+
+# Synthèse dans le tableau kable
+
+# Données de départ
+df <- tibble::tibble(
+  Annee = as.factor(indice_td$Annee),
+  indice = indice_td$indice)
+
+
+# Ajouter la variation en pourcentage (année par rapport à l’année précédente)
+df <- df %>%
+  arrange(Annee) %>%
+  mutate(Variation = c(NA, round((indice[-1] / indice[-length(indice)] - 1) * 100, 2)))
+        
+# Creation du tableau kable
+kable(df, digits = 2,
+      caption = "Indice des prix des parcelles predit par le modèle linéaire",
+      col.names = c("Année", "Indice (base 100 en 2018)", "Variation annuelle (%)")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = FALSE,
+                font_size = 12)
+
+
+```
+
+Nous allons diagnostiqué le modèle avant de revenir sur l'interprétation des indices calculés.
+
+#### - Diagnostique du modèle
+
+Cette diagnostique se fera en trois points : 
+La validation croisée (pour confirmer la fiabilité du modèle hédonique retenu),Vérifier les résidus (pour vérifier la stabilité du modèle au fil des années) et le tester de robustesse.
+
+##### a. Validation croisée
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+diagnostic_with_trained_model <- function(model, data, target_var, feature_vars, time_var, nfolds = 5) {
+
+  # Nettoyage
+  data <- data[complete.cases(data[, c(target_var, feature_vars, time_var)]), ]
+  
+  # Création des matrices
+  dmat <- sparse.model.matrix(as.formula(paste("~", paste(feature_vars, collapse = " + "), "- 1")), data = data)
+  dtrain_all <- xgb.DMatrix(data = as.matrix(dmat), label = data[[target_var]])
+  
+  # Prédiction globale
+  pred_global <- predict(model, dtrain_all)
+  actual_global <- data[[target_var]]
+  rmse_global <- sqrt(mean((pred_global - actual_global)^2))
+  r2_global <- 1 - sum((actual_global - pred_global)^2) / sum((actual_global - mean(actual_global))^2)
+  
+  # Validation temporelle par année
+  years <- sort(unique(data[[time_var]]))
+  rmse_year <- numeric(length(years))
+  r2_year <- numeric(length(years))
+  
+  for (i in seq_along(years)) {
+    year_data <- data[data[[time_var]] == years[i], ]
+    if (nrow(year_data) < 5) next  # Trop peu d'observations
+
+    dmat_test <- sparse.model.matrix(as.formula(paste("~", paste(feature_vars, collapse = " + "), "- 1")), data = year_data)
+    dtest <- xgb.DMatrix(data = as.matrix(dmat_test))
+    pred <- predict(model, dtest)
+    actual <- year_data[[target_var]]
+    
+    rmse_year[i] <- sqrt(mean((pred - actual)^2))
+    ss_tot <- sum((actual - mean(actual))^2)
+    ss_res <- sum((actual - pred)^2)
+    r2_year[i] <- if (ss_tot > 0) 1 - ss_res / ss_tot else NA
+  }
+  
+  # Interprétation
+  interpretation <- sapply(r2_year, function(r2) {
+    if (is.na(r2)) return("Insuffisant")
+    else if (r2 >= 0.7) "Très bon ajustement"
+    else if (r2 >= 0.5) "Ajustement acceptable"
+    else "Faible ajustement"
+  })
+  
+  # Création du tableau
+  table_results <- data.frame(
+    Annee = years,
+    RMSE = round(rmse_year, 2),
+    R2 = round(r2_year, 3),
+    Interpretation = interpretation
+  )
+  
+  # Affichage kable
+  kable(table_results, caption = "Performance du modèle XGBoost par année",
+        col.names = c("Année", "RMSE", "R²", "Interprétation"), align = "c") %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                  full_width = FALSE, font_size = 12)
+}
+
+target_var <- 'Cout_m2'
+time_var <- 'Annee'
+diagnostic_with_trained_model(xgb_model, sonatur, target_var, feature_vars, time_var, nfolds = 5)
+```
+
+L'analyse des performances du modèle XGBoost sur la période 2018-2024 révèle une excellente capacité d'ajustement global, comme en témoigne la valeur élevée et constante du coefficient de détermination ($ R^2 $), oscillant entre 0.867 et 0.996. Cette stabilité indique que le modèle capture efficacement la variabilité des prix des parcelles en fonction des caractéristiques considérées (superficie, usage, type d'option, localisation, et année). La RMSE, qui mesure l'erreur moyenne, diminue progressivement au fil des années, passant de 0.17 en 2018 à un remarquable 0.01 en 2024, suggérant une précision croissante des prédictions, potentiellement due à une homogénéité accrue des données ou à un meilleur apprentissage par le modèle au fil du temps. Les $ R^2 $ supérieurs à 0.9 à partir de 2021, combinés à des RMSE très faibles (notamment 0.01 en 2024), reflètent un très bon ajustement, bien que cette performance exceptionnelle en 2024 pourrait également indiquer un surapprentissage ou un échantillon réduit (69 observations). Globalement, le modèle démontre une robustesse remarquable, mais une analyse approfondie des résidus et des données de 2024 serait utile pour valider sa généralisation.
+
+
+##### b. Vérification des résidus
+
+Calculez les prédictions pour chaque année et comparez-les aux valeurs réelles :
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+
+boxplot(residuals ~ sonatur$Annee, main = "Résidus par année", ylab = "Résidus")
+
+```
+
+ Le modèle XGBoost semble offrir une bonne stabilité temporelle de ses performances, sans biais majeur au fil des années. Toutefois, une vigilance est requise pour les années les plus récentes (2023–2024), qui présentent soit des prédictions trop proches de la moyenne (manque de variabilité), soit des erreurs ponctuelles importantes (présence d’outliers). Cela peut indiquer un besoin de renforcement des données récentes, ou une évolution structurelle non capturée par les variables explicatives du modèle.
+
+
+
+##### c. Tester la robustesse
+
+Il s'agit de perturber une caractéristique intrinsèque à la variable expliqué et recalculer les indices de prix et comparer avec les indices prédits plus haut. Pour cela nous allons augmenter la superficie de 10%.
+
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
+sonatur_perturbed <- sonatur
+sonatur_perturbed$Superficie <- sonatur_perturbed$Superficie * 1.1
+dmat_perturbed <- sparse.model.matrix(~ Superficie + Usage_rec + Site_rec + Annee - 1, data = sonatur_perturbed)
+
+dtrain_perturbed <- xgb.DMatrix(data = as.matrix(dmat_perturbed), label = sonatur_perturbed$Cout_m2)
+
+model_perturbed <- xgb.train(data = dtrain_perturbed, nrounds = 100, objective = "reg:squarederror")
+
+pred_perturbed <- predict(model_perturbed, dtrain_perturbed)
+
+sonatur_perturbed$pred_log <- pred_perturbed
+
+indice_perturbed <- aggregate(pred_log ~ Annee, data = sonatur_perturbed, FUN = mean)
+
+indice_perturbed$indice <- exp(indice_perturbed$pred_log - indice_perturbed$pred_log[indice_perturbed$Annee == "2018"]) * 100
+
+# preparation pour la visualisation
+indice_reel_plot <- indice_perturbed %>%
+  select(Annee, indice_perturbed = indice)
+
+indice_modele_plot <- indice_td %>%
+  select(Annee, indice_model = indice)
+
+# Fusionner les deux indices
+comparaison_indices <- full_join(indice_reel_plot, indice_modele_plot, by = "Annee") %>%
+  pivot_longer(cols = c("indice_perturbed", "indice_model"),
+               names_to = "Type", values_to = "Indice")
+
+# Tracer les courbes
+ggplot(comparaison_indices, aes(x = as.factor(Annee), y = Indice, group = Type, color = Type)) +
+  geom_line(size = 1.3) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("indice_perturbed" = "steelblue", "indice_model" = "darkorange"),
+                     labels = c("indice_perturbed ", "Indice estimé (modèle)")) +
+  labs(
+    title = "Évolution des indices de prix des parcelles (2018–2024)",
+    subtitle = "Comparaison entre indice empirique et indice estimé par modèle hédonique",
+    x = "Année",
+    y = "Indice (base 100 en 2018)",
+    color = "Source"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+#print(indice_perturbed$indice)
+```
+
+Le test de perturbation (+1O% de superficie) démontre une robustesse remarquable du modèle, comme en attestent les observations clés suivantes :  
+   Les courbes de l'indice original et de l'indice perturbé (`indice_perturbed`) restent étroitement alignées sur toute la période (2018-2024). L'écart maximal n'excède pas **2 points d'indice** (~103 vs ~105 en 2019), ce qui est négligeable dans un contexte économique. Cette proximité confirme que le modèle résiste aux variations mineures des données d'entrée.
+   Bien que la superficie soit un déterminant théorique majeur des prix fonciers, son augmentation de 11% n'a pas provoqué de distorsion significative. 
+  
+
+
+
+
+#### - Interpretation des résultats 
+#####  Les indices
+```{r,fig.width=6, fig.height=4, out.width="\\linewidth", fig.align="center", echo=FALSE, warning=FALSE, message=FALSE}
+# Extraire les années et les indices
+years <- as.numeric(as.character(indice_td$Annee))
+indice_values <- indice_td$indice
+
+# Tracer l'indice
+plot(years, indice_values, type = "b", pch = 19, col = "blue",
+     xlab = "Année", ylab = "Indice des prix (base 2018 = 100)",
+     main = "Évolution de l'Indice des Prix Immobiliers (2018-2024)",
+     ylim = c(0, max(indice_values) * 1.1))  # Ajuster l'échelle
+grid()  # Ajouter une grille
+text(years, indice_values, labels = round(indice_values, 1), pos = 3, cex = 0.8)
+
+```
+Le graphique met en évidence une évolution instable de l’indice des prix immobiliers à Ouagadougou entre 2018 et 2024. Après une légère hausse entre 2018 (base 100) et 2019 (100,4), les prix connaissent une baisse progressive jusqu’en 2021 (87,9), traduisant un ralentissement du marché immobilier, possiblement lié à des facteurs économiques ou contextuels comme la crise sanitaire. En 2022, l’indice bondit fortement à 116,1, signalant un pic des prix, peut-être dû à une pression spéculative ou à une offre insuffisante. Cependant, cette hausse est suivie d’un net recul en 2023 (80,7) et d’une stabilisation à un niveau bas en 2024 (80,1), illustrant un retournement du marché. Cette volatilité suggère des dynamiques foncières sensibles aux chocs et appelle à une régulation adaptée pour stabiliser le secteur immobilier.
+
+#####  L'importance des variables 
+```{r, echo=FALSE,message=FALSE,warning=FALSE}
+
+# Récupérer l’importance
+importance_matrix <- xgb.importance(model = xgb_model)
+
+# Afficher dans un tableau kable
+kable(importance_matrix, digits = 3, caption = "Importance des variables dans le modèle XGBoost")
+
+```
+
+La variable Superficie se distingue nettement avec un Gain de 0.378, un Cover de 0.428 et une Fréquence de 0.416. Elle constitue de loin le facteur explicatif le plus déterminant du prix au mètre carré, ce qui corrobore l’intuition selon laquelle la taille de la parcelle influence fortement sa valorisation.
+
+Taxe_Jouissance arrive en deuxième position avec un Gain de 0.224. Bien qu’elle soit moins fréquemment utilisée, son effet sur la prédiction reste substantiel, suggérant qu’elle agit comme un facteur complémentaire important dans la formation des prix.
+
+Les modalités du Type_option telles que "ACOMPTE 30%" ou "ACOMPTE 50%" apparaissent également avec des contributions significatives. Cela reflète le fait que les modalités de paiement influencent les prix observés, probablement en lien avec les conditions d’accessibilité ou de spéculation.
+
+Les variables temporelles (Annee2023, Annee2021, etc.), bien que faiblement fréquentes, contribuent non négligeablement à la performance du modèle. Cela justifie l’inclusion des dummies temporelles dans une perspective d’estimation d’un indice hédonique d’évolution des prix.
+
+Les variables liées à l’usage (Usage_rec) et au site (Site_rec) ont des effets plus localisés et modestes mais non négligeables, traduisant l’hétérogénéité spatiale et fonctionnelle du marché foncier urbain à Ouagadougou.
+
+Enfin, certaines modalités comme Site_recSILMIOUGOU ou Annee2022 présentent des contributions quasi nulles (Gain < 0.005), ce qui suggère qu’elles n’améliorent pas significativement la qualité prédictive du modèle. Elles pourraient être exclues lors d’une phase de simplification.
+
+##### Comparaison 
+
+Calculez un indice brut basé sur la moyenne des prix réels par année :
+
+
+```{r,echo=FALSE, message=FALSE,warning=FALSE}
+
+indice_reel <- aggregate(Cout_m2 ~ Annee, data = sonatur, FUN = mean, na.rm = TRUE) #indice construit sans effets
+
+indice_reel$indice <- (indice_reel$Cout_m2 / indice_reel$Cout_m2[indice_reel$Annee == "2018"]) * 100
+
+
+
+# S'assurer que les noms de colonnes sont harmonisés
+indice_reel_plot <- indice_reel %>%
+  select(Annee, indice_reel = indice)
+
+indice_modele_plot <- indice_td %>%
+  select(Annee, indice_model = indice)
+
+# Fusionner les deux indices
+comparaison_indices <- full_join(indice_reel_plot, indice_modele_plot, by = "Annee") %>%
+  pivot_longer(cols = c("indice_reel", "indice_model"),
+               names_to = "Type", values_to = "Indice")
+
+# Tracer les courbes
+ggplot(comparaison_indices, aes(x = as.factor(Annee), y = Indice, group = Type, color = Type)) +
+  geom_line(size = 1.3) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("indice_reel" = "steelblue", "indice_model" = "darkorange"),
+                     labels = c("Indice réel (moyenne annuelle)", "Indice estimé (modèle)")) +
+  labs(
+    title = "Évolution des indices de prix des parcelles (2018–2024)",
+    subtitle = "Comparaison entre indice empirique et indice estimé par modèle hédonique",
+    x = "Année",
+    y = "Indice (base 100 en 2018)",
+    color = "Source"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+```
+
+Le graphique ci-dessus met en parallèle l’évolution de l’indice de prix moyen des parcelles (indice réel) avec l’indice estimé par le modèle hédonique à dummies temporelles.
+
+On observe que les deux courbes présentent une dynamique relativement similaire, traduisant la capacité du modèle à capturer l’évolution structurelle des prix sur la période 2018–2024.
+Les écarts ponctuels peuvent s'expliquer par des effets spécifiques non intégrés dans le modèle (par exemple : effets de localisation fine, politiques foncières ponctuelles, ou caractéristiques non observées).
+
+## Conclusion
+Cette étude visait à estimer un indice hédonique de l’évolution des prix des parcelles à Ouagadougou entre 2018 et 2024 à partir des données de transactions foncières. En mobilisant la méthode hédonique, nous avons pu modéliser les prix unitaires des parcelles à l’aide de variables décrivant leurs caractéristiques physiques, juridiques, contractuelles et temporelles.
+
+Après avoir testé un modèle linéaire classique, nous avons constaté que plusieurs hypothèses fondamentales (normalité, homoscédasticité, linéarité) n’étaient pas satisfaites. En réponse à cela, nous avons opté pour un modèle plus flexible et robuste, notamment à travers l’utilisation du modèle XGBoost avec dummies temporelles, qui a permis une meilleure prise en compte des non-linéarités et des interactions complexes entre variables.
+
+L’analyse des résidus, des valeurs prédictives, ainsi que des performances de validation croisée (globale et par année) ont confirmé la stabilité et la qualité prédictive du modèle retenu. Par ailleurs, la comparaison entre l’indice hédonique prédit et celui issu des moyennes simples a mis en évidence la valeur ajoutée de l’approche hédonique pour neutraliser les effets de composition et mieux refléter l’évolution "pure" des prix.
+
+Enfin, l’évaluation de l’importance des variables a révélé que les facteurs les plus influents sont la superficie, la taxe de jouissance et les conditions de paiement, tandis que les effets temporels captés par les dummies d’année ont permis de reconstituer une trajectoire cohérente des prix.

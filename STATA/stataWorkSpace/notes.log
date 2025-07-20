@@ -1,0 +1,130 @@
+----------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  Y:\LPAS_2\Cohorte3\STATA\stataWorkSpace\notes.log
+  log type:  text
+ opened on:   4 Feb 2025, 16:41:33
+
+. do "C:\Users\USER\AppData\Local\Temp\STD4dd0_000000.tmp"
+
+.  use "PMA data for exercise.dta"
+file PMA data for exercise.dta not found
+r(601);
+
+end of do-file
+
+r(601);
+
+. do "C:\Users\USER\AppData\Local\Temp\STD4dd0_000000.tmp"
+
+. use "Y:\LPAS_2\Cohorte3\STATA\datasets for exercise\PMA data for exercise.dta"
+
+. 
+end of do-file
+
+. do "C:\Users\USER\AppData\Local\Temp\STD4dd0_000000.tmp"
+
+.  save "out1.dta"
+file out1.dta saved
+
+. 
+end of do-file
+
+. import excel "Y:\LPAS_2\Cohorte3\STATA\datasets for exercise\PMA data for exercise.xlsx", sheet("Sheet1")
+>  firstrow clear
+(31 vars, 347 obs)
+
+. BR
+command BR is unrecognized
+r(199);
+
+. br
+
+. do "C:\Users\USER\AppData\Local\Temp\STD4dd0_000000.tmp"
+
+.  import excel "Y:\LPAS_2\Cohorte3\STATA\datasets for exercise\PMA data for exercise.xlsx", sheet("Sheet1") firstrow clear
+(31 vars, 347 obs)
+
+. 
+end of do-file
+
+. br
+
+. do "C:\Users\USER\AppData\Local\Temp\STD4dd0_000000.tmp"
+
+.  export excel data_ange.xls
+file data_ange.xls saved
+
+. 
+end of do-file
+
+. do "C:\Users\USER\AppData\Local\Temp\S
+> TD4dd0_000000.tmp"
+
+.  
+.  import delimited "Y:\LPAS_2\Cohorte3\
+> STATA\datasets for exercise\PMA data f
+> or exercise.csv" clear
+using required
+r(100);
+
+end of do-file
+
+r(100);
+
+. br
+
+. import delimited "Y:\LPAS_2\Cohorte3\STATA\datasets for exercise\PMA d
+> ata for exercise.csv", clear 
+(encoding automatically selected: UTF-8)
+(31 vars, 347 obs)
+
+. do "C:\Users\USER\AppData\Local\Temp\STD4dd0_000000.t
+> mp"
+
+.  insheet "Y:\LPAS_2\Cohorte3\STATA\datasets for exerc
+> ise\PMA data for exercise.csv", clear
+"Y:\LPAS_2\Cohorte3\STATA\datasets for exercise\PMA dat
+> a for exercise.csv invalid varname
+r(198);
+
+end of do-file
+
+r(198);
+
+. br
+
+. do "C:\Users\USER\AppData\Local\Temp\STD4dd0_000000.t
+> mp"
+
+.  import delimited "Y:\LPAS_2\Cohorte3\STATA\datasets 
+> for exercise\PMA data for exercise.csv", clear
+(encoding automatically selected: UTF-8)
+(31 vars, 347 obs)
+
+. 
+end of do-file
+
+. do "C:\Users\USER\AppData\Local\Temp\STD4dd0_000000.t
+> mp"
+
+. save "LPAS data for exercice_excel.dta"
+file LPAS data for exercice_excel.dta saved
+
+. 
+end of do-file
+
+. do "C:\Users\USER\AppData\Local\Temp\STD4dd0_000000.t
+> mp"
+
+.  
+.  insheet using "Y:\LPAS_2\Cohorte3\STATA\datasets for
+>  exercise\PMA data for exercise.csv", clear
+(31 vars, 347 obs)
+
+.  
+. 
+end of do-file
+
+. br
+
+. exit, clear

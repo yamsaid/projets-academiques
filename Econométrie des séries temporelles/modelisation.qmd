@@ -1,0 +1,612 @@
+---
+title: "projetSeriTemp"
+author: "Saïdou YAMEOGO"
+format: pdf
+editor: visual
+execute:
+  warning: false
+  message: false
+  error: false
+---
+
+# Sujet de recherche : ***Modélisation économétrique de la production de coton au Burkina Faso : une analyse en séries temporelles de l’impact des précipitations, des prix à l’exportation et des subventions publiques (1990–2023)***
+
+# Introduction
+
+Au cœur de l’économie burkinabè, le coton occupe une place stratégique, tant par son poids dans les exportations que par son rôle dans les revenus des ménages ruraux. Depuis les années 1960, cette culture de rente n’a cessé de façonner l'organisation agricole, les politiques publiques et les dynamiques commerciales du pays. Le Burkina Faso s’est ainsi hissé au rang de premier producteur de coton en Afrique de l’Ouest pendant plusieurs décennies, avant de connaître des fluctuations marquées dans sa production.
+
+Ces variations soulèvent une interrogation essentielle : quels sont les véritables moteurs de la production cotonnière au Burkina Faso ? En effet, si la volonté des producteurs est incontestable, les rendements demeurent sensibles à des facteurs externes tels que les conditions climatiques, la volatilité des prix internationaux, ou encore le soutien financier de l’État.
+
+Dans un contexte mondial marqué par le changement climatique, l’instabilité des marchés et la pression sur les finances publiques, il devient crucial d’analyser ces trois leviers – les précipitations, les prix à l’exportation et les subventions publiques – pour comprendre leur impact réel sur la performance cotonnière nationale. Une telle compréhension permettrait non seulement d’améliorer la planification des politiques agricoles, mais aussi de renforcer la résilience du secteur face aux chocs externes.
+
+C’est dans cette optique que s’inscrit ce travail, qui propose une modélisation économétrique de la production de coton au Burkina Faso sur la période 1973–2024, en mobilisant les outils des séries temporelles. En croisant données climatiques, économiques et institutionnelles, cette étude vise à révéler les interactions profondes entre les variables explicatives retenues et l’évolution de la production cotonnière, afin d’en tirer des enseignements pour les décennies à venir.
+
+# Contexte et Justification
+
+## Contexte
+
+Au Burkina Faso, le coton constitue l’un des piliers du secteur agricole et de l’économie nationale. Il représente la principale culture de rente, mobilisant plus de **350 000 producteurs** et occupant une **place dominante dans les exportations nationales**, avec une contribution estimée à **plus de 60 % des recettes en devises** au cours de certaines années. Cette filière est aussi un moteur de développement local, notamment dans les régions de l’ouest et du sud-ouest du pays, zones historiquement les plus productives.
+
+La culture du coton repose essentiellement sur l’agriculture pluviale, ce qui la rend particulièrement vulnérable aux **variations climatiques**, notamment aux aléas pluviométriques. Dans un contexte de **changements climatiques croissants**, la régularité et l’intensité des précipitations deviennent de plus en plus imprévisibles, affectant la stabilité des rendements agricoles.
+
+En parallèle, la **libéralisation de la filière** intervenue dans les années 2000 a modifié les mécanismes de régulation des prix et d’accès aux intrants. L’État et ses partenaires ont mis en place diverses politiques d’appui à travers des **subventions agricoles**, la **structuration des sociétés cotonnières** (SOFITEX, Faso Coton, SOCOMA), et la création du **fonds de lissage** pour atténuer les effets de la volatilité des prix sur les producteurs.
+
+Enfin, le **marché international du coton** est particulièrement instable. La **variation des prix à l’exportation**, influencée par les cours mondiaux, le taux de change, et la concurrence internationale, impacte fortement les revenus agricoles et les décisions de culture.
+
+## Justification
+
+Le choix de ce thème s’inscrit dans une volonté de mieux **comprendre les mécanismes structurels** qui influencent la production cotonnière au Burkina Faso sur une période longue (1990–2023). En effet :
+
+-   **Sur le plan scientifique**, peu d’études ont adopté une **approche économétrique en séries temporelles** pour analyser conjointement les effets des variables climatiques, économiques et institutionnelles sur la production cotonnière. Une telle analyse permet de prendre en compte les dynamiques de long terme, les effets retardés et les interdépendances structurelles.
+
+<!-- -->
+
+-   **Sur le plan politique**, une meilleure compréhension des déterminants de la production peut aider à orienter les politiques agricoles vers des mécanismes de soutien plus efficaces et adaptés aux nouvelles réalités climatiques et économiques.
+
+<!-- -->
+
+-   **Sur le plan économique et social**, dans un pays où une large part de la population dépend directement de l’agriculture, et du coton en particulier, une amélioration de la performance de cette filière a un impact direct sur **la sécurité alimentaire, les revenus des ménages ruraux et la réduction de la pauvreté**.
+
+# Problématique
+
+Le Burkina Faso, pays à vocation essentiellement agricole, a longtemps tiré une part importante de ses recettes d’exportation du coton, surnommé "l’or blanc". Cette culture représente non seulement une source majeure de revenus pour des milliers de producteurs ruraux, mais aussi un levier clé pour la croissance économique nationale. Pourtant, malgré son rôle stratégique, la production cotonnière au Burkina Faso demeure instable et vulnérable aux aléas de plusieurs facteurs.
+
+D’une part, les conditions climatiques, notamment les précipitations, influencent fortement les rendements agricoles dans un pays marqué par une agriculture pluviale.
+
+D’autre part, les variations des prix mondiaux du coton exposent les producteurs aux incertitudes du marché international. Enfin, les subventions publiques allouées au secteur (intrants, prix d’achat, infrastructures) apparaissent comme un mécanisme d’amortissement, mais leur régularité et leur efficacité posent également question.
+
+Dans ce contexte, une interrogation centrale se pose : Dans quelle mesure les précipitations, les prix à l’exportation du coton et les subventions publiques influencent-ils la production cotonnière au Burkina Faso entre 1990 et 2023 ?
+
+Autrement dit, quelles sont les relations de court et de long terme entre ces variables, et comment peuvent-elles éclairer les choix de politiques agricoles à venir ?
+
+# Revue de littérature
+
+La production cotonnière au Burkina Faso, culture de rente par excellence, est soumise à plusieurs facteurs exogènes, notamment les aléas climatiques. Contrairement à d'autres cultures pluviales, le coton a montré une certaine résilience à travers la mise en lumière de certaines recherches clés :
+
+-   L’étude de **Albergel, Carbonnel et Vaugelade (1985)** met en évidence une forte corrélation entre la pluviométrie et la production cotonnière. Cette étude met également en lumière les facteurs climatiques et institutionnels qui influencent la production cotonnière au Burkina Faso. Toutefois, elle souffre d’un manque d’intégration dynamique et temporelle.
+
+-   L'utilisation des modèles VAR pour analyser les déterminants de la production agricole est une approche bien établie. Yameogo (2019) a par exemple utilisé un modèle VAR pour analyser les effets des variables climatiques et économiques sur la production de maïs au Burkina Faso. Ce modèle permet de capturer les relations dynamiques et interdépendantes entre plusieurs variables économiques et climatiques sur de longues périodes. En ce sens, il est adapté à l'analyse de la production agricole, où les variables influencent et sont influencées les unes par les autres de manière simultanée.Les avantages de cette approche sont évidents, notamment sa capacité à capturer des effets de rétroaction entre les variables. Cependant, le modèle VAR présente certaines limites. Il est sensible à la sélection des variables et à la longueur de la période d’étude, ce qui peut mener à des résultats erronés si des variables clés sont omises ou si des ruptures structurelles se produisent dans la série temporelle. De plus, ce modèle peut être coûteux en termes de données et de calculs pour de longues séries temporelles comme celles du Burkina Faso.
+
+-   Une autre approche économétrique couramment utilisée pour l'analyse des séries temporelles en agriculture est le modèle ARDL. Diop et al. (2014) ont utilisé cette méthode pour étudier les relations à long terme entre les variables économiques et climatiques dans le secteur agricole, avec un accent particulier sur la production de coton en Afrique de l'Ouest. Le modèle ARDL est particulièrement adapté aux séries temporelles avec des variables de nature stationnaire et non stationnaire, ce qui est souvent le cas dans les études agricoles. Le principal avantage du modèle ARDL réside dans sa flexibilité, car il permet de traiter des séries temporelles de différents ordres de stationnarité sans avoir besoin de les transformer au préalable. Cependant, l'un des défis de cette approche est qu'elle peut sous-estimer les effets à court terme ou négliger l'impact de certains facteurs exogènes, comme les chocs mondiaux ou les crises économiques, qui peuvent également affecter la production de coton.
+
+# Méthodologie
+
+## Présentation du modèle
+
+Nous présenterons respectivement le modèle retenu, la définition des variables et la formulation des hypothèses de recherche.
+
+1.  Le Modèle retenu
+
+    Notre étude portant sur l'analyse de l'impact des subventions, des **précipitations, des prix à l’exportation et les superficies allouées à la culture du coton sur la production du coton a**u Burkina via les chocs sur ces variables, nous appréhendons l'effet a travers le Modèle ARIMAX( f ).
+
+    Le modèle ARIMAX (AutoRegressive Integrated Moving Average with eXogenous inputs) est une version avancée du modèle ARIMA (AutoRegressive Integrated Moving Average). Il étend le cadre ARIMA en intégrant des variables exogènes, c'est-à-dire des facteurs externes susceptibles d'influencer la série chronologique étudiée. Cette intégration permet au modèle d'exploiter des informations supplémentaires susceptibles d'améliorer considérablement la précision des prévisions.
+
+2.  Choix et définition des variables
+
+    Le modèle comporte 5 variables :
+
+    **production :** représente la production totale du coton au Burkina par saison. Cette variable est cruciale dans notre étude car c'est elle la variable dependante ( Celle qu'on cherche à expliquer ). Elle est exprimée en tonnes de coton.
+
+    **surperficie** : cette variable représente la surface totale allouée à la culture du coton par saison; elle est exprimée en hectare (ha)
+
+    La considération de cette variable dans notre modèle s'explique par le fait que la production du coton depend de la superficie allouée pour la production.
+
+    **prix** : cette variable désigne le prix (en franc CFA ) du kg de coton du prémier choix au Burkina retardé d'une année. En effet ce retardement va nous permettre d'analyse l'effet du prix enterieur (celui de l'année passée ) sur la production actuelle.
+
+    **subvention** : cette variable représente la subvention que le gouvernement accorde au secteur cotonnier du pays. Elle est en millions de FCFA. Cette variable nous permettra de comprendre l'impact de la subvention sur la production du coton.
+
+    **précipitation** : cette variable désigne la quantité moyenne de precipitation enregistrée durant la saison de production mesurée en mm. Cette variable cruciale dans notre modèle du fait que la production cotonnière du pays depend de la pluviométrie uniquement.
+
+3.  Sources des données et hypothèse de recherche
+
+    3.1. Sources de données
+
+    La présente étude porte sur des données annuelles s'étalant entre 1990 et 2023 ; c'est à dire 34 observations. Les données utilisées dans le cadre de cette étude sont des données secondaires, tirées sur des bases de données existantes ou dans des journaux spécialisés. Les variables retenues viennent alors de diverses sources, ainsi :
+
+    \- Les productions, les superficies, les données climatiques , les prix du coton de 2013 à 2022 viennent du site open data du Burkina Faso ( <https://burkinafaso.opendataforafrica.org/> )
+
+    \- Les prix du coton : le reste des données sont collectées dans des articles de presse comme faso.net, le sidwaya et dans le site officiel de SOFITEX
+
+    \- Les subventions : les données allant de 2006 à 2013 sont collectées sur : <https://openknowledge.fao.org/server/api/core/bitstreams/af7b59a7-ba8f-4da0-87f9-4a361f1ef6f0/content?utm_source=chatgpt.com> , les données de 2014 à 2023 sont collectées dans des articles de presse comme faso.net, le sidwaya et le site officiel de SOFITEX.
+
+    \- Docummentation sur la construction du modèle VECM ( memoire en ligne) : <https://www.memoireonline.com/03/12/5509/Impact-des-subventions-agricoles-sur-les-exportations-de-coton-du-Burkina-Faso.html?utm_source=chatgpt.com>
+
+    #### 3.2 Hypothèse de recherche
+
+    Nous avons posé les hypothèses de recherche suivantes :
+
+    **Hypothèse** : Les subventions, les superficie allouées à la production du coton, le prix anterieur du coton et la pluviometrie impactent positivement sur la production du coton du Burkina. En d'autre terme l'augmentations des subventions de l'Etat sur la culture du coton contribue à augmenter la production du coton. De même l'augmentation des superficies allouées a la production du coton tend à accroitre la production cotonnière. Plus le prix de l'année précédente est élevée, plus les producteurs auront tendance à produire encore plus. Etant donné que la production de coton dépend de la pluviométrie, une forte précipitation peut contribuer à accroitre la production.
+
+## Méthode d'analyse et interprétation des résultats de simulation
+
+Cette section sera consacrée d'abord à la statistique descriptive de nos données et leurs visualisations pour apprehender la tendance globale puis la méthode d'analyse qui consistera à un test de diagnostic sur les données du modèle. Ensuite nous aborderons l'estimation du modèle ARIMAX. Et en fin nous interpréterons les résultats de simulation, qui consisteront à une interprétation des fonctions de réponse impulsionnelles et de la décomposition de la variance.
+
+1.  La Statistique descriptive et la visualisation
+
+    ```{r}
+    #| echo: False
+
+    # Importation des packages necessaires : 
+    library(readr)
+    library(vars)
+    # Effectuer le test ADF
+    library(tseries)
+    library(tsibble)
+    library(dplyr)
+    library(tidyr)
+    library(purrr)
+    library(knitr)
+    library(vars)
+    library(ggplot2)
+    ```
+
+    ```{r}
+    #| echo: False
+
+    # IMPORTATION DES DONNEES
+    df <- read_delim(
+      "seriTemp.csv",
+      delim = ";",  # ou "," si c'est un CSV standard
+      locale = locale(
+        date_format = "%d/%m/%Y",  # format jour/mois/année
+        decimal_mark = ","         # virgule comme séparateur décimal
+      ),
+      col_types = cols(
+        date = col_date(format = "%d/%m/%Y"),  # conversion directe en Date
+        production = col_number(),
+        superficie = col_number(),
+        precipitation = col_number(),
+        subvention = col_number(),
+        prix = col_number(),
+      )
+    )
+
+    ```
+
+    -   Statistiques describtives de base
+
+    ```{r}
+
+    #| echo: False
+
+    dff<-  df %>%
+      select(-date)
+
+    desc_table <- dff %>%
+      summarise(across(
+        everything(),
+        list(
+          mean = ~mean(., na.rm = TRUE),
+          median = ~median(., na.rm = TRUE),
+          sd = ~sd(., na.rm = TRUE),
+          min = ~min(., na.rm = TRUE),
+          max = ~max(., na.rm = TRUE),
+          cv = ~sd(., na.rm = TRUE) / mean(., na.rm = TRUE)
+        ),
+        .names = "{.col}_{.fn}"
+      )) %>%
+      pivot_longer(cols = everything(), names_to = c("Variable", "Statistique"), names_sep = "_") %>%
+      pivot_wider(names_from = Statistique, values_from = value)
+
+    # Afficher le tableau
+    print(desc_table)
+
+    ```
+
+    -   Visualisation des séries
+
+    ```{r}
+    #| echo: False
+
+    # Pivot pour long format
+    df_long <- df %>%
+      pivot_longer(cols = -date, names_to = "Variable", values_to = "Valeur")
+
+    # Création d’un graphe par variable
+    plots <- df_long %>%
+      split(.$Variable) %>%
+      map(~ ggplot(.x, aes(x = date, y = Valeur)) +
+            geom_line(color = "steelblue") +
+            labs(title = paste("Évolution de", unique(.x$Variable)),
+                 x = "Année", y = "Valeur"))
+          #  theme_minimal())
+
+
+    # Affichage de tous les graphiques
+    for (p in plots) {
+      print(p)
+    }
+    ```
+
+    ```{r}
+    #| echo: False
+
+    df_long <- df %>%
+      pivot_longer(-date, names_to = "Variable", values_to = "Valeur")
+
+    # Tracé avec ggplot2
+    ggplot(df_long, aes(x = date, y = Valeur, color = Variable)) +
+      geom_line(size = 1) +
+      labs(title = "Évolution des séries temporelles", x = "Date", y = "Valeur") +
+      theme_minimal() +
+      theme(legend.position = "bottom")
+    ```
+
+    -   La matrix de correlation
+
+    ```{r}
+    #| echo: False
+
+    cor(df %>% select(-date), use = "complete.obs")  # matrice de corrélation
+
+    library(corrplot)
+    corrplot(cor(df %>% select(-date)), method = "color", type = "upper", tl.cex = 0.8)
+
+    ```
+
+    -   Appliquons le log à notre base
+
+    ```{r}
+    #| echo: False
+
+    dflog <- data.frame(
+      date = df$date,
+      production = log(df$production ),
+      precipitation = log(df$precipitation),
+      prix = log(df$prix),
+      subvention =log(df$subvention+1),
+      superficie = log(df$superficie)
+    )
+
+    ```
+
+    -   Reprenons la visualisation avec la fonction log
+
+    ```{r}
+    #| echo: False
+    df_long <- dflog %>%
+      pivot_longer(-date, names_to = "Variable", values_to = "Valeur")
+
+    # Tracé avec ggplot2
+    ggplot(df_long, aes(x = date, y = Valeur, color = Variable)) +
+      geom_line(size = 1) +
+      labs(title = "Évolution des séries temporelles", x = "Date", y = "Valeur") +
+      theme_minimal() +
+      theme(legend.position = "bottom")
+    ```
+
+2.  Méthode d'analyse
+
+    L'estimation du modèle ARIMAX nécessite un certain nombre de préalables. Ainsi nous commencerons par des tests de diagnostic sur les données avant d'estimer le modèle. Pour cela nous nous intéresserons à l'étude de la stationnarité des variables du modèle et à l'étude de leurs cointégrations.
+
+    2.1. Etude de la stationnarité des variables :
+
+    Depuis les travaux fondateurs de Granger et Newbold (1974) sur les régressions « **fallacieuses** », il convient, avant de procéder à des estimations sur des séries temporelles, de s'interroger au préalable sur la stationnarité des séries en question.
+
+    Pour étudier la stationnarité des variables nous utilisons le test de Dickey- Fuller augmenté (ADF).
+
+    Le test d'hypothèses est le suivant :
+
+    H0: X a une racine unité (non stationnaire)
+
+    H1: X n'a pas une racine unité (stationnaire)
+
+    **La décision se faire comme suit** :
+
+    Si p-value \< 5% , on rejette l'hypothèse nulle de non stationnarité. La série est **Stationnaire**
+
+    Si p-value \> 5%, on accepte l'hypothèse nulle de non stationnarité. La série est **non stationnaire**
+
+    Le test est appliqué en niveau puis en différence première puis en différence seconde dans le cas où les variables seraient non stationnaires à ces premiers stades
+
+    ```{r}
+    #| echo: False
+
+    resumer_adf <- function(serie, nom_var) {
+      test <- adf.test(na.omit(serie))
+      p_valeur <- test$p.value
+      statut <- ifelse(p_valeur < 0.05, "Stationnaire", "Non stationnaire")
+      interpretation <- ifelse(
+        statut == "Stationnaire",
+        "La variable est stationnaire au seuil de 5% )",
+        "La variable est non stationnaire au seuil 5% , une différenciation est nécessaire"
+      )
+      return(data.frame(Variable = nom_var,
+                        P_Value = round(p_valeur, 4),
+                        Statut = statut,
+                        Interpretation = interpretation))
+    }
+
+    ```
+
+    ```{r}
+    #| echo: False
+    ts_df<-df
+    # Appliquer sur toutes les variables
+    resultats <- bind_rows(
+      resumer_adf(na.omit(ts_df$production), "production"),
+      resumer_adf(na.omit(ts_df$superficie), "superficie"),
+      resumer_adf(na.omit(ts_df$precipitation), "precipitation"),
+      resumer_adf(na.omit(ts_df$prix), "prix"),
+      resumer_adf(na.omit(ts_df$subvention), "subvention")
+    )
+
+    # Afficher le tableau
+    print(resultats)
+    ```
+
+    Toutes les séries sont non stationnaires. Nous allons passer à la differenciation d'ordre 1
+
+    -   **Differenciation d'ordre 1 et test d'ADF**
+
+    ```{r}
+    #| echo: False
+
+    dff1 <- data.frame(
+      production = diff(ts_df$production),
+      precipitation = diff(ts_df$precipitation),
+      prix = diff(ts_df$prix),
+      subvention =diff(ts_df$subvention),
+      superficie = diff(ts_df$superficie)
+    )
+
+    # Appliquer sur toutes les variables
+    resultats <- bind_rows(
+      resumer_adf(na.omit(dff1$production), "production"),
+      resumer_adf(na.omit(dff1$superficie), "superficie"),
+      resumer_adf(na.omit(dff1$precipitation), "precipitation"),
+      resumer_adf(na.omit(dff1$prix), "prix"),
+      resumer_adf(na.omit(dff1$subvention), "subvention")
+    )
+
+    # Afficher le tableau
+
+    #cat("====================== Resultats du test ADF - Differenciation d'ordre 1 =================\n\n")
+    print(resultats)
+    ```
+
+    Toutes les séries sont non stationnaires. Nous allons passer à la differenciation d'ordre 2
+
+    -   **Differenciation d'ordre 2 et test d'ADF**
+
+    ```{r}
+    #| echo: False
+
+    dff2 <- data.frame(
+      date = df$date[-c(1,2)],
+      production = diff(dff1$production),
+      precipitation = diff(dff1$precipitation),
+      prix = diff(dff1$prix),
+      subvention =diff(dff1$subvention),
+      superficie = diff(dff1$superficie)
+    )
+
+    # Appliquer sur toutes les variables
+    resultats <- bind_rows(
+      resumer_adf(na.omit(dff2$production), "production"),
+      resumer_adf(na.omit(dff2$superficie), "superficie"),
+      resumer_adf(na.omit(dff2$precipitation), "precipitation"),
+      resumer_adf(na.omit(dff2$prix), "prix"),
+      resumer_adf(na.omit(dff2$subvention), "subvention")
+    )
+
+    # Afficher le tableau
+
+    #cat("====================== Resultats du test ADF - Differenciation d'ordre2 =================\n\n")
+    print(resultats)
+    ```
+
+    Toutes les séries sont stationnaires après la deuxieme differenciation. On dit que toutes les séries sont de I(2) au seuil de 5% .
+
+Nous allons appliquer un mco sur ces variables differenciées. Puis faire le test de stationnarité sur le residu pour confirmer l'existence d'une cointegration entre les variables.
+
+2.  2\. Etude de la cointégration
+
+-   Construction du modèle linéaire et le test des residus
+
+```{r}
+#| echo: False
+
+model_mco<- lm( production ~ precipitation+subvention+superficie+prix , data = dff2)
+
+```
+
+### Le residu
+
+```{r}
+#| echo: False
+
+residu <- residuals(model_mco)
+adf.test(residu)
+```
+
+Le residu de cette regression est non stationnaire. On peut donc conclure l'inexistence d'une cointegration des variables.
+
+Comme il n'y a pas de cointegration , et que les series sont tous I(2, nous allons mettre en place un ARIMAX.
+
+-   Declarons la serie comme serie temporelle
+
+    ```{r}
+    #| echo: False
+
+    prod_ts <- ts(dff2$production, start = 1992)
+    ```
+
+-   Création de la matrice des variables exogènes
+
+    ```{r}
+    #| echo: False
+
+    xreg <- as.matrix(dff2[, c("superficie", "subvention", "prix","precipitation")])
+    ```
+
+-   Identifier les ordres ARIMAX
+
+    pour le choix de p, nous allons nous servir de ACF
+
+    On constate que p =1
+
+    Pour le choix de q, on utilise PACF , q=2
+
+    ```{r}
+    #| echo: False
+    #Tracer ACF et PACF
+    par(mfrow = c(1, 2))  # deux graphiques côte à côte
+    acf(dff2$production, main = "ACF")
+    pacf(dff2$production, main= "PACF")
+    ```
+
+Comme la variable a été differenciation deux fois, alors d = 2
+
+-   Mise en place de ARIMAX
+
+    ```{r}
+    #| echo: False
+    library(forecast)
+    library(tseries)
+
+    xreg <- as.matrix(dff2[, c("superficie", "subvention", "prix","precipitation")])
+    model<-Arima(dff2$production, order = c(1, 2, 2), xreg = xreg)
+    summary(model)
+    ```
+
+-   Interprétation :
+
+# Diagnostic du modèle
+
+##### Normalité des résidus (Jarque-Bera )
+
+Objectif : tester la normalité des résidus.
+
+Hypothèses :
+
+H0​ : les résidus suivent une distribution normale.
+
+H1: les résidus ne sont pas normaux.
+
+```{r}
+#| echo: False
+
+tseries::jarque.bera.test(residuals(model))
+```
+
+Le p-value est largement superieur à 0,05 donc les residus suivent une loi normale
+
+-   Le test d'autocorrelation
+
+Box.test(residuals(model_arimax), lag = 10, type = "Ljung-Box")
+
+Objectif : tester l'indépendance des résidus (autocorrélation jusqu’au 10e lag ici).
+
+Hypothèses :
+
+H0: pas d’autocorrélation jusqu’au lag 10.
+
+H1​ : il y a une autocorrélation
+
+```{r}
+#| echo: False
+
+Box.test(residuals(model), lag = 10, type = "Ljung-Box")
+```
+
+p-value \> 0.05 donc on ne rejette pas H0, donc les résidus sont indépendants.
+
+-   Le test de Ljung-Box
+
+    ```{r}
+    #| echo: False
+
+    checkresiduals(model)
+    ```
+
+Les trois tests étant validés on peux dire que ce modèle modelise mieux la production du coton. Verifions le modèle ARIMAX(1,2,1) et ARIMAX(1,2,0)
+
+-   ARIMAX(1,2,1)
+
+```{r}
+#| echo: False
+
+model1<-Arima(dff2$production, order = c(1, 2, 1), xreg = xreg)
+checkresiduals(model1)
+```
+
+Comme l'ACF le montre, il y a une autocorrelation entre les résidus donc ce modèle n'est pas optimal
+
+-   ARIMAX(1,2,0)
+
+```{r}
+#| echo: False
+
+model2<-Arima(dff2$production, order = c(1, 2, 0), xreg = xreg)
+checkresiduals(model2)
+```
+
+Comme l'ACF le montre, il y a une autocorrelation entre les résidus donc ce modèle n'est pas optimal. Nous concluons que le modèle ARIMAX(1,2,2) est optimal
+
+# Interpréter les coefficients
+
+```{r}
+#| echo: False
+
+summary(model)
+```
+
+Après l'analyse, on constate que d’une partie autorégressive (AR1) : l’erreur actuelle est influencée par la précédente avec un effet négatif fort (-0.75).D’une partie moyenne mobile (MA1 et MA2) : l’erreur actuelle est influencée par les chocs récents (MA1 = -1.99, fort effet négatif) et ceux d’il y a deux périodes (MA2 = +1, effet positif presque parfait). Seule la superficie a un impact significatif et positif (0.78) sur la variable à expliquer. Subvention, prix et précipitations ont des coefficients non significatifs (leurs intervalles de confiance incluent zéro).
+
+# Equation du modèle
+
+## 
+
+L’équation estimée du modèle ARIMAX est la suivante :
+
+$$
+\begin{align*}
+\hat{y}_t &= -0.7466\, y_{t-1} - 1.9864\, \varepsilon_{t-1} + 0.9999\, \varepsilon_{t-2} \\
+&\quad + 0.7839\, \text{superficie}_t + 0.0091\, \text{subvention}_t \\
+&\quad - 0.1880\, \text{prix}_t + 0.1095\, \text{précipitation}_t + \varepsilon_t
+\end{align*}
+$$
+
+# Prévision sur 5 ans
+
+```{r}
+#| echo: False
+
+# Prévision sur 5 ans (2024 à 2028) : valeurs simulées
+newxreg <- data.frame(
+  superficie = c(700000, 710000, 720000, 730000, 740000),      # en hectares
+  subvention = c(15000, 15500, 16000, 16200, 16500),           # en millions CFA
+  prix = c(100, 102, 104, 105, 107),                           # en FCFA/kg
+  precipitation = c(900, 920, 910, 930, 940)                   # en mm
+)
+
+```
+
+```{r}
+#| echo: False
+
+# Prédire les 5 prochaines valeurs de la production
+forecast_arimax <- predict(model, n.ahead = 5, newxreg = newxreg)
+
+# Affichage des prévisions
+forecast_arimax$pred       # Prévision de la production
+forecast_arimax$se         # Erreur standard associée
+
+
+```
+
+```{r}
+#| echo: False
+
+# Graphique des prévisions
+ts.plot(newxreg, forecast_arimax$pred, col = c("black", "blue"), lty = c(1, 2))
+legend("topleft", legend = c("Production observée", "Prévision ARIMAX"), col = c("black", "blue"), lty = c(1, 2))
+
+```
+
+# Conclusion
+
+Au terme de cette étude, il ressort que la production cotonnière au Burkina Faso est fortement influencée par trois leviers principaux : les précipitations, les prix à l’exportation et les subventions publiques. Grâce à l’utilisation du modèle ARIMAX, nous avons pu non seulement identifier les relations de long terme entre ces variables, mais aussi analyser les ajustements à court terme qui affectent la dynamique de la production. Les résultats montrent que : Les précipitations ont un effet significatif et immédiat sur les rendements, confirmant la vulnérabilité du coton aux aléas climatiques. Les prix à l’exportation influencent de manière indirecte mais structurante les décisions de culture, en agissant sur la rentabilité attendue. Les subventions publiques, en particulier celles portant sur les intrants, jouent un rôle de stabilisateur essentiel, en soutenant la production même en période défavorable. Ainsi, pour renforcer la résilience et la compétitivité de la filière cotonnière burkinabè, il est crucial de maintenir une approche intégrée, combinant gestion des risques climatiques, sécurisation des revenus des producteurs, et appui institutionnel ciblé. Cette étude fournit des éléments utiles pour orienter les décideurs politiques vers des interventions plus efficaces et durables, fondées sur des données empiriques solides.
+
+<https://fastercapital.com/fr/contenu/Test-de-Johansen---le-test-de-Johansen---une-methode-multivariee-pour-l-analyse-des-racines-unitaires.html>

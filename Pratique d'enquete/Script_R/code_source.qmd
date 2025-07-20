@@ -1,0 +1,539 @@
+---
+title: "Rapport_enquete"
+format: pdf
+editor: visual
+---
+
+```{r}
+library(dplyr)
+library(questionr)
+library(ggplot2)
+```
+
+## Importation de la base
+
+```{r}
+base  <- read.csv("base.csv",sep = ";")
+```
+
+```{r}
+
+
+  base<- base[-c(44,52,53,54,55)]
+  colnoms<-c( "consentement",
+  "utilis_serv_ru",
+  "sexe",
+  "bnfc_aide",
+  "aide_type",
+  "cycle_etude",
+  "année_cycle",
+  "filiere_etude",
+  "autre_filiere",
+  "cite_univ",
+  "regime_al",
+  "regime_al_precis",
+  "frequence",
+  "satisfact",
+  "prix_repas",
+  "qualite_rep",
+  "quanti_rep",
+  "choix_menus",
+  "Haricot",
+  "Riz_sauce",
+  "Riz_gras",
+  "Degue",
+  "Yaourt",
+  "Crudite",
+  "Hambourger",
+  "Gonre",
+  "Soupe",
+  "Gateau",
+  "Alloco",
+  "Couscous",
+  "Haricvert",
+  "To",
+  "Spaguetti",
+  "Macoroni",
+  "nombr_plat",
+  "plat_varie",
+  "hygiene_ru",
+  "accueil_per",
+  "temps_at",
+  "rapport_qual_pri",
+  "budget_mens",
+  "suggestion",
+  "sugges_preciser",
+  "rais_Qual_med",
+  "Prix_eleve",
+  "long_attente",
+  "Hor_inadapt",
+  "Manq_hygiene",
+  "fast_food",
+  "Autres"
+  
+  )
+# Renommage des colonnes
+colnames(base)<-colnoms
+
+```
+
+
+
+```{r}
+
+## Recodage de base$consentement en base$consentement_rec
+base$consentement_rec <- base$consentement
+base$consentement_rec[base$consentement == "Non, je ne veux pas y participer"] <- "non"
+base$consentement_rec[base$consentement == "Oui, je  veux y participer"] <- "oui"## Recodage de base$consentement en base$consentement_rec)
+
+```
+
+```{r}
+## Recodage de base$utilis_serv_ru en base$utilis_serv_ru_rec
+base$utilis_serv_ru_rec <- base$utilis_serv_ru
+base$utilis_serv_ru_rec[base$utilis_serv_ru == "Non, je ne fréquente pas!"] <- "non"
+base$utilis_serv_ru_rec[base$utilis_serv_ru == "Oui, je fréquente"] <- "oui"
+```
+
+```{r}
+## Recodage de base$sexe en base$sexe_rec
+base$sexe_rec <- base$sexe
+base$sexe_rec[base$sexe == "Féminin"] <- "femme"
+base$sexe_rec[base$sexe == "Masculin"] <- "homme"
+```
+
+# Taux de participation
+
+```{r}
+
+resu<-base %>%
+  group_by(consentement_rec) %>%
+  summarise(effectif = n()) %>%
+  mutate(pourcentage = effectif / sum(effectif) * 100)
+
+```
+
+
+```{r}
+ggplot(resu, aes(x = consentement_rec, y = pourcentage, fill = consentement_rec)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = paste0(round(pourcentage, 1), "%")), 
+            position = position_stack(vjust = 0.5), size = 3) +
+  labs(title = "Taux de participation à d'étude",
+       x ="",
+       y = "Pourcentage") +
+  scale_fill_manual(values = c("oui" = "steelblue", "non" = "tomato")) +
+  theme_minimal()
+
+```
+
+
+
+# Taux d'utilisation des service du RU 
+
+```{r}
+resume<-base %>%
+  group_by(utilis_serv_ru) %>%
+  summarise(effectif = n()) %>%
+  mutate(pourcentage = effectif / sum(effectif) * 100)
+```
+
+
+
+```{r}
+ggplot(resume, aes(x = utilis_serv_ru, y = pourcentage, fill = utilis_serv_ru)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = paste0(round(pourcentage, 1), "%")), 
+            position = position_stack(vjust = 0.5), size = 3) +
+  labs(title = "Taux de fréquentation aux services du RU",
+       x ="",
+       y = "Pourcentage")
+
+```
+
+
+# la base de ceux qui utilisent les services du RU
+
+```{r}
+base_ru <- base %>%
+  filter(utilis_serv_ru == "Oui, je fréquente")
+```
+
+```{r}
+## Recodage de base$aide_type en base$aide_type_rec
+base_ru$aide_type_rec <- base_ru$aide_type
+base_ru$aide_type_rec[base_ru$aide_type == ""] <- "Aucune_aide"
+```
+
+```{r}
+## Recodage de base_ru$année_cycle en base_ru$année_cycle_rec
+base_ru$année_cycle_rec <- base_ru$année_cycle
+base_ru$année_cycle_rec[base_ru$année_cycle == "1ere"] <- "1ere année"
+base_ru$année_cycle_rec[base_ru$année_cycle == "2e"] <- "2e année"
+base_ru$année_cycle_rec[base_ru$année_cycle == "3e"] <- "3e année"
+```
+
+
+### type d'aide et frequentation du RU
+```{r}
+
+
+resume <- base_ru %>%
+  group_by(aide_type_rec) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  mutate(pourcentage = n / sum(n) * 100)
+
+```
+
+```{r}
+
+ggplot(resume, aes(x = "", y = pourcentage, fill = aide_type_rec)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  geom_text(aes(label = paste0(round(pourcentage, 1), "%")), 
+            position = position_stack(vjust = 0.5)) +
+  labs(title = "Répartition des types d'aide parmi les usagers du service RU",
+       fill = "Type d'aide") +
+  theme_void()
+
+```
+
+
+### cycle d'etude 
+
+```{r}
+resume <- base_ru %>%
+  group_by(cycle_etude) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  mutate(pourcentage = n / sum(n) * 100)
+
+```
+
+```{r}
+
+ggplot(resume, aes(x = "", y = pourcentage, fill = cycle_etude)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  geom_text(aes(label = paste0(round(pourcentage, 1), "%")), 
+            position = position_stack(vjust = 0.5)) +
+  labs(title = "Répartition des types d'aide parmi les usagers du service RU",
+       fill = "Type d'aide") +
+  theme_void()
+
+```
+
+
+```{r}
+resume <- base_ru %>%
+  group_by(filiere_etude) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  mutate(pourcentage = n / sum(n) * 100)
+
+```
+
+```{r}
+
+ggplot(resume, aes(x = "", y = pourcentage, fill = filiere_etude)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  geom_text(aes(label = paste0(round(pourcentage, 1), "%")), 
+            position = position_stack(vjust = 0.5)) +
+  labs(title = "Répartition des types d'aide parmi les usagers du service RU",
+       fill = "Type d'aide") +
+  theme_void()
+
+```
+
+### filiere et année
+
+```{r}
+res<- base_ru %>%
+  group_by(cycle_etude,année_cycle_rec)%>%
+  summarise(n = n(), .groups = "drop") %>%
+  mutate(pourcentage = n / sum(n) * 100)
+
+res
+```
+
+
+```{r}
+ggplot(res, aes(x = année_cycle_rec, y = pourcentage, fill = année_cycle_rec)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~cycle_etude) +
+  geom_text(aes(label = paste0(round(pourcentage, 1), "%")),
+            position = position_dodge(width = 0.9), vjust = -0.3, size = 3) +
+  labs(title = "Taux de participation par année et cycle",
+       x = "Année d'étude",
+       y = "Pourcentage") +
+  scale_fill_brewer(palette = "Set2") +  # ou "Pastel1", "Dark2", etc.
+  theme_minimal()
+
+```
+
+
+## Appreciation generale
+
+
+
+
+```{r}
+res2<- base_ru %>%
+  group_by(satisfact)%>%
+  summarise(n = n(), .groups = "drop") %>%
+  mutate(pourcentage = n / sum(n) * 100)
+
+res2
+```
+
+```{r}
+ggplot(res2, aes(x = satisfact, y = pourcentage, fill = satisfact)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  #facet_wrap(~cycle_etude) +
+  geom_text(aes(label = paste0(round(pourcentage, 1), "%")),
+            position = position_dodge(width = 0.9), vjust = -0.3, size = 3) +
+  labs(title = "Le niveau de satisfaction générale ",
+       x ="Niveau",
+       y = "Pourcentage") +
+    scale_fill_manual(values = c("satisfait" = "steelblue", "Très satisfait" = "tomato", "Pas du tout satisfait"="green","Peu satisfait"="orange")) 
+```
+
+## la satisfaction générale par niveau d'éducation
+
+```{r}
+res3<- base_ru %>%
+  group_by(cycle_etude,satisfact)%>%
+  summarise(n = n(), .groups = "drop") %>%
+  group_by(cycle_etude) %>%
+  mutate(pourcentage = n / sum(n) * 100)
+
+res3
+```
+
+
+```{r}
+ggplot(res3, aes(x = satisfact, y = pourcentage, fill = satisfact)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~cycle_etude) +
+  geom_text(aes(label = paste0(round(pourcentage, 1), "%")),
+            position = position_dodge(width = 0.9), vjust = -0.3, size = 3) +
+  labs(title = "Le niveau de satisfaction générale par cycle d'étude  ",
+       x =" ",
+       y = "Pourcentage") +
+    scale_fill_manual(values = c("satisfait" = "steelblue", "Très satisfait" = "tomato", "Pas du tout satisfait"="green","Peu satisfait"="orange")) +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
+```
+
+
+## la satisfaction générale par filière 
+
+
+```{r}
+res4<- base_ru %>%
+  group_by(filiere_etude,satisfact)%>%
+  summarise(n = n(), .groups = "drop") %>%
+  group_by(filiere_etude) %>%
+  mutate(pourcentage = n / sum(n) * 100)
+
+res4
+```
+
+```{r}
+ggplot(res4, aes(x = satisfact, y = pourcentage, fill = satisfact)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~filiere_etude) +
+  geom_text(aes(label = paste0(round(pourcentage, 1), "%")),
+            position = position_dodge(width = 0.9), vjust = -0.3, size = 3) +
+  labs(title = "Le niveau de satisfaction généralepar filière ",
+       x =" ",
+       y = "Pourcentage") +
+    scale_fill_manual(values = c("satisfait" = "steelblue", "Très satisfait" = "tomato", "Pas du tout satisfait"="green","Peu satisfait"="orange")) +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
+```
+
+## la satisfaction générale par filière (autre visualisation)
+
+
+```{r}
+ggplot(res4, aes(x = filiere_etude, y = pourcentage, fill = satisfact)) +
+  geom_bar(stat = "identity", position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Satisfaction par filière par filière",
+       x = "Filière", y = "Proportion")
+
+```
+
+
+## Le niveau de satisfaction de la quantité du repas selon la filière
+
+
+```{r}
+res5<- base_ru %>%
+  group_by(filiere_etude,quanti_rep)%>%
+  summarise(n = n(), .groups = "drop") %>%
+  group_by(filiere_etude) %>%
+  mutate(pourcentage = n / sum(n) * 100)
+
+res5
+```
+
+```{r}
+ggplot(res5, aes(x = quanti_rep, y = pourcentage, fill = quanti_rep)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~filiere_etude) +
+  geom_text(aes(label = paste0(round(pourcentage, 1), "%")),
+            position = position_dodge(width = 0.9), vjust = -0.3, size = 3) +
+  labs(title = "Le niveau de satisfaction de la quantité du repas ",
+       x =" ",
+       y = "Pourcentage")+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
+```
+
+## Le niveau de satisfaction de la Qualité du repas selon la filière
+
+
+```{r}
+res6<- base_ru %>%
+  group_by(filiere_etude,qualite_rep)%>%
+  summarise(n = n(), .groups = "drop") %>%
+  group_by(filiere_etude) %>%
+  mutate(pourcentage = n / sum(n) * 100)
+
+res6
+```
+
+```{r}
+ggplot(res6, aes(x = qualite_rep, y = pourcentage, fill = qualite_rep)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~filiere_etude) +
+  geom_text(aes(label = paste0(round(pourcentage, 1), "%")),
+            position = position_dodge(width = 0.9), vjust = -0.3, size = 3) +
+  labs(title = "Le niveau de satisfaction de la quantité du repas ",
+       x =" ",
+       y = "Pourcentage")+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
+```
+
+```{r}
+res7<- base_ru %>%
+  group_by(cycle_etude,année_cycle_rec,qualite_rep)%>%
+  summarise(n = n(), .groups = "drop") %>%
+  group_by(cycle_etude,année_cycle_rec) %>%
+  mutate(pourcentage = n / sum(n) * 100)
+
+res7
+```
+```{r}
+ggplot(res7, aes(x = année_cycle_rec, y = pourcentage, fill = qualite_rep)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~cycle_etude) +
+  geom_text(aes(label = paste0(round(pourcentage, 1), '%')),
+            position = position_dodge(width = 0.9), vjust = -0.3, size = 3) +
+  labs(title = "La qualité de la nourriture",
+       x = "",
+       y = " ")
+
+```
+
+
+
+## Le temps d'attente
+
+```{r}
+resum<- base_ru %>%
+  group_by(temps_at)%>%
+  summarise(effectif = n(), .groups = "drop") %>%
+  mutate(pourcentage = effectif / sum(effectif) * 100)
+
+resum
+```
+
+```{r}
+ggplot(resum, aes(x = "", y = effectif, fill = temps_at)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  geom_text(aes(label = paste0(effectif)), 
+            position = position_stack(vjust = 0.5)) +
+  labs(title = "Répartition des types d'aide parmi les usagers du service RU",
+       fill = "Temps d'attente") +
+  theme_void()
+```
+
+
+## Hygiène ddu RU( local et materiel)
+
+```{r}
+resum2<- base_ru %>%
+  group_by(hygiene_ru)%>%
+  summarise(effectif = n(), .groups = "drop") %>%
+  mutate(pourcentage = effectif / sum(effectif) * 100)
+
+resum2
+```
+
+
+```{r}
+ggplot(resum2, aes(x = "", y = effectif, fill = hygiene_ru)) +
+  geom_bar(stat = "identity", width = 3) +
+  coord_polar("y") +  # transforme en cercle
+  #theme_void() +      # supprime les axes et grilles
+  geom_text(aes(label = paste0(round(pourcentage, 1), "%")), 
+            position = position_stack(vjust = 0.5)) +
+  labs(title = "Zone polaire",) +
+  theme(legend.title = element_blank())
+```
+
+
+## la satisfaction de l'accueil du personnel
+
+```{r}
+resum3<- base_ru %>%
+  group_by(accueil_per)%>%
+  summarise(effectif = n(), .groups = "drop") %>%
+  mutate(pourcentage = effectif / sum(effectif) * 100)
+
+resum3
+```
+
+
+```{r}
+ggplot(resum3, aes(x = accueil_per, y = pourcentage, fill = accueil_per)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  #facet_wrap(~accueil_per) +
+  geom_text(aes(label = paste0(round(pourcentage, 1), '%')),
+            position = position_dodge(width = 0.9), vjust = -0.3, size = 3) +
+  labs(title = "Le niveau de satisfaction de l'accueil du personnel",
+       x = "",
+       y = "Pourcentage")
+
+```
+
+## budget mensuel en moyenne par promotion
+
+```{r}
+budget_moyen <- base_ru %>%
+  group_by(filiere_etude,année_cycle_rec) %>%
+  summarise(moyen = mean(budget_mens, na.rm = TRUE))
+
+budget_moyen
+```
+
+```{r}
+echo:FALSE
+ggplot(budget_moyen, aes(x = année_cycle_rec, y = moyen, fill = année_cycle_rec)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~filiere_etude) +
+  geom_text(aes(label = paste0(round(moyen, 2))),
+            position = position_dodge(width = 0.9), vjust = -0.3, size = 3) +
+  labs(title = "Le budget mensuel moyen alloué au RU",
+       x = "",
+       y = " ")
+
+```
+
+
+
+

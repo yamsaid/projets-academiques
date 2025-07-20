@@ -1,0 +1,979 @@
+---
+output: 
+  pdf_document:
+    latex_engine: xelatex  
+    number_sections: true
+    toc: true
+    toc_depth: 2
+    includes:
+      in_header: preamble.tex
+      before_body: titlepage.tex
+fontsize: 11pt
+geometry: margin=2.5cm
+lang: fr
+---
+
+```{r, warning = FALSE, message = FALSE, echo = FALSE}
+#Chargement des packages
+library(feather)
+library(dplyr)
+library(corrplot)
+library(car)
+library(nnet)
+library(VIM)
+library(mice)
+library(lmtest)
+library(naniar)
+library(FactoMineR)
+library(factoextra)
+library(pscl)
+library(pROC)
+library(caret)
+library(knitr)
+library(Hmisc)
+library(tidyr)
+library(kableExtra)
+library(e1071)
+library(purrr)
+
+
+```
+
+```{r, warning = FALSE, message = FALSE, echo = FALSE}
+#L’option knitr::opts_chunk$set(crop = NULL) désactive le rognage automatique des marges autour des figures, évitant ainsi les erreurs liées à l’absence de pdfcrop lors de la compilation PDF.
+knitr::opts_chunk$set(crop = NULL)
+
+```
+
+```{r, warning = FALSE, message = FALSE, echo = FALSE}
+#Charger les données
+data <- read_feather("base_projet_quali.feather")
+########### Filtration des observations en fonction du milieu urbain
+# En effet,l' entreprise immobilière souhaite mettre à disposition de ménages,  différents types de logements en milieu urbain. Les données qui
+# nous concernent sont donc celles qui ont un lien avec le milieu urbain (qui correspond à la modalité 1 dans notre variable milieu). La variable data_urban 
+# ainsi créee sélectionne uniquemement les observations du milieu urbain pour notre étude.
+data_urban <- data %>% filter(milieu == 1)
+```
+
+\newpage
+
+# Introduction
+
+Dans un contexte de croissance démographique et d’urbanisation rapide au Burkina Faso, la question du logement en milieu urbain est devenue un enjeu stratégique tant pour les autorités publiques que pour les acteurs du secteur privé. Les ménages urbains vivent dans des habitats variés, allant des maisons modernes aux constructions traditionnelles en banco ou en matériaux précaires, en fonction de leurs caractéristiques économiques, sociales et culturelles. Dans ce cadre, l’entreprise immobilière ImmoFaso S.A, spécialisée dans le développement de logements urbains, cherche à mieux comprendre les facteurs qui influencent le type de logement occupé par les ménages afin d’adapter son offre immobilière à la demande réelle. Elle souhaite identifier les profils de ménages à cibler pour chaque type de logement disponible. Pour répondre à cette problématique, ce travail propose d’utiliser une régression logistique multinomiale, appliquée aux données de l’Enquête Harmonisée sur les Conditions de Vie des Ménages (EHCVM 2018). La variable d’intérêt, le type de logement, comporte initialement huit modalités, que nous regroupons en quatre grandes catégories selon leur niveau de confort et de modernité, afin de faciliter l’analyse et l’interprétation. L’analyse s’appuie sur huit variables explicatives pertinentes, choisies parmi les dimensions économiques, démographiques et relatives aux conditions d’habitat. L’objectif est d’identifier les principaux déterminants du type de logement, afin de fournir à ImmoFaso S.A. des recommandations opérationnelles pour mieux segmenter le marché urbain et proposer des logements adaptés aux profils des ménages burkinabè.
+
+# Analyse descriptive préliminaire
+
+Avant de procéder à la construction des variables synthétiques et à la modélisation, une analyse descriptive des données a été réalisée pour explorer les caractéristiques des ménages urbains et identifier les relations potentielles entre les variables. Cette analyse s’appuie sur la base `data_urban`, qui contient les données brutes avant tout regroupement ou création de variables composites.
+
+## Variables quantitatives
+
+L’analyse statistique descriptive des variables quantitatives constitue une étape essentielle pour explorer les caractéristiques de base des données collectées. Elle permet de résumer de manière synthétique les principales tendances et la dispersion des variables d’intérêt. Le tableau ci-dessous présente les indicateurs statistiques clés: moyenne, médiane, écart-type, minimum, maximum et asymétrie pour trois variables quantitatives extraites de l’enquête : le revenu total du ménage (dtot), la taille du ménage (hhsize) et l’âge du chef de ménage (hage). Ces mesures fournissent un aperçu global de la structure économique, démographique et sociale des ménages enquêtés.
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+# Variables sélectionnées
+selected_vars <- c("dtot", "hhsize", "hage")
+
+# Vérification des variables dans le dataset
+missing_vars <- setdiff(selected_vars, names(data_urban))
+if (length(missing_vars) > 0) {
+  stop("Variables manquantes : ", paste(missing_vars, collapse = ", "))
+}
+
+# Sélection et conversion
+data_check <- data_urban %>%
+  select(all_of(selected_vars)) %>%
+  mutate(across(everything(), ~ as.numeric(as.character(.))))
+
+# Supprimer les colonnes avec que des NA
+valid_vars <- names(data_check)[colSums(!is.na(data_check)) > 0]
+data_check <- data_check %>% select(all_of(valid_vars))
+
+if (ncol(data_check) == 0) {
+  stop("Toutes les colonnes sont invalides (que des NA).")
+}
+
+# Fonction de résumé pour une variable
+resumer_variable <- function(v) {
+  c(Moyenne = mean(v, na.rm = TRUE),
+    Mediane = median(v, na.rm = TRUE),
+    Ecart_type = sd(v, na.rm = TRUE),
+    Minimum = min(v, na.rm = TRUE),
+    Maximum = max(v, na.rm = TRUE),
+    Asymetrie = skewness(v, na.rm = TRUE))
+}
+
+# Appliquer à chaque variable
+summary_quanti <- data.frame(t(sapply(data_check, resumer_variable)))
+summary_quanti <- tibble::rownames_to_column(summary_quanti, var = "Variable")
+
+# Affichage du tableau
+kable(summary_quanti, digits = 2, caption = "Résumé statistique des variables quantitatives") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE, font_size = 10)
+
+```
+
+Les données montrent que le revenu des ménages est en moyenne élevé mais très inégal, avec quelques ménages aux revenus extrêmement hauts. La taille moyenne des ménages est grande, autour de 5 à 6 personnes, avec certains ménages exceptionnellement nombreux. L’âge du chef de ménage est plus homogène, autour de 45 ans en moyenne, avec une distribution relativement équilibrée.
+
+## Variables qualitatives
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+# Labels pour typ_logement
+label_typ_logement <- c(
+  "1" = "Maison moderne (Villa)",
+  "2" = "Immeuble/appartement",
+  "3" = "Maison individuelle simple en dur",
+  "4" = "Célibatérium",
+  "5" = "Maison individuelle simple en banco",
+  "6" = "Maison traditionnelle en banco",
+  "7" = "Case/paille",
+  "8" = "Autre"
+)
+
+# Sélection des variables qualitatives
+qual_vars <- c("typ_logement")
+
+# Vérification des variables présentes
+missing_vars <- setdiff(qual_vars, names(data_urban))
+if (length(missing_vars) > 0) {
+  stop("Variables manquantes dans data_urban : ", paste(missing_vars, collapse = ", "))
+}
+
+# Créer une copie du data_urban avec typ_logement labelisé
+data_labeled <- data_urban %>%
+  mutate(
+    typ_logement_label = factor(
+      label_typ_logement[as.character(typ_logement)],
+      levels = label_typ_logement # pour garder l'ordre des labels
+    )
+  )
+
+# Créer les tableaux de fréquences sur la variable labelisée
+summary_quali <- data_labeled %>%
+  select(typ_logement_label) %>%
+  summarise(across(everything(), ~list(table(.)))) %>%
+  pivot_longer(cols = everything(), names_to = "Variable", values_to = "Frequences") %>%
+  mutate(
+    Frequences = map2(Frequences, Variable, ~kable(.x, caption = paste("Fréquences pour", .y)) %>%
+                        kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE))
+  )
+
+# Diagramme en barres avec labels
+ggplot(data_labeled, aes(x = typ_logement_label, fill = typ_logement_label)) +
+  geom_bar() +
+  labs(title = "Répartition des types de logement",
+       x = "Type de logement", y = "Effectif") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  guides(fill = "none")
+
+
+```
+
+La "Maison individuelle simple en dur" est le type de logement le plus fréquent, regroupant plus de 900 ménages, ce qui traduit une forte préférence pour ce mode d’habitat. Elle est suivie par la "Maison individuelle simple en banco" et les "Immeubles/appartements", avec respectivement environ 800 et 700 ménages, reflétant une diversité entre habitat traditionnel et moderne. En revanche, les "Maisons modernes (Villa)", les "Célibatériums", les "Cases/paille" et la catégorie "Autre" sont peu représentés, indiquant une adoption limitée de ces formes d’habitat, probablement en raison de contraintes économiques, culturelles ou liées à l’urbanisation.
+
+## Analyse croisée
+
+Le tableau croisé présente la répartition des types de logement selon les régions du Burkina Faso, basée sur les données de l’EHCVM 2018. Cette analyse met en lumière les variations régionales des préférences résidentielles, révélant les habitats les plus courants dans chaque zone géographique. Elle offre ainsi un outil précieux pour comprendre les dynamiques territoriales du logement et orienter les politiques d’aménagement ainsi que les stratégies commerciales des acteurs immobiliers comme ImmoFaso S.A.
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+# Labels des types de logement
+label_typ_logement <- c(
+  "1" = "Maison moderne (Villa)",
+  "2" = "Immeuble/appartement",
+  "3" = "Maison individuelle simple en dur",
+  "4" = "Célibatérium",
+  "5" = "Maison individuelle simple en banco",
+  "6" = "Maison traditionnelle en banco",
+  "7" = "Case/paille",
+  "8" = "Autre"
+)
+
+# Labels des régions
+label_region <- c(
+  "1" = "Boucle du Mouhoun",
+  "2" = "Cascades",
+  "3" = "Centre",
+  "4" = "Centre-Est",
+  "5" = "Centre-Nord",
+  "6" = "Centre-Ouest",
+  "7" = "Centre-Sud",
+  "8" = "Est",
+  "9" = "Hauts Bassins",
+  "10" = "Nord",
+  "11" = "Plateau-Central",
+  "12" = "Sahel",
+  "13" = "Sud-Ouest"
+)
+
+# Ajout des labels à la base de données
+data_labeled <- data_urban %>%
+  mutate(
+    typ_logement_label = factor(label_typ_logement[as.character(typ_logement)],
+                                levels = label_typ_logement),
+    region_label = factor(label_region[as.character(region)],
+                          levels = label_region)
+  )
+
+# Création du tableau croisé
+tableau_croise <- data_labeled %>%
+  filter(!is.na(typ_logement_label), !is.na(region_label)) %>%
+  count(typ_logement_label, region_label) %>%
+  pivot_wider(names_from = region_label, values_from = n, values_fill = 0)
+
+
+```
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+# 1. Compter le nombre total de ménages par région (en caractères)
+regions_extremes <- data_labeled %>%
+  filter(!is.na(region_label)) %>%
+  count(region_label, name = "total_menages") %>%
+  arrange(desc(total_menages))
+
+# 2. Sélectionner les 3 régions les plus et les moins peuplées en caractères
+regions_choisies <- c(
+  as.character(head(regions_extremes$region_label, 3)),  # top 3
+  as.character(tail(regions_extremes$region_label, 3))   # bottom 3
+)
+
+# 3. Filtrer les données avec ces 6 régions (region_label en facteur ok)
+data_plot_filtré <- data_labeled %>%
+  filter(as.character(region_label) %in% regions_choisies, !is.na(typ_logement_label)) %>%
+  count(typ_logement_label, region_label)
+
+# 4. Créer le tableau croisé
+tableau_extremes <- data_plot_filtré %>%
+  pivot_wider(names_from = region_label, values_from = n, values_fill = 0)
+
+# 5. Vérifier les colonnes présentes
+cols_disponibles <- colnames(tableau_extremes)
+
+# 6. Garder uniquement les régions existantes comme colonnes
+regions_valides <- regions_choisies[regions_choisies %in% cols_disponibles]
+
+# 7. Réordonner le tableau (typ_logement_label + régions valides)
+tableau_extremes <- tableau_extremes[, c("typ_logement_label", regions_valides)]
+
+# 8. Afficher le tableau
+kable(tableau_extremes,
+      caption = "Tableau croisé : Types de logement dans les 3 régions les plus et les moins peuplées en termes de ménages recensés",
+      align = "l",
+      digits = 0,
+      booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down", font_size = 11)
+```
+
+Le tableau met en évidence de fortes disparités régionales dans les types de logement. La région du **Centre**, la plus urbanisée, concentre les logements modernes tels que les **villas**, les **immeubles** et les **célibatériums**, contrairement aux régions moins peuplées comme le **Centre-Sud**, l’**Est** ou le **Plateau-Central**, où dominent les logements plus rudimentaires, notamment les **maisons en banco**. Le type de logement le plus courant dans toutes les régions reste la **maison individuelle simple en dur**, reflétant un compromis entre durabilité et accessibilité. Les **cases en paille** sont quasiment absentes, signalant leur disparition progressive. Ces différences traduisent des niveaux variés d’urbanisation et de développement socio-économique entre les régions.
+
+# Construction de variables synthétiques
+
+Afin d’enrichir l’analyse et de réduire la dimensionnalité des informations disponibles, plusieurs variables composites ont été construites à partir des données originales.
+
+## Regroupement de la variable dépendante typ_logement
+
+La variable initiale typ_logement comporte 8 modalités. Pour faciliter l’interprétation du modèle multinomial et garantir une taille suffisante dans chaque classe, nous avons regroupé ces modalités en 4 catégories suivant leur rapprochement et représentativité dans la base de données :
+
+```{r, results = 'hide', echo = FALSE, message = FALSE}
+# Création du tableau
+regroupement <- data.frame(
+  `Code regroupé` = c(1, 2, 3, 4),
+  `Modalités initiales` = c("1, 2", "3", "4", "5, 6, 7, 8"),
+  `Libellé` = c("Logement moderne", "Maison individuelle en dur", "Célibatérium", "Logement traditionnel")
+)
+
+# Affichage
+kable(regroupement, caption = "Tableau 1 : Regroupement des modalités de la variable `typ_logement`")
+
+```
+
+## Score de possession de biens (niveau de confort)
+
+Un score synthétique de confort des ménages a été construit en deux étapes via des analyses en composantes principales (ACP). D’abord, un score de possession de sept biens durables (télévision, réfrigérateur, cuisinière, voiture, fer à repasser, ordinateur, décodeur) a été créé à partir de la première composante principale. Ensuite, ce score a été combiné avec l’accès à l’électricité et à l’eau potable, et une seconde ACP a produit un score global de confort. Ce dernier, continu, a été segmenté en trois niveaux (faible, moyen, élevé) selon les terciles, facilitant son usage dans les analyses statistiques.
+
+```{r, results = 'hide', echo = FALSE, message = FALSE}
+
+
+# Dans le jeu de données, certains ménages ont des possessions. Nous pouvons donc les regrouper selon leurs  caractéristiques similaires
+# Par exemple, les objets ensemble. Par la suite, nous décidons de regrouper ces informations dispersées en une seule variable
+
+
+# -------------------------
+# 1. Score de possession de biens
+# -------------------------
+########### Regroupement des différentes possessions des ménages 
+
+
+# Ici, nous regroupons les objets possédés par le ménage en une variable que nous allons utiliser par la suite pour produire
+# uen Analyse en Correspondantes Princiaples. Cette ACP permettra donc de synthétiser les informations contenues dans chaque possession
+# et permettre ainsi de voir les ressemblances. Un indicateur sera à la suite crée grâce à la première composante principale qui résume la plus grande partie de la 
+# variance commune entre les biens.
+
+
+# Variables binaires (0/1) de biens durables
+equip_vars <- data_urban[, c("tv", "frigo", "cuisin", "car", "fer", "ordin", "decod")]
+
+# Conversion en numérique si besoin
+equip_vars[] <- lapply(equip_vars, function(x) as.numeric(as.character(x)))
+
+# ACP pour extraire un score synthétique de possession
+res_pca <- PCA(equip_vars, scale.unit = TRUE, ncp = 2, graph = FALSE)
+
+# Extraction de la 1ère composante comme score
+data_urban$possession_bien <- res_pca$ind$coord[, 1]
+
+# -------------------------
+# 2. Préparation des autres variables (élec + eau)
+# -------------------------
+
+# Dans cette partie, nous préparons les variables elec et eau pour être intégrés dans l'analyse statistique suivante.
+# Nous vérifions si ces variables sont numériques afin de pouvoir les intégrer.
+data_urban$elec_ac <- as.numeric(as.character(data_urban$elec_ac))
+data_urban$eauboi_ss <- as.numeric(as.character(data_urban$eauboi_ss))
+
+# -------------------------
+# 3. Création du score global de confort (ACP sur 3 dimensions)
+# -------------------------
+# Ici, nous réalisons une nouvelle ACP mais cette fois ci avec avec trois dimensions, en combinant le score de possession de biens,
+# l'acces reseau electrique et à l'eau potable en saison sèche. Pour faire cette analyse, nous supprimons les observations manquantes afin de ne pas biaiser les résultats.
+
+# Sélection des variables à fusionner
+vars_confort <- data_urban[, c("possession_bien", "elec_ac", "eauboi_ss")]
+
+# Supprimer les lignes avec NA
+idx_valid <- complete.cases(vars_confort)
+vars_confort_valid <- vars_confort[idx_valid, ]
+
+# ACP
+pca_confort <- prcomp(vars_confort_valid, scale. = TRUE)
+
+# Extraction de la 1ère composante comme score global
+  # Nous retenons ici la première composante principale comme score global de confort. Ce score va constituer une mesure synthétique du niveau de confort du ménage
+  # tout en tenant en compte de plusieurs des caractéristiques prises en compte.
+score_global <- pca_confort$x[, 1]
+
+# Ajout dans la base initiale
+data_urban$score_confort <- NA
+data_urban$score_confort[idx_valid] <- score_global
+
+# -------------------------
+# 4. Catégorisation du score global : faible / moyen / élevé
+# -------------------------
+    # Etant donné que le score global est constitué de valeurs continues, nous décidons de les regrouper selon leur proportion, afin de pouvoir créer un niveau de confort
+
+data_urban$niveau_confort <- cut(
+  data_urban$score_confort,
+  breaks = quantile(data_urban$score_confort, probs = c(0, 0.33, 0.66, 1), na.rm = TRUE),
+  labels = c("faible", "moyen", "élevé"),
+  include.lowest = TRUE
+)
+
+```
+
+## Score de qualité du logement
+
+À ce niveau, un score simple de qualité du logement a été construit à partir de trois variables binaires : type de mur, de toit et de sol. Le score qualite_logement est obtenu par somme directe (valeurs entre 0 et 3).
+
+```{r, results = 'hide', echo = FALSE, message = FALSE}
+#Calcul du score par la sommation des lignes
+data_urban$qualite_logement <- rowSums(data_urban[, c("mur", "toit", "sol")])
+```
+
+## Indice socioéconomique par ACM
+
+Ici, un indice synthétique de position sociale a été calculé par analyse des correspondances multiples (ACM) à partir du niveau d’éducation (heduc) et du statut dans la population active (hcsp) :
+
+```{r, results = 'hide', echo = FALSE, message = FALSE}
+#Sélection des variable
+df_cat <- data_urban[, c("heduc", "hcsp")]
+  #Réalisation de l'ACM
+res_mca <- MCA(df_cat, graph = FALSE)
+# On extrait ensuite l'axe 1 de l'ACM qui contient le plus d'informations commune entre heduc et hcsp. Cette valeur devient le score socio économique de chaque ménage.
+data_urban$indice_socioeco <- res_mca$ind$coord[,1]
+```
+
+## Sous-ensemble des variables candidates
+
+La sélection des variables explicatives est cruciale pour construire un modèle économétrique solide. Elle consiste à identifier, selon la littérature, le contexte théorique et les données disponibles, les facteurs susceptibles d’influencer la variable dépendante. Dans cette étude, les variables ont été regroupées par thèmes (économique, sociodémographique, habitat, géographique) pour structurer l’analyse et faciliter l’interprétation. Le choix s’appuie sur la qualité des données, leur pertinence conceptuelle, l’absence de multicolinéarité et l’amélioration de l’ajustement, garantissant ainsi la rigueur méthodologique et la validité des résultats.
+
+```{r, results = 'hide', echo = FALSE, message = FALSE, warning = FALSE}
+########### Regroupement de la variable dépendante typ_logement
+
+# On a remarqué que certaines modalités de la variable à expliquer typ_logement
+# avaient très peu d'observations et d'autres en avaient trop. Nous avons ainsi 
+# décider de les regrouper par ressemblance ou affinité. Alors, les modalités 1 et 2 en "Logement moderne" , les modalités
+# 5,6,7 et 8 en "logement traditionnel". Les autres modalités(3 et 4) ne sont pas groupées.
+
+# Recodage des valeurs d’origine de la variable typ_logement en 4 nouvelles catégories
+data_urban$typ_logement <- as.character(data_urban$typ_logement)
+data_urban$typ_logement[data_urban$typ_logement == "2"] <- "1"
+data_urban$typ_logement[data_urban$typ_logement == "3"] <- "2"
+data_urban$typ_logement[data_urban$typ_logement == "4"] <- "3"
+data_urban$typ_logement[data_urban$typ_logement == "5"] <- "4"
+data_urban$typ_logement[data_urban$typ_logement == "6"] <- "4"
+data_urban$typ_logement[data_urban$typ_logement == "7"] <- "4"
+data_urban$typ_logement[data_urban$typ_logement == "8"] <- "4"
+
+# Transformation en factor
+data_urban$typ_logement <- as.factor(data_urban$typ_logement)
+
+# Ajout des labels 
+levels(data_urban$typ_logement) <- c(
+  "Logement moderne",
+  "Maison individuelle en dure",
+  "Célibatérium",
+  "Logement traditionnel"
+)
+
+
+
+########### Regroupement de la variable hage en intervalles 
+
+# La variable hage est constituée des âges des ménages. Il nous a semblé plus pertinent de regrouper ces âges en
+# intervalles pour faciliter l'interprétation et les estimations. En effet, il est plus avantageux pour une entreprise donnée, de connâitre 
+# les chances pour une catégorie donnée(par exemple jeune, vieux, etc), de choisir tel type de logement.Celà rend va permettre ainsi de pouvoir comparer entre catégorie
+# Ainsi, ceux qui ont un âge inférieur à 30 sont des jeunes, ceux qui en ont compris entre 31 et 50 sont des adultes, et le reste est considéré comme vieux. 
+data_urban$age_cat <- cut(data_urban$hage, breaks = c(0, 30, 50, Inf), labels = c("jeune", "adulte", "âgé"))
+
+# Renommage
+data_urban <- data_urban %>%
+  dplyr::rename(
+    type_logement = typ_logement,                  # Variable dépendante (regroupée)
+    statut_occupation = logem,                     # Statut d’occupation du logement
+    age_chef = age_cat,                            # Âge du chef de ménage (catégorisé)
+    taille_menage = hhsize,                        # Nombre de membres dans le ménage
+    statut_matrimonial = hmstat,                   # Statut matrimonial
+    niveau_education = heduc,                      # Niveau d’éducation
+    cat_socio_prof = hcsp,                         # Catégorie socio-professionnelle
+    depenses_menage = dtot,                        # Dépenses totales du ménage
+    actif_derniere_sem = hactiv7j,                 # Chef actif durant les 7 derniers jours
+    qualite_logement = qualite_logement,           # Score basé sur matériaux
+    niveau_confort = niveau_confort,              # Score basé sur les biens possédés
+    electricite = elec_ac,                         # Accès à l’électricité
+    region_residence = region,                     # Région urbaine
+    score_socioeco = indice_socioeco               # Score ACM (éducation + activité)
+  )
+
+
+
+data_subset <- data_urban %>%
+  dplyr::select(type_logement, statut_occupation, age_chef, taille_menage,
+         statut_matrimonial, niveau_education, cat_socio_prof,
+         depenses_menage, actif_derniere_sem, qualite_logement,
+         niveau_confort, electricite, region_residence, score_socioeco)
+
+data_subset$type_logement <- as.factor(data_subset$type_logement)
+factor_vars2 <- c("age_chef",  "niveau_confort","cat_socio_prof", "qualite_logement", "region_residence", "statut_matrimonial", "statut_occupation")
+data_subset[factor_vars2] <- lapply(data_subset[factor_vars2], as.factor)
+```
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+library(knitr)
+
+# Création du tableau résumé
+vars_justif <- data.frame(
+  Variable = c(
+    "type_logement", "statut_occupation", "age_chef", "taille_menage",
+    "statut_matrimonial", "niveau_education", "cat_socio_prof",
+    "depenses_menage", "actif_derniere_sem", "qualite_logement",
+    "niveau_confort", "electricite", "region_residence", "score_socioeco"
+  ),
+  Description = c(
+    "Type de logement (4 catégories)",
+    "Occupation : propriétaire, locataire...",
+    "Âge du chef de ménage (cat.)",
+    "Nombre de membres du ménage",
+    "État matrimonial du chef",
+    "Niveau d’instruction",
+    "Catégorie socioprofessionnelle",
+    "Dépenses totales du ménage",
+    "Actif durant la dernière semaine",
+    "Score sur les matériaux (sol, mur...)",
+    "Score équipement (TV, frigo, etc.)",
+    "Accès à l’électricité",
+    "Région de résidence",
+    "Score éducation + activité"
+  ),
+  Justification = c(
+    "Variable cible à prédire",
+    "Lien direct avec le logement",
+    "Influence les besoins en logement",
+    "Impacte la taille et le confort requis",
+    "Indicateur de stabilité sociale",
+    "Détermine les opportunités économiques",
+    "Mesure le statut socioéconomique",
+    "Pouvoir d’achat du ménage",
+    "Indique la participation économique",
+    "Reflète la qualité du logement",
+    "Indicateur de niveau de vie",
+    "Présence d’infrastructures modernes",
+    "Effets géographiques urbains",
+    "Score synthétique socioéconomique"
+  )
+)
+
+kable(vars_justif, caption = "Tableau : Justification des variables explicatives retenues")
+```
+
+# Sélection des variables explicatives
+
+## Detection et traitement des valeurs manquantes
+
+Avant d'estimer un modèle, il est essentiel d'examiner la complétude des données. La présence de valeurs manquantes peut biaiser les résultats ou réduire la puissance statistique si elles ne sont pas traitées de manière adéquate. Dans cette section, nous commençons par identifier les variables comportant des données manquantes, en utilisant un résumé global par variable.
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+# Conversion 
+data_subset$cat_socio_prof <- as.factor(data_subset$cat_socio_prof)
+# Résumé des valeurs manquantes par variable
+miss_var_summary(data_subset)
+```
+
+Pour gérer les données manquantes, nous allons utiliser l’imputation multiple avec le package mice. La variable catégorielle cat_socio_prof a été imputée par régression polytomique (polyreg), adaptée aux modalités multiples. La matrice des prédicteurs a été ajustée pour éviter la colinéarité et exclure la variable cible afin d’éviter la fuite d’information. L’imputation multiple permet d’obtenir des estimations plus fiables que la suppression simple des données manquantes. La base finale est issue de la combinaison des 5 jeux de données imputés.
+
+```{r, results = 'hide', echo = FALSE, message = FALSE, warning = FALSE}
+# Initialisation de l’imputation multiple
+init <- mice(data_subset, maxit = 0)
+
+# Méthodes d’imputation
+meth <- init$method
+
+# Imputation de cat_socio_prof par régression polytomique (logit multinomial)
+meth["cat_socio_prof"] <- "polyreg"
+
+# Matrice des prédicteurs
+pred <- make.predictorMatrix(data_subset)
+
+# Ajustement des prédicteurs : ici, on choisit "score_socioeco" comme seul prédicteur
+# Supposons qu'il s'agit bien d'une variable disponible dans data_subset
+pred["cat_socio_prof", ] <- 0
+pred["cat_socio_prof", "score_socioeco"] <- 1
+
+# Retirer une variable cible (inutile de dire à la fois mettre 0 puis 1 puis 0)
+# Ici, on empêche "type_logement" d’être utilisé pour imputer cat_socio_prof
+pred["cat_socio_prof", "type_logement"] <- 0  # Ce n'est utile que si elle était mise à 1 auparavant
+
+# Lancer l’imputation multiple
+set.seed(500)
+imp <- mice(data_subset, m = 5, maxit = 10, method = meth, predictorMatrix = pred, printFlag = TRUE)
+```
+
+```{r, results = 'hide', echo = FALSE, message = FALSE, warning = FALSE}
+# Extraire le jeu de données complet imputé
+DataBase <- complete(imp)
+```
+
+On peut désormais confirmer qu’aucune valeur manquante ne subsiste sur les variables retenues pour le modèle. Une fois cette vérification achevée, l’analyse se poursuivra avec le traitement des valeurs aberrantes, afin d’assurer la robustesse des résultats.
+
+## Traitement des valeurs aberrantes
+
+Avant d’engager l’analyse statistique, il est important d’identifier d’éventuelles valeurs aberrantes (ou outliers) susceptibles de biaiser les résultats. Ces valeurs extrêmes peuvent être dues à des erreurs de saisie, à des situations atypiques ou à une forte hétérogénéité dans la population observée. À cette fin, des boîtes à moustaches (boxplots) ont été utilisées pour visualiser la distribution des variables quantitatives clés, notamment les dépenses totales du ménage et la taille du ménage. Ces représentations permettent de repérer visuellement les observations éloignées des quartiles (valeurs au-delà de 1,5 fois l'écart interquartile).
+
+```{r, echo = FALSE, warning = FALSE}
+par(mfrow = c(1, 2))         # 1 ligne, 2 colonnes
+par(mar = c(4, 4, 2, 1))     # marges
+boxplot(DataBase$depenses_menage, main = "Dépenses du ménage")
+boxplot(DataBase$taille_menage, main = "Taille du ménage")
+
+```
+
+En observant les deux, on remarque une forte disparité entre les depenses et les tailles des ménages. On remarque en effet la présence de valeurs atypiques. Ainsi nous allons utiliser le critère IQR (Interquartile Range) qui s’avère particulièrement efficace. Ce critère repose sur l’analyse de la distribution d’une variable, en identifiant les observations qui s’éloignent fortement de la zone centrale (le cœur de la distribution).
+
+```{r, results = 'hide', echo = FALSE, message = FALSE, warning = FALSE}
+# Traitement des valeurs aberentes (outliers)
+traitement_outliers <- function(df, df_var){
+  
+  # Calcul des quartiles
+  Q1 <- quantile(df_var, 0.25, na.rm = TRUE)
+  Q3 <- quantile(df_var, 0.75, na.rm = TRUE)
+  
+  # IQR
+  IQR_val <- Q3 - Q1
+  
+  # Bornes
+  borne_basse <- Q1 - 1.5 * IQR_val
+  borne_haute <- Q3 + 1.5 * IQR_val
+  
+  # Filtrage : suppression des outliers
+  df_clean <- df[df_var >= borne_basse & df_var <= borne_haute, ]
+  return (df_clean)
+}
+#Construction de la base finale
+DataBase= traitement_outliers(DataBase, DataBase$taille_menage)
+DataBase= traitement_outliers(DataBase, DataBase$depenses_menage)
+```
+
+## Test de correlation entre les variables quantitatives
+
+Après la gestion des valeurs manquantes, nous allons maintenant nous interesser à la corrélation entre les variables quantitatives. En cas de forte corrélation détectée, nous allons procéder à la suppression d'une des variables pour conserver la robustesse du modèle. Tout d'abord nous allons réaliser le test de Shapiro-Wilk pour voir la distribution des données des variables quantitatives afin de nous orienter sur le test de corrélation approprié.
+
+```{r, echo = FALSE, warning = FALSE, results = 'hide'}
+#Sélection des variables quantitatives
+vars_quanti <- as.data.frame(DataBase[, c("depenses_menage", "taille_menage")])
+# 1. Test de normalité (Shapiro-Wilk) pour chaque variable
+shapiro_results <- sapply(vars_quanti, function(x) shapiro.test(x)$p.value)
+shapiro_df <- data.frame(
+  Variable = names(shapiro_results),
+  p.value = round(shapiro_results, 4)
+)
+# 2. Choix automatique du test de corrélation
+if(all(shapiro_results > 0.05)) {
+  methode <- "pearson"
+  cat(" Conditions normales remplies -> Pearson ")
+} else {
+  methode <- "spearman"
+  cat(" Données non normales: test de Spearman recommandén")
+}
+
+# 3. Test de corrélation
+cor_test <- cor.test(
+  vars_quanti$taille_menage, 
+  vars_quanti$depenses_menage,
+  method = methode,
+  exact = ifelse(methode == "spearman", FALSE, NA)
+)
+
+# 4. Résultats présentés proprement
+cat("  RÉSULTATS DE LA CORRÉLATION (", toupper(methode), "): ")
+results_df <- data.frame(
+  Coefficient = round(cor_test$estimate, 3),
+  p.value = ifelse(cor_test$p.value < 0.001, "< 0.001", round(cor_test$p.value, 4))
+)
+if(methode == "pearson") {
+  results_df$IC_95 <- paste0("[", round(cor_test$conf.int[1], 3), ", ", round(cor_test$conf.int[2], 3), "]")
+}
+#print(results_df)
+
+# 5. Fonction d’interprétation automatique
+interpret_cor <- function(r, p) {
+  if(p >= 0.05) return("Aucune corrélation significative")
+  strength <- ifelse(abs(r) > 0.7, "Forte",
+                    ifelse(abs(r) > 0.3, "modérée", "faible"))
+  direction <- ifelse(r > 0, "positive", "négative")
+  paste( "Corrélation", direction,strength, "(r =", round(r, 3), ")")
+}
+cat("  INTERPRÉTATION: ")
+cat(interpret_cor(cor_test$estimate, cor_test$p.value))
+
+```
+
+Étant donné que les variables ne suivent pas une distribution normale(d'après le test de Shapiro-Wilk), le test de Spearman a été privilégié pour évaluer la relation entre la taille du ménage et les dépenses du ménage. Les résultats montrent une corrélation positive modérée (r = 0.301), statistiquement significative. Cela signifie qu’en général, les dépenses des ménages tendent à augmenter avec leur taille, bien que cette relation ne soit pas très forte. Ce résultat est cohérent avec l’idée selon laquelle les besoins croissent avec le nombre de personnes dans un ménage. Le test ne revèle pas de corrélation forte entre les dépenses et la taille des ménages donc pour la suite les deux variables seront toutes consevées.
+
+## Test de correlation entre les variables qualitatives
+
+Afin d’évaluer l’association entre variables qualitatives, le V de Cramer a été utilisé. Cet indicateur, dérivé du test du chi², permet de mesurer la force de l’association entre deux variables catégorielles, indépendamment de leurs dimensions. Nous allons visuliser ces resultats afin de choisir les variables à la fois pertinentes et moins corrélées.
+
+```{r, echo = FALSE, warning = FALSE}
+#V de Cramér (variables catégoriques)
+
+# Fonction pour calculer le V de Cramér
+cramer_v <- function(var1, var2) {
+  tbl <- table(var1, var2)
+  chi2 <- chisq.test(tbl)$statistic
+  n <- sum(tbl)
+  min_dim <- min(nrow(tbl) - 1, ncol(tbl) - 1)
+  sqrt(chi2 / (n * min_dim))
+}
+
+# Calculer V de Cramér pour toutes les paires de variables catégoriques
+cat_vars <- factor_vars2 <- c("age_chef",  "niveau_confort","cat_socio_prof", "qualite_logement", "region_residence", "statut_matrimonial", "statut_occupation")
+cramer_matrix <- matrix(NA, nrow = length(cat_vars), ncol = length(cat_vars), 
+                        dimnames = list(cat_vars, cat_vars))
+
+#Construction de la matrice
+for (i in 1:length(cat_vars)) {
+  for (j in 1:length(cat_vars)) {
+    if (i != j) {
+      cramer_matrix[i, j] <- cramer_v(data_subset[[cat_vars[i]]], data_subset[[cat_vars[j]]])
+    }
+  }
+}
+
+# Visualisation
+corrplot(cramer_matrix, method = "color", type = "upper", order = "hclust", 
+         addCoef.col = "black", tl.col = "black", tl.srt = 45, 
+         diag = FALSE)
+
+title(main = "V de Cramér", cex.main = 1.5, font.main = 2)
+
+```
+
+Les résultats révèlent des liens généralement faibles à modérés, aucun coefficient ne dépassant 0.40. Les relations les plus notables concernent age_chef et niveau_confort (V = 0.37), ainsi que statut_occupation (V = 0.27), mais ces niveaux restent en deçà des seuils critiques de redondance. La variable score_socioeco, dérivée d'une ACP, est par construction indépendante. De plus, region_residence montre peu d’association avec les autres variables. Ainsi, les variables age_chef, score_socioeco, niveau_confort, qualite_logement, region_residence et statut_occupation peuvent être intégrées dans une régression logistique multinomiale sans risque notable de colinéarité, en couvrant des dimensions complémentaires du profil des ménages.
+
+# Regression logistique
+
+Dans le but d’expliquer les déterminants du type de logement des ménages, une régression logistique multinomiale a été estimée. La variable dépendante type_logement est catégorielle à plus de deux modalités, justifiant l’usage de ce modèle. Les variables explicatives incluent des caractéristiques démographiques (taille_menage, age_chef), économiques (score_socioeco, depenses_menage), résidentielles (region_residence, statut_occupation), ainsi qu’un indicateur de confort (niveau_confort) et de qualité de l’habitat (qualite_logement). Par ailleurs, la variable continue depenses_menage a été log-transformée afin de réduire l’asymétrie de sa distribution et améliorer l'ajustement du modèle.
+
+```{r, results = 'hide', warning = FALSE}
+Base_finale = DataBase
+
+# Application du logarithme
+Base_finale$depenses_menage= log(Base_finale$depenses_menage + 1)
+
+# Regression
+model_3 <- multinom(type_logement ~ taille_menage + age_chef + score_socioeco + niveau_confort + qualite_logement + region_residence + depenses_menage + statut_occupation,
+                      data = Base_finale)
+summary(model_3)
+```
+
+**Interprétation des résultats:** Le modèle logit multinomial montre que le type de logement est influencé principalement par le score socioéconomique, la qualité du logement, le statut d’occupation, ainsi que la région de résidence. Certaines modalités de ces variables présentent des effets marqués sur les probabilités d’occuper un type de logement particulier. L’ajustement du modèle est globalement satisfaisant (AIC = 4658,2), et les résultats confirment l’importance des facteurs sociaux et territoriaux dans le ciblage des logements à proposer aux ménages.
+
+# Diagnostic et validation du modèle
+
+Afin de garantir la robustesse et la fiabilité du modèle multinomial estimé, il est essentiel de procéder à une série de validations statistiques. Ces étapes permettent de s’assurer que le modèle est correctement spécifié, qu’il fournit des prédictions cohérentes et qu’il respecte les hypothèses de base.
+
+## Test du rapport de vraisemblance (Likelihood Ratio Test - LRT)
+
+Le test du rapport de vraisemblance (Likelihood Ratio Test – LRT) permet d’évaluer la performance globale du modèle en comparant le modèle complet (incluant les variables explicatives) à un modèle nul (ne contenant que l’intercept). L’objectif est de tester si les variables explicatives introduites dans le modèle apportent une amélioration significative de l’ajustement par rapport à un modèle sans information. Plus précisément, il s’agit de tester l’hypothèse nulle suivante :
+
+$$
+H_0 : \text{Tous les coefficients des variables explicatives sont nuls}
+$$
+
+Si la statistique du LRT est significative (p-value \< 0.05), on peut conclure que le modèle complet est globalement meilleur que le modèle nul, ce qui justifie la présence des variables explicatives.
+
+```{r, results = 'hide', echo = FALSE, message = FALSE, warning = FALSE}
+#Modèle nul
+model_null <- multinom(type_logement ~ 1, data = Base_finale, trace = FALSE)
+# Log-vraisemblance des modèles
+ll_full <- logLik(model_3)
+ll_null <- logLik(model_null)
+
+# Déviances
+dev_full <- -2 * as.numeric(ll_full)
+dev_null <- -2 * as.numeric(ll_null)
+
+# Statistique du test LRT
+LRT_stat <- dev_null - dev_full
+
+# Degrés de liberté
+df_diff <- attr(ll_full, "df") - attr(ll_null, "df")
+
+# p-value
+p_value <- pchisq(LRT_stat, df = df_diff, lower.tail = FALSE)
+
+# Affichage
+cat("Test global du modèle multinomial model_3: ")
+cat("Statistique du test (LRT) =", round(LRT_stat, 3))
+cat("Degrés de liberté =", df_diff)
+cat("p-value =", signif(p_value, 4))
+```
+
+Après le test, on obtient les résultats suivants :
+
+-   **Deviance résiduelle du modèle nul** : 7416.191
+-   **Deviance résiduelle du modèle complet** : 4502.224
+-   **Différence de déviance (statistique LRT)** : 2913.966
+-   **Degrés de liberté** : 75
+-   **p-value** : \< 0.0001
+
+**Interprétation** :  La statistique G² est très élevée et la p-value est pratiquement nulle, ce qui indique un rejet clair de l’hypothèse nulle. Autrement dit, les variables explicatives introduites dans le modèle améliorent **significativement** l’ajustement par rapport au modèle nul. Le modèle `model_3` présente donc une **validité globale satisfaisante** pour expliquer les différences observées dans le type de logement.
+
+## Pseudo R² de McFadden
+
+Le pseudo R² de McFadden est une mesure d’ajustement global utilisée pour les modèles de régression logistique, notamment multinomiaux. Contrairement au R² classique de la régression linéaire, il mesure la performance relative du modèle complet par rapport à un modèle nul (sans prédicteurs).
+
+La formule est la suivante :
+
+$$
+R^2_{\text{McFadden}} = 1 - \frac{\log L_{\text{modèle}}}{\log L_{\text{modèle nul}}}
+$$
+
+Des valeurs proches de 0 indiquent un mauvais ajustement. En pratique, un R² de McFadden compris entre 0.2 et 0.4 est généralement considéré comme acceptable.
+
+Résultats :
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+# Affichage du pseudo R²
+pR2(model_3)
+```
+
+**Interprétation :** Le pseudo R² de McFadden obtenu (≈ 0.393) indique un bon niveau d’ajustement global du modèle multinomial model_3. Cela confirme que les variables explicatives apportent une contribution substantielle à la prédiction du type de logement. Ce résultat est cohérent avec les conclusions du test du rapport de vraisemblance.
+
+
+## Validation croisée (Cross-validation)
+
+La validation croisée est une méthode utilisée pour évaluer la **capacité prédictive** d’un modèle statistique sur des données nouvelles, non utilisées lors de l’estimation. Elle permet de tester la **robustesse** et la **généralisation** du modèle, en réduisant les risques de surapprentissage (overfitting). Dans cette étude, la validation croisée permet de vérifier si le modèle multinomial `model_3` conserve un bon pouvoir prédictif en dehors de l’échantillon utilisé pour son estimation.
+
+Résultats:
+
+```{r, results = 'hide', echo = FALSE, message = FALSE, warning = FALSE}
+
+set.seed(123)  # Pour reproductibilité
+
+# Nombre de folds
+k <- 5
+
+# Création des folds (stratifiés sur la variable cible)
+folds <- createFolds(Base_finale$type_logement, k = k, list = TRUE, returnTrain = FALSE)
+
+accuracies <- numeric(k)
+
+for(i in seq_along(folds)) {
+  test_idx <- folds[[i]]
+  
+  train_data <- Base_finale[-test_idx, ]
+  test_data <- Base_finale[test_idx, ]
+  
+  # Entraînement du modèle multinomial sur train_data
+  model_cv <- multinom(type_logement ~ taille_menage + age_chef + score_socioeco +
+                       niveau_confort + qualite_logement + region_residence +
+                       depenses_menage + statut_occupation,
+                       data = train_data, trace = FALSE)
+  
+  # Prédiction sur test_data
+  preds <- predict(model_cv, newdata = test_data)
+  
+  # Calcul de l'accuracy (taux de bonnes prédictions)
+  acc <- mean(preds == test_data$type_logement)
+  
+  accuracies[i] <- acc
+  cat("Fold", i, "- Accuracy:", round(acc, 4))
+}
+
+cat("Accuracy moyenne sur", k, "folds :", round(mean(accuracies), 4))
+
+```
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+# Résultats des accuracies par fold
+fold_results <- data.frame(
+  Fold = paste0("Fold ", 1:4),
+  Accuracy = c(0.6551, 0.6632, 0.6957, 0.6875)
+)
+
+# Calcul de la moyenne
+mean_accuracy <- mean(fold_results$Accuracy)
+
+# Ajouter la moyenne dans une nouvelle ligne
+fold_results <- rbind(fold_results, data.frame(Fold = "Moyenne :", Accuracy = mean_accuracy))
+
+# Affichage avec kable
+knitr::kable(fold_results, digits = 4, caption = "Accuracies par fold et accuracy moyenne (validation croisée 5 folds)")
+
+```
+
+**Interprétation :** Les résultats montrent une performance stable du modèle à travers les différentes partitions du jeu de données. L’accuracy moyenne d’environ 67.3 % indique que le modèle parvient à prédire correctement le type de logement dans plus de deux tiers des cas sur des données non utilisées lors de l’entraînement.
+
+## Test de significativité de Wald
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+# Résumé du modèle
+summary_model <- summary(model_3)
+
+# Coefficients estimés
+coefs <- summary_model$coefficients
+
+# Erreurs standard
+ses <- summary_model$standard.errors
+
+# Statistiques z
+z_values <- coefs / ses
+
+# p-values bilatérales (test de Wald)
+p_values <- 2 * (1 - pnorm(abs(z_values)))
+
+# Organiser dans un data.frame lisible
+result <- data.frame(
+  Variable = rep(rownames(coefs), times = ncol(coefs)),
+  Modalite = rep(colnames(coefs), each = nrow(coefs)),
+  Estimate = as.vector(coefs),
+  Std_Error = as.vector(ses),
+  z_value = as.vector(z_values),
+  p_value = as.vector(p_values)
+) %>%
+  arrange(Modalite, Variable)
+
+# Affichage avec knitr::kable
+knitr::kable(head(result, 10), digits = 4, caption = "Tests de significativité des coefficients du modèle multinomial (test de Wald) - 10 premières lignes")
+```
+
+**Interpretation:** Le modèle multinomial révèle que plusieurs facteurs démographiques, socioéconomiques et liés au logement influencent significativement le choix du type de logement par rapport à la catégorie de référence. L’âge du chef de ménage, les dépenses, le niveau de confort et la qualité du logement jouent un rôle important, tout comme la région de résidence et le statut d’occupation. Par exemple, l’âge diminue la probabilité de choisir un célibatérium, tandis que des dépenses plus élevées réduisent la probabilité de certains logements. Le score socioéconomique montre une hiérarchie claire dans les choix, et la taille du ménage favorise certains types de logement tout en limitant d’autres. Ces résultats confirment que les caractéristiques individuelles et contextuelles sont déterminantes pour expliquer la diversité des types de logement choisis.
+
+## Multicolinéarité
+
+La multicolinéarité survient lorsque plusieurs variables explicatives d’un modèle de régression sont fortement corrélées, ce qui complique l’estimation précise des coefficients, augmente les erreurs standard et diminue la fiabilité des tests statistiques. Dans un modèle multinomial, elle peut biaiser l’interprétation des effets individuels et déstabiliser les coefficients estimés. Pour la détecter, on utilise notamment le facteur d’inflation de la variance (VIF), où une valeur élevée (au-delà de 5 ou 10) indique un risque de multicolinéarité problématique. L’analyse de cette multicolinéarité est essentielle pour assurer la robustesse et la fiabilité du modèle.
+
+```{r, results = 'hide', echo = FALSE, message = FALSE, warning = FALSE}
+# Modèle auxiliaire pour le calcul du VIF 
+mod_lm <- lm(taille_menage ~ age_chef + score_socioeco + niveau_confort + qualite_logement + region_residence + depenses_menage + statut_occupation,
+             data = Base_finale)
+
+# Calcul des VIF
+vif_values <- vif(mod_lm)
+print(vif_values)
+
+```
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+# Affichage avec kable
+gvif_table <- data.frame(
+  Variable = c("age_chef", "score_socioeco", "niveau_confort", "qualite_logement", 
+               "region_residence", "depenses_menage", "statut_occupation"),
+  GVIF = c(1.249116, 1.621653, 2.117231, 1.471597, 1.595132, 1.844798, 1.994229),
+  Df = c(2, 1, 2, 3, 12, 1, 3),
+  GVIF_corrige = c(1.057184, 1.273441, 1.206263, 1.066510, 1.019647, 1.358234, 1.121922)
+)
+
+kable(gvif_table, digits = 4, caption = "GVIF et GVIF corrigé pour les variables explicatives")
+
+```
+
+**Interprétation :** Le tableau présente les valeurs de GVIF (*Generalized Variance Inflation Factor*) ainsi que leur correction tenant compte des degrés de liberté associés à chaque variable explicative. Les valeurs corrigées du GVIF sont toutes inférieures à 2, ce qui indique une absence de multicolinéarité préoccupante entre les variables. Cela signifie que les variables incluses dans le modèle sont suffisamment indépendantes, ce qui garantit la stabilité des coefficients estimés et la fiabilité des tests statistiques.
+
+## Analyse des résidus
+
+L’analyse des résidus permet d’évaluer la qualité de l’ajustement du modèle multinomial.
+
+-   Les **résidus de déviance** mesurent la différence entre les observations réelles et les valeurs prédites, en tenant compte de la fonction de vraisemblance du modèle.
+-   Les **résidus de Pearson** évaluent les écarts standardisés entre les observations et les prédictions, en se basant sur la variance des données. L’étude de ces résidus aide à détecter d’éventuelles observations aberrantes, des problèmes d’ajustement, ou des spécifications manquantes dans le modèle.
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+# Récupération des résidus
+resid_dev <- residuals(model_3, type = "deviance")
+resid_pearson <- residuals(model_3, type = "pearson")
+
+resid_df <- data.frame(resid_dev)
+colnames(resid_df) <- paste0("Dev_", colnames(resid_df))
+resid_df <- cbind(resid_df, resid_pearson)
+colnames(resid_df)[(ncol(resid_df)-ncol(resid_pearson)+1):ncol(resid_df)] <- paste0("Pearson_", colnames(resid_pearson))
+
+# Passage en format long (long format)
+resid_long <- resid_df %>%
+  mutate(id = 1:n()) %>%
+  pivot_longer(cols = -id, names_to = c("Type", "Categorie"), names_sep = "_", values_to = "Residus")
+
+# Histogramme des résidus
+ggplot(resid_long, aes(x = Residus, fill = Type)) +
+  geom_histogram(bins = 30, alpha = 0.6, position = "identity") +
+  facet_wrap(~Categorie + Type, scales = "free") +
+  labs(title = "Distribution des résidus de déviance et de Pearson par catégorie",
+       x = "Valeur du résidu", y = "Effectif") +
+  theme_minimal()
+```
+
+Les histogrammes des résidus de déviance et de Pearson montrent un bon ajustement global du modèle multinomial, avec des résidus centrés autour de zéro et relativement symétriques, renforçant la validité des estimations. Cependant, une plus grande dispersion des résidus est notée pour les catégories « Maison individuelle en dure » et « Logement traditionnel », indiquant une variabilité accrue et une précision moindre. En revanche, les catégories « Célibatérium » et « Logement moderne » présentent une forte concentration des résidus près de zéro, traduisant une meilleure performance prédictive. Ainsi, bien que le modèle soit performant pour certaines catégories, il pourrait être amélioré pour d’autres en enrichissant les variables explicatives ou en explorant d’autres approches de modélisation.
+
+# Recommandations opérationnelles pour ImmoFaso S.A.
+
+Sur la base de l’analyse économétrique du modèle multinomial appliqué aux données de l’EHCVM (2018), plusieurs recommandations concrètes peuvent être formulées à l’intention de l’entreprise **ImmoFaso S.A.**, en vue d’adapter son offre immobilière aux besoins différenciés des ménages urbains au Burkina Faso.
+
+D’abord, la **segmentation du marché** selon les caractéristiques des ménages s’impose. Les ménages à **haut score socioéconomique** (éducation et emploi stables) privilégient les logements modernes. Il est donc conseillé à ImmoFaso d’investir dans des appartements bien équipés, situés en zone urbaine, avec des services de qualité (eau, électricité, sécurité). À l’inverse, les ménages à **faibles revenus** optent davantage pour les logements traditionnels ou les célibatériums. Pour répondre à cette demande, l’entreprise peut développer une offre de logements à bas coût dans les zones périurbaines, utilisant des matériaux améliorés (ex. : briques stabilisées), et proposer des formules locatives souples. Les **ménages de grande taille** devraient quant à eux être ciblés par des logements spacieux, notamment des maisons en dur à plusieurs pièces avec cour intérieure.
+
+Ensuite, l’**analyse régionale** met en lumière des spécificités spatiales. Par exemple, la **région du Nord** montre une forte demande pour les célibatériums, tandis que la **région du Sahel** est davantage associée aux logements traditionnels. ImmoFaso peut donc adapter son offre localement : studios pour jeunes travailleurs dans la région du Nord, maisons traditionnelles améliorées en région du Sahel. Cette orientation géographique permettrait d’optimiser les investissements immobiliers en fonction des préférences régionales.
+
+Par ailleurs, les **niveaux de confort** et la **qualité perçue du logement** influencent fortement les choix résidentiels. Il convient donc d’intégrer des équipements modernes (toilettes intérieures, accès à l’électricité, carrelage) dans les projets destinés aux ménages à confort moyen ou élevé, et d’améliorer la durabilité des logements traditionnels sans augmenter drastiquement les coûts pour les ménages modestes. Des solutions intermédiaires peuvent inclure l’utilisation de toits en tôle de qualité et l’accès collectif à l’eau.
+
+Concernant le **statut d’occupation**, des stratégies différenciées doivent être mises en œuvre. Les célibatériums peuvent être proposés avec des taux de location flexibles pour les travailleurs mobiles, tandis que l’accès à la propriété pour les ménages modestes pourrait être facilité via des crédits adaptés ou des programmes de construction par étapes, où les ménages bâtissent leur logement progressivement.
+
+D’un point de vue analytique, bien que le modèle présente une performance correcte (pseudo R² de McFadden = 0.39 et une précision moyenne de 67.3 % en validation croisée), certaines catégories comme les « maisons en dur » et « logements traditionnels » sont moins bien prédites. Il est donc recommandé de **collecter des données complémentaires** (qualitatives et quantitatives) sur les préférences des ménages, les freins économiques ou culturels à l’accession au logement, et les infrastructures locales. ImmoFaso pourrait également tester des modèles alternatifs (forêts aléatoires, modèles avec interactions) pour affiner la compréhension des déterminants du choix de logement.
+
+Enfin, les **diagnostics du modèle** confirment la robustesse de l’analyse : l’absence de multicolinéarité (GVIF \< 2) assure la fiabilité des estimations, et la distribution des résidus suggère que le modèle est globalement bien ajusté. Des efforts peuvent cependant être faits pour réduire la variabilité observée dans certaines modalités, notamment via une **mise à jour des données** (postérieures à 2018), afin de tenir compte des évolutions récentes du contexte urbain et des modes d’habitation.
+
+En résumé, ces recommandations opérationnelles visent à permettre à **ImmoFaso S.A.** de mieux adapter son offre aux profils variés des ménages burkinabè, en combinant des stratégies d’investissement ciblées, une segmentation socioéconomique fine, et des approches innovantes en matière de logement abordable et durable.
+
+# Conclusion
+
+Cette étude, basée sur les données de l’EHCVM 2018, a analysé les facteurs déterminant le type de logement en milieu urbain au Burkina Faso à l’aide d’un modèle logit multinomial pondéré. Les résultats révèlent que des variables telles que le score socioéconomique, la qualité du logement, le statut d’occupation, la taille du ménage, les dépenses et la région influencent significativement les choix résidentiels. Le modèle présente un bon ajustement (pseudo R² = 0,393 ; précision = 67,3 %), malgré quelques limites sur certaines catégories. Sur cette base, des recommandations ciblées sont formulées pour ImmoFaso S.A., notamment la segmentation de l’offre, le développement de logements adaptés aux différents profils et une stratégie d’investissement géographique différenciée. Ce travail constitue un appui stratégique pour une politique immobilière inclusive, adaptée à la diversité du marché urbain burkinabè.

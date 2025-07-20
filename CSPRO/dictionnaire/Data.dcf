@@ -1,0 +1,464 @@
+﻿[Dictionary]
+Version=CSPro 7.7
+Label=Data
+Name=DATA_DICT
+RecordTypeStart=1
+RecordTypeLen=1
+Positions=Relative
+ZeroFill=No
+DecimalChar=Yes
+SecurityOptions=027454C06A3F152B324071ABFFD2C13CCF612C6725C7D2619D0E40FF339BEFB5
+
+[Level]
+Label=Data Level
+Name=DATA_LEVEL
+
+[IdItems]
+
+[Item]
+Label=Numéro du ménage
+Name=S0Q1
+Start=2
+Len=2
+DataType=Numeric
+ZeroFill=Yes
+
+[Item]
+Label=Strate
+Name=S0Q2
+Start=4
+Len=2
+DataType=Numeric
+ZeroFill=Yes
+
+[Item]
+Label=ZD
+Name=S0Q3
+Start=6
+Len=4
+DataType=Alpha
+
+[Record]
+Label=IDENTIFICATION
+Name=ID
+RecordTypeValue='2'
+RecordLen=35
+
+[Item]
+Label=Date d'interview
+Name=S0Q4
+Start=10
+Len=10
+DataType=Alpha
+
+[Item]
+Label=Heure de début
+Name=S0Q5
+Start=20
+Len=8
+DataType=Alpha
+
+[Item]
+Label=Heure de fin
+Name=S0Q6
+Start=28
+Len=8
+DataType=Alpha
+
+[Record]
+Label=CARACTERISTIQUES DES MENAGES
+Name=S1Q0
+RecordTypeValue='3'
+RecordLen=86
+
+[Item]
+Label=Residence du Ménage
+Name=S1Q1
+Start=10
+Len=1
+DataType=Numeric
+
+[ValueSet]
+Label=Residence du Ménage
+Name=S1Q1_VS1
+Value=1;Rural
+Value=2;Urbain
+
+[Item]
+Label=Nom et prenom du CM
+Name=S1Q2
+Start=11
+Len=25
+DataType=Alpha
+
+[Item]
+Label=Telephone du CM
+Name=S1Q3
+Start=36
+Len=8
+DataType=Numeric
+
+[Item]
+Label=Type de logement
+Name=S1Q4
+Start=44
+Len=1
+DataType=Numeric
+
+[ValueSet]
+Label=Type de logement
+Name=S1Q4_VS1
+Value=1;Villa
+Value=2;Appartement
+Value=3;Cour commune
+Value=4;Maison individuelle simple
+Value=5;Autre
+
+[Item]
+Label=Autre type de logement
+Name=S1Q4_A
+Start=45
+Len=20
+DataType=Alpha
+
+[Item]
+Label=Statut d'occupation
+Name=S1Q5
+Start=65
+Len=1
+DataType=Numeric
+
+[ValueSet]
+Label=Statut d'occupation
+Name=S1Q5_VS1
+Value=1;Propriétaire
+Value=2;Locataire
+Value=3;Logé par un tiers (ami, parent, employeur, etc)
+Value=4;Autre
+
+[Item]
+Label=Autre statut d'occupation
+Name=S1Q5_A
+Start=66
+Len=20
+DataType=Alpha
+
+[Item]
+Label=Flaques d'eaux abords du logement
+Name=S1Q6
+Start=86
+Len=1
+DataType=Numeric
+
+[ValueSet]
+Label=Flaques d'eaux abords du logement
+Name=S1Q6_VS1
+Value=1;Oui
+Value=2;Non
+
+[Record]
+Label=COMPOSITION DU MENAGE
+Name=S2Q0
+RecordTypeValue='4'
+MaxRecords=20
+RecordLen=115
+
+[Item]
+Label=Numéro de l’individu
+Name=S2Q1
+Start=10
+Len=2
+DataType=Numeric
+
+[Item]
+Label=Nom et prénom du membre
+Name=S2Q2
+Start=12
+Len=25
+DataType=Alpha
+
+[Item]
+Label=Lien avec le CM
+Name=S2Q2L
+Start=37
+Len=2
+DataType=Numeric
+
+[ValueSet]
+Label=Lien avec le CM
+Name=S2Q2L_VS1
+Value=1;Chef de ménage
+Value=2;Mari ou femme
+Value=3;Fils ou fille
+Value=4;Gendre ou belle-fille
+Value=5;Petit-fils ou petite fille
+Value=6;Père ou mère
+Value=7;Oncle/Tante
+Value=8;Frère ou sœur
+Value=9;Co-épouse
+Value=10;Autres parents
+
+[Item]
+Label=Sexe
+Name=S2Q3
+Start=39
+Len=1
+DataType=Numeric
+
+[ValueSet]
+Label=Sexe
+Name=S2Q3_VS1
+Value=1; Féminin
+Value=2;Masculin
+
+[Item]
+Label=Age
+Name=S2Q4
+Start=40
+Len=2
+DataType=Numeric
+
+[Item]
+Label=Situation matrimoniale
+Name=S2Q5
+Start=42
+Len=1
+DataType=Numeric
+
+[ValueSet]
+Label=Situation matrimoniale
+Name=S2Q5_VS1
+Value=1; Célibataire
+Value=2;  Mariée
+Value=3;Divorcée
+Value=4;Veuve
+Value=5;Autre
+
+[Item]
+Label=Autre situation à préciser
+Name=S2Q5_A
+Start=43
+Len=20
+DataType=Alpha
+
+[Item]
+Label=Religion
+Name=S2Q6
+Start=63
+Len=1
+DataType=Numeric
+
+[ValueSet]
+Label=Religion
+Name=S2Q6_VS1
+Value=1; Islam
+Value=2; Catholicisme
+Value=3; Protestantisme
+Value=4; Religion africaine
+Value=5;Autre
+
+[Item]
+Label=Autre religion à préciser
+Name=S2Q6_A
+Start=64
+Len=15
+DataType=Alpha
+
+[Item]
+Label=Ethnie
+Name=S2Q7
+Start=79
+Len=1
+DataType=Numeric
+
+[ValueSet]
+Label=Ethnie
+Name=S2Q7_VS1
+Value=1; Moaaga
+Value=2;Peulh
+Value=3; Samo
+Value=4;Gourmantché
+Value=5;Bwaba
+Value=6; Bissa
+Value=7; Sénoufo
+Value=8;Gourounsi
+Value=9;Autre
+
+[Item]
+Label=Autre ethnie à préciser
+Name=S2Q7_A
+Start=80
+Len=15
+DataType=Alpha
+
+[Item]
+Label=Le niveau d'instruction de l'individu
+Name=S2Q8
+Start=95
+Len=1
+DataType=Numeric
+
+[ValueSet]
+Label=Le niveau d'instruction de l'individu
+Name=S2Q8_VS1
+Value=1; Aucun
+Value=2; Primaire
+Value=3; Secondaire
+Value=4; Supérieur
+Value=5;Autre
+
+[Item]
+Label=Autre niveau à préciser
+Name=S2Q8_A
+Start=96
+Len=20
+DataType=Alpha
+
+[Record]
+Label=CAS DE DENGUE
+Name=S3Q0
+RecordTypeValue='5'
+MaxRecords=20
+RecordLen=19
+
+[Item]
+Label=Numero
+Name=S3Q1
+Start=10
+Len=2
+DataType=Numeric
+ZeroFill=Yes
+
+[Item]
+Label=Consentement pour le test
+Name=S3Q2
+Start=12
+Len=1
+DataType=Numeric
+
+[ValueSet]
+Label=Consentement pour le test
+Name=S3Q2_VS1
+Value=1;Oui
+Value=2;Non
+
+[Item]
+Label=Le résultat du test
+Name=S3Q3
+Start=13
+Len=1
+DataType=Numeric
+
+[ValueSet]
+Label=Le résultat du test
+Name=S3Q3_VS1
+Value=1; Positif
+Value=2;Négatif
+Value=3;Pas encore disponible
+
+[Item]
+Label=La derniere manifestation de dengue
+Name=S3Q4
+Start=14
+Len=1
+DataType=Numeric
+
+[ValueSet]
+Label=La derniere manifestation de dengue
+Name=S3Q4_VS1
+Value=1;Oui
+Value=2;Non
+
+[Item]
+Label=Soins à l'hopital
+Name=S3Q5
+Start=15
+Len=1
+DataType=Numeric
+
+[ValueSet]
+Label=Soins à l'hopital
+Name=S3Q5_VS1
+Value=1;Oui
+Value=2;Non
+
+[Item]
+Label=Traitements traditionnels
+Name=S3Q6
+Start=16
+Len=1
+DataType=Numeric
+
+[ValueSet]
+Label=Traitements traditionnels
+Name=S3Q6_VS1
+Value=1;Oui
+Value=2;Non
+
+[Item]
+Label=La durée de convalescence
+Name=S3Q7
+Start=17
+Len=2
+DataType=Numeric
+
+[Item]
+Label=Usage de moustiquaire
+Name=S3Q8
+Start=19
+Len=1
+DataType=Numeric
+
+[ValueSet]
+Label=Usage de moustiquaire
+Name=S3Q8_VS1
+Value=1;Oui
+Value=2;Non
+
+[Record]
+Label=ENREGISTREMENT DES CAS DE DECES LIES A LA DINGUE
+Name=S4Q0
+RecordTypeValue='6'
+MaxRecords=10
+RecordLen=14
+
+[Item]
+Label=Numéro du cas
+Name=S4Q1
+Start=10
+Len=1
+DataType=Numeric
+ZeroFill=Yes
+
+[Item]
+Label=Traitement à l'hopital
+Name=S4Q2
+Start=11
+Len=1
+DataType=Numeric
+
+[ValueSet]
+Label=Traitement à l'hopital
+Name=S4Q2_VS1
+Value=1;Oui
+Value=2;Non
+
+[Item]
+Label=Traitement traditionnel
+Name=S4Q3
+Start=12
+Len=1
+DataType=Numeric
+
+[ValueSet]
+Label=Traitement traditionnel
+Name=S4Q3_VS21
+Value=1;Oui
+Value=2;Non
+
+[Item]
+Label=L'age à son décès
+Name=S4Q4
+Start=13
+Len=2
+DataType=Numeric

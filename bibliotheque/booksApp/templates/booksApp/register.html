@@ -1,0 +1,91 @@
+{% extends 'booksApp/base_login.html' %}
+{% load static %}
+
+{% block title %}Inscription - Bibliothèque{% endblock %}
+
+{% block content %}
+<div class="hero-section" style="background-image: url('{% static 'booksApp/images/connecter_image.jpg' %}')">
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-center">Inscription</h2>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <div class="form-text">{{ field.help_text }}</div>
+                        {% endif %}
+                        {% if field.errors %}
+                        <div class="alert alert-danger">
+                            {{ field.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">S'inscrire</button>
+                    </div>
+                </form>
+                <div class="text-center mt-3">
+                    <p>Déjà inscrit ? <a href="{% url 'login' %}" class="text-decoration-none">Se connecter</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<style>
+    .hero-section {
+        height: 100vh;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        position: relative;
+    }
+    .card {
+        max-width: 400px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: hwb(193 93% 4%);
+        border-radius: 80px;
+        box-shadow: 0 8px 16px #1818ee1a;
+    }
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        text-decoration-color: blue;
+    }
+    
+    .btn {
+        padding: 15px 30px;
+        font-size: 1.2rem;
+        transition: transform 0.5s ease;
+    }
+    
+    .btn:hover {
+        transform: translateY(-4px);
+    }
+</style>
+{% endblock %}

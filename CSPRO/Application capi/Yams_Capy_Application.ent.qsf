@@ -1,0 +1,229 @@
+﻿---
+fileType: Question Text
+version: CSPro 7.7
+languages:
+  - name: EN
+    label: English
+styles:
+  - name: Normal
+    className: normal
+    css: |
+      font-family: Arial;font-size: 16px;
+  - name: Question
+    className: instruction
+    css: |
+      font-family: Times New Roman;font-weight: bold;font-style: italic;font-size: 24px;color: #000080;
+  - name: Heading 1
+    className: heading1
+    css: |
+      font-family: Arial;font-size: 36px;
+  - name: Heading 2
+    className: heading2
+    css: |
+      font-family: Arial;font-size: 24px;
+  - name: Heading 3
+    className: heading3
+    css: |
+      font-family: Arial;font-size: 18px;
+  - name: consigne
+    className: consigne
+    css: |
+      font-family: Courier New;font-style: italic;font-size: 16px;color: #ff00ff;
+questions:
+  - name: DATA_DICT.S0Q1
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="instruction" style="font-size: 24px;">Quel est le numéro du ménage ?</span></p><p><span class="consigne" style="font-size: 16px;">Saisir le numéro du ménage</span><span class="instruction"><font color="#ffffff">﻿</font></span></p><p><p></p></p>
+  - name: DATA_DICT.S0Q2
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="instruction">Quel State appartient ce ménage?</span></p><p><span class="consigne">Renseignez le State du ménage</span></p>
+  - name: DATA_DICT.S0Q3
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="instruction">Quelle Zone de denombrement appartient ce ménage?</span></p><p><span class="consigne">Renseignez le ZD du ménage</span></p><p></p>
+  - name: DATA_DICT.S0Q4
+    conditions:
+      - questionText:
+          EN: |
+            <span class="consigne">Date d'interview</span><p></p>
+  - name: DATA_DICT.S0Q5
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="consigne">﻿</span><span class="consigne">date de début de l'interview</span></p><p></p><p></p>
+  - name: DATA_DICT.S0Q6
+    conditions:
+      - questionText:
+          EN: |
+            <span class="consigne">﻿</span><span class="consigne">date de fin de l'interview</span><p></p>
+  - name: DATA_DICT.S1Q1
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="normal instruction" style="font-size: 24px;">﻿</span><span style="font-family: &quot;Times New Roman&quot;, serif; font-size: 24px;" class="instruction">Quel est le milieu de résidence du ménage&nbsp;?</span><span style="font-size: 24px;">﻿</span><span class="heading1" style="font-size: 24px;">﻿</span><span class="instruction" style="font-size: 24px;">﻿</span></p><p></p><p></p>
+  - name: DATA_DICT.S1Q2
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="instruction">Quel est le nom et prénom du Chef de ménage?</span></p><p><font color="#000080" face="Times New Roman"><span style="font-size: 16px;" class="consigne"><b><i>Renseignez le nom et le prénom du CM</i></b></span></font><span style="font-size: 16px;">﻿</span><p></p></p>
+  - name: DATA_DICT.S1Q3
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="instruction">Quel est le numéro de telephone du Chef de ménage?</span></p><p><font color="#000080" face="Times New Roman"><span class="consigne"><b>Saisir le numéro de telephone du CM</b></span></font></p><p></p>
+  - name: DATA_DICT.S1Q4
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="instruction">Quel type de logement disposez-vous?</span></p><p><span class="consigne">Choisir le type de logement correspondant</span></p>
+  - name: DATA_DICT.S1Q4_A
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="instruction">Pouvez vous préciser le type de logement qu'avez vous?</span></p><p><span class="consigne">Saisir le type de logement</span></p>
+  - name: DATA_DICT.S1Q5
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="instruction">Quel est le statut d'occupation de ce votre maison?</span></p><p><p><span class="consigne">Choisir le statut d'occupation correspondant</span></p></p>
+  - name: DATA_DICT.S1Q5_A
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="instruction">Pouvez vous préciser le statut d'occupation de votre maison?</span></p><p><span class="consigne">Saisir le statut d'occupation</span></p><p></p>
+  - name: DATA_DICT.S1Q6
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="instruction">Y'a t-il des flagues d'eaux abords de votre logement?</span></p><p><span class="normal consigne">﻿</span><span class="instruction"><span class="normal consigne">Choisir entre oui et non</span><br></span></p><p><p></p></p>
+  - name: DATA_DICT.S2Q1
+    conditions:
+      - questionText:
+          EN: |
+            <span class="consigne normal">﻿</span><span class="instruction"><span class="consigne" style="font-family: Arial;">Saisir le numéro de l'individu</span></span><p></p>
+  - name: DATA_DICT.S2Q2
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="instruction">Quel est le nom et prénom du membre&nbsp;</span><span class="consigne normal instruction" style="font-family: Arial; font-weight: 700;"><span style="font-size: 18px;">n°</span>&nbsp;</span><span style="font-size: 24px; font-style: italic; font-weight: 700; color: rgb(255, 0, 255); font-family: &quot;Courier New&quot;;" class="normal instruction">~~ S2Q1~~</span><span style="color: rgb(0, 0, 128); font-family: &quot;Times New Roman&quot;; font-size: 24px; font-style: italic; font-weight: bold;" class="normal instruction">?</span></p><p><span class="consigne normal">﻿</span><span class="instruction"><span style="font-family: Arial; font-size: 16px;" class="consigne">Saisir le nom et le prenom du membre n°&nbsp;</span><span style="color: rgb(255, 0, 255); font-family: &quot;Courier New&quot;;">~~ S2Q1~~</span><br></span></p><p></p><p></p><p></p>
+  - name: DATA_DICT.S2Q2L
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="instruction">Quel lien existe entre&nbsp;</span><span style="font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;" class="instruction"><font color="#ff00ff">~~ S2Q2~~ <span class="instruction">et le chef du ménage?</span></font></span></p><p><span class="normal consigne">﻿Choisissez le lien qui lie&nbsp;</span><span style="color: rgb(255, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;" class="consigne">~~ S2Q2(curocc())~~&nbsp;</span><span class="consigne">au CM</span></p><p><span class="normal">﻿</span></p><p></p><p></p>
+  - name: DATA_DICT.S2Q3
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="instruction">Quel est le sexe de&nbsp;</span><span class="instruction" style="font-family: &quot;Courier New&quot;;"><font color="#0000ff">~~ S2Q2~~</font></span><span style="color: rgb(0, 0, 128); font-family: &quot;Times New Roman&quot;; font-size: 24px; font-style: italic; font-weight: bold;"><span class="instruction">&nbsp;</span>?</span></p><p></p><p><span class="consigne">Choisir le sexe de&nbsp;</span><span class="consigne" style="font-size: 24px; font-weight: 700;"><span style="color: rgb(0, 0, 255);">~~ S2Q2~~</span>&nbsp;</span></p><p></p>
+  - name: DATA_DICT.S2Q4
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="instruction">Quel est l'age de&nbsp;</span><span style="color: rgb(0, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2~~</span><span style="color: rgb(0, 0, 128); font-family: &quot;Times New Roman&quot;; font-size: 24px; font-style: italic; font-weight: bold;">?</span></p><p></p><p><span class="consigne">Saisir l'age de&nbsp;</span><span style="color: rgb(0, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2~~</span></p><p></p>
+  - name: DATA_DICT.S2Q5
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="instruction">Quelle est la situation matrimoniale de&nbsp;&nbsp;</span><span style="color: rgb(0, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2~~</span><span style="color: rgb(0, 0, 128); font-family: &quot;Times New Roman&quot;; font-size: 24px; font-style: italic; font-weight: bold;">?</span></p><p></p><p><span class="consigne">Choisir le situation qui convient</span></p><p></p>
+  - name: DATA_DICT.S2Q5_A
+    conditions:
+      - questionText:
+          EN: |
+            <span class="consigne">Précisez la situation matrimoniale de&nbsp;</span><span style="color: rgb(0, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2~~</span><p></p>
+  - name: DATA_DICT.S2Q6
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="instruction">Quelle est la réligion de&nbsp;</span><span style="color: rgb(0, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2~~</span><span style="color: rgb(0, 0, 128); font-family: &quot;Times New Roman&quot;; font-size: 24px; font-style: italic; font-weight: bold;">?</span></p><p></p><p><span class="consigne">Choisir la réligion de&nbsp;</span><span style="color: rgb(0, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2~~</span></p>
+  - name: DATA_DICT.S2Q6_A
+    conditions:
+      - questionText:
+          EN: |
+            <span class="consigne">Préciser la réligion de&nbsp;</span><span style="color: rgb(0, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2~~</span><p></p>
+  - name: DATA_DICT.S2Q7
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="instruction">Quel est l'ethnie de&nbsp;</span><span style="color: rgb(0, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2~~</span><span style="color: rgb(0, 0, 128); font-family: &quot;Times New Roman&quot;; font-size: 24px; font-style: italic; font-weight: bold;">?</span></p><p><span class="consigne">Choisir l'ethnie de&nbsp;</span><span style="color: rgb(0, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2~~</span></p><p></p><p></p><p></p>
+  - name: DATA_DICT.S2Q7_A
+    conditions:
+      - questionText:
+          EN: |
+            <span class="consigne">Préciser l'ethnie de&nbsp;</span><span style="color: rgb(0, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2~~</span><p></p>
+  - name: DATA_DICT.S2Q8
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="instruction">Quel est le niveau d'instruction de&nbsp;</span><span style="color: rgb(0, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2~~</span><span style="color: rgb(0, 0, 128); font-family: &quot;Times New Roman&quot;; font-size: 24px; font-style: italic; font-weight: bold;">?</span></p><p></p><p><span class="consigne">Choisir le niveau d'instruction de&nbsp;</span><span style="color: rgb(0, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2~~</span></p><p></p>
+  - name: DATA_DICT.S2Q8_A
+    conditions:
+      - questionText:
+          EN: |
+            <span style="color: rgb(255, 0, 255); font-family: &quot;Courier New&quot;; font-style: italic;">Préciser le niveau d'instruction de&nbsp;</span><span style="color: rgb(0, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2~~</span><p></p>
+  - name: DATA_DICT.S3Q1
+    conditions:
+      - questionText:
+          EN: |
+            <p><b><span class="heading1" style="font-size: 24px; color: rgb(128, 0, 16);">Renseignement des informations de dengue sur&nbsp;</span></b><span style="color: rgb(255, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2(curocc())~~</span></p><p><b><font color="#800010"><span class="heading1 consigne" style="font-size: 24px;"><span style="font-size: 16px;">Le numéro de</span>&nbsp;</span></font></b><span style="color: rgb(255, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2(curocc())~~&nbsp;</span><span style="font-style: italic;"><span class="heading1 instruction consigne normal"><font color="#000000">&nbsp;</font></span></span><span class="consigne" style="font-size: 14pt; font-family: &quot;Times New Roman&quot;, serif;">dans la liste des membres du ménage</span></p><p></p><p></p><p></p>
+  - name: DATA_DICT.S3Q2
+    conditions:
+      - questionText:
+          EN: |
+            <p><b><span class="heading1" style="font-size: 24px; color: rgb(128, 0, 16);">Renseignement des informations de dengue sur&nbsp;</span><span class="heading1" style="font-size: 24px;"><font color="#800010">&nbsp;</font></span></b><span style="color: rgb(255, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2(curocc())~~</span></p><p><span class="instruction"><span style="color: rgb(255, 0, 255); font-family: &quot;Courier New&quot;;">~~ S2Q2(curocc())~~</span>&nbsp;accepte-t-il (elle) faire le test de la dengue ?</span></p>
+  - name: DATA_DICT.S3Q3
+    conditions:
+      - questionText:
+          EN: |
+            <p><b><span class="heading1" style="font-size: 24px; color: rgb(128, 0, 16);">Renseignement des informations de dengue sur&nbsp;</span></b><span style="color: rgb(255, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2(curocc())~~</span></p><p><span class="instruction">Quel a été le résultat du test ?</span></p><p><font color="#000080" face="Times New Roman"><span style="font-size: 16px;" class="consigne"><b><i>Saisir le résultat du test</i></b></span></font></p><p></p><p></p>
+  - name: DATA_DICT.S3Q4
+    conditions:
+      - questionText:
+          EN: |
+            <p><b><span class="heading1" style="font-size: 24px; color: rgb(128, 0, 16);">Renseignement des informations de dengue sur&nbsp;</span></b><span style="color: rgb(255, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2(curocc())~~</span></p><p><b><span class="heading1" style="font-size: 24px; color: rgb(128, 0, 16);"><br></span></b><span style="color: rgb(0, 0, 128); font-family: &quot;Times New Roman&quot;, serif; font-size: 16pt; font-style: italic; font-weight: bold;">&nbsp;</span><span style="color: rgb(255, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2(curocc())~~&nbsp;</span><span style="color: rgb(0, 0, 128); font-family: &quot;Times New Roman&quot;, serif; font-size: 16pt; font-style: italic; font-weight: bold;">a-t-il(elle) été touché(e) par la dingue au
+            cours des 12 derniers mois ?&nbsp;</span></p><p></p><p></p>
+  - name: DATA_DICT.S3Q5
+    conditions:
+      - questionText:
+          EN: |
+            <p><b><span class="heading1" style="font-size: 24px; color: rgb(128, 0, 16);">Renseignement des informations de dengue sur&nbsp;</span></b><span style="color: rgb(255, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2(curocc())~~</span></p><p><b><span class="heading1" style="font-size: 24px; color: rgb(128, 0, 16);"><br></span></b><span style="color: rgb(255, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2(curocc())~~&nbsp;</span><span style="color: rgb(0, 0, 128); font-family: &quot;Times New Roman&quot;; font-size: 24px; font-style: italic; font-weight: bold;">a-t-il(elle) reçu des soins à l’hôpital ?</span></p><p></p><p></p>
+  - name: DATA_DICT.S3Q6
+    conditions:
+      - questionText:
+          EN: |
+            <p><b><span class="heading1" style="font-size: 24px; color: rgb(128, 0, 16);">Renseignement des informations de dengue sur&nbsp;</span></b><span style="color: rgb(255, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2(curocc())~~</span></p><p><b><span class="heading1" style="font-size: 24px; color: rgb(128, 0, 16);"><br></span></b><span style="color: rgb(255, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2(curocc())~~&nbsp;</span><span style="color: rgb(0, 0, 128); font-family: &quot;Times New Roman&quot;; font-size: 24px; font-style: italic; font-weight: bold;">a-t-il(elle) reçu des traitements traditionnels ?</span></p><p></p><p></p>
+  - name: DATA_DICT.S3Q7
+    conditions:
+      - questionText:
+          EN: |
+            <p><b><span class="heading1" style="font-size: 24px; color: rgb(128, 0, 16);">Renseignement des informations de dengue sur&nbsp;</span></b><span style="color: rgb(255, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2(curocc())~~</span></p><p><span class="instruction">La convalescence a-t-elle durée combien de jours ?</span></p><p></p><p></p>
+  - name: DATA_DICT.S3Q8
+    conditions:
+      - questionText:
+          EN: |
+            <p><b><span class="heading1" style="color: rgb(128, 0, 16); font-size: 24px;">Renseignement des informations de dengue sur&nbsp;</span></b><span style="color: rgb(255, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2(curocc())~~</span></p><p><b><span class="heading1" style="font-size: 24px;"><font color="#800010"><br></font></span></b><span style="color: rgb(255, 0, 255); font-family: &quot;Courier New&quot;; font-size: 24px; font-style: italic; font-weight: 700;">~~ S2Q2(curocc())~~&nbsp;</span><span style="color: rgb(0, 0, 128); font-family: &quot;Times New Roman&quot;; font-size: 24px; font-style: italic; font-weight: bold;">dort-il(elle) toujours sous une moustiquaire imprégnée ?</span></p><p></p><p></p>
+  - name: DATA_DICT.S4Q1
+    conditions:
+      - questionText:
+          EN: |
+            <p><span class="instruction">Quel est le numero du cas?</span></p><p><span class="normal consigne">﻿Saisir le numéro du cas</span><span class="instruction"><br></span></p><p><p></p></p>
+  - name: DATA_DICT.S4Q2
+    conditions:
+      - questionText:
+          EN: |
+            <span class="instruction">Suivait-il(elle) un traitement à l’hôpital ?</span><p></p>
+  - name: DATA_DICT.S4Q3
+    conditions:
+      - questionText:
+          EN: |
+            <span class="instruction">Suivait-il(elle) un traitement traditionnel ?</span><p></p>
+  - name: DATA_DICT.S4Q4
+    conditions:
+      - questionText:
+          EN: |
+            <span class="instruction">Quel âge avait-il(elle) à son décès ?</span><p></p>
+...

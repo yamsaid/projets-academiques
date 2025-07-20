@@ -1,0 +1,11 @@
+NOM_Prenom;Code POStal;Age;GENDER;chest_pain;Resting_blood_PRESSURE;Serum cholestoral;MAX.HEART.RATE;disease
+Verdi_Giuseppe;4100;63;Male;1;145;233;150;no
+WAGNER_Richard;37610;67;male ;4;160;non renseigne;108;yes
+Vivaldi_ANTONIO;45960;67;male;4;120;229;129;yes
+BIZET_GEORGES;25000;37; male;3;130;250;187;no
+Adjani_isabelle;6000;41;female;2;130;204;172;no
+Aznavour_CHARLES;38000;56;male;2;120;236;178;no
+LUCIANI_clara;84320;62;Female;4;140;268;160;yes
+gall_france;13290;57;female ;4;120;354;163;no
+Biolay_benjamin;5000;63;male;4;130;254;147;yes
+CABREL_Francis;77560;53;male;4;140;203;155;yes

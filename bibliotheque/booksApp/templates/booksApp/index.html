@@ -1,0 +1,62 @@
+{% extends 'booksApp/base.html' %}
+{% load static %}
+
+{% block title %}Accueil - Bibliothèque{% endblock %}
+
+{% block content %}
+<div class="hero-section" style="background-image: url('{% static 'booksApp/images/background.jpg' %}')">
+    <div class="hero-content">
+        <h1 class="display-4 text-white mb-4">Bienvenue dans la Bibliothèque AuSaid </h1>
+        <div class="d-flex gap-3 justify-content-center">
+            <a href="{% url 'book_list' %}" class="btn btn-primary btn-lg">
+                Visiter nos livres
+            </a>
+            <a href="{% url 'about' %}" class="btn btn-secondary btn-lg">
+                À Propos
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.hero-section {
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    text-decoration-color: blue;
+}
+
+.btn {
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    transition: transform 0.5s ease;
+}
+
+.btn:hover {
+    transform: translateY(-4px);
+}
+</style>
+{% endblock %}

@@ -73,7 +73,7 @@ Ce repository contient une collection complète de projets académiques réalis�
 *Analyse spatiale avec QGIS*
 
 ### Interface Django
-![Application Django](images/example_django_app.png)
+![Application Django](images/pageAccueilWeb.png)
 *Interface de l'application bibliothèque*
 
 ## 🎯 Compétences Développées
@@ -142,7 +142,7 @@ Chaque projet contient :
 
 Pour plus d'informations sur ces projets ou pour des opportunités de collaboration :
 
-- **Email** : [votre-email@example.com]
+- **Email** : [saidouyameogo3@gmail.com]
 - **LinkedIn** : [votre-profil-linkedin]
 - **GitHub** : [votre-profil-github]
 

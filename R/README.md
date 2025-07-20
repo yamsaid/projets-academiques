@@ -228,6 +228,10 @@ Ce projet a été réalisé dans le cadre d'une formation en :
 - **Visualisation de données**
 - **Analyse de données**
 
+## Enseignant
+
+- **Dr Boyam Fabrice YAMEOGO**
+
 ---
 
 *Ce projet démontre la maîtrise du langage R et des outils statistiques pour l'analyse de données et la création de visualisations professionnelles.* 

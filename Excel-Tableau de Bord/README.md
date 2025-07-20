@@ -203,6 +203,16 @@ Ce projet a été réalisé dans le cadre d'une formation en :
 - **Excel avancé**
 - **Économie appliquée**
 
+## Equipe 
+
+- **KABORE Yasine**
+- **SAWADOGO Ernest**
+- **YAMEOGO Saïdou**
+
+## Enseignant
+
+- **Mr**
+
 ---
 
 *Ce projet démontre la maîtrise des outils de Business Intelligence et leur application dans l'analyse économique et l'aide à la décision.* 

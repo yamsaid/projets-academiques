@@ -1,4 +1,14 @@
-# 🗺️ Projet QGIS - Cartographie Sanitaire et Démographique
+# 🗺️ Projet QGIS - Cartographie Sanitaire et Démographique : Analyse Spatiale de la mortalité néo-natale
+
+## Problématique
+La **mortalité néo-natale** au Burkina Faso est un problème de santé publique complexe, influencé par des facteurs multiples et interdépendants. Malgré les efforts déployés pour améliorer les services de santé maternelle et infantile, des disparités géographiques persistent, avec des taux de mortalité plus élevés dans certaines régions. Ces disparités soulèvent plusieurs questions :
+
+- Quelles sont les zones géographiques les plus touchées par la mortalité néo-natale au Burkina Faso ?
+- Quels sont les facteurs socio-économiques, sanitaires et environnementaux qui contribuent à ces disparités spatiales ?
+- Comment les systèmes d'information géographique peuvent-ils aider à identifier les zones prioritaires pour des interventions ciblées ?
+- Quelles stratégies peuvent être mises en place pour réduire la mortalité néo-natale dans les zones à haut risque ?
+
+En répondant à ces questions, ce projet vise à fournir une analyse approfondie des dimensions spatiales de la mortalité néo-natale au Burkina Faso, tout en proposant des solutions concrètes pour améliorer la santé des nouveau-nés et réduire les inégalités géographiques
 
 ## 🎯 Objectif du Projet
 
@@ -66,31 +76,31 @@ QGIS/
 ## 🗺️ Cartes Produites
 
 ### 1. Carte de Mortalité Néonatale
-- **Fichier** : `CT_deces_propf.jpeg`
+![deces neon-natal](/images/qgis/deces.png)
 - **Objectif** : Visualiser la répartition de la mortalité infantile
 - **Méthode** : Choroplèthe par province
 - **Légende** : Classes de mortalité par couleur
 
 ### 2. Carte d'Incidence
-- **Fichier** : `CT_INCID.jpeg`
+![deces neon-natal](/images/qgis/propodist.png)
 - **Objectif** : Montrer les taux d'incidence par région
 - **Méthode** : Cartographie par cercles proportionnels
 - **Analyse** : Identification des zones à risque
 
 ### 3. Carte de Proportion de Femmes
-- **Fichier** : `CT_propFem.jpeg`
+![Proportion de Femmes](/images/qgis/propofem.png)
 - **Objectif** : Analyser la répartition démographique par genre
 - **Méthode** : Choroplèthe avec seuils personnalisés
 - **Interprétation** : Déséquilibres démographiques
 
 ### 4. Carte de Ratio
-- **Fichier** : `CT_ratio.jpeg`
+![ratio](/images/qgis/ratio.png)
 - **Objectif** : Calculer et visualiser des ratios sanitaires
 - **Méthode** : Classification automatique
 - **Application** : Indicateurs de performance
 
 ### 5. Carte Multi-phénomènes
-- **Fichier** : `trois_pheno.jpeg`
+![deces neon-natal](/images/qgis/ind.png)
 - **Objectif** : Synthèse de trois indicateurs
 - **Méthode** : Combinaison de variables
 - **Valeur ajoutée** : Vue d'ensemble intégrée
@@ -190,6 +200,15 @@ Ce projet a été réalisé dans le cadre d'une formation en :
 - **Cartographie thématique**
 - **Analyse spatiale**
 - **Santé publique**
+
+## Equipe 
+
+- **SAVADOGO Harouna**
+- **YAMEOGO Saïdou**
+
+## Enseignant
+
+- **Dr SANGLI Gabriel**
 
 ---
 

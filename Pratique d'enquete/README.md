@@ -231,6 +231,16 @@ Ce projet a été réalisé dans le cadre d'une formation en :
 - **Collecte de données**
 - **Programmation R**
 
+## Equipe 
+
+- **KABORE Adeline T. Eudoxie**
+- **SAWADOGO Donatien**
+- **YAMEOGO Saïdou**
+
+## Enseignant
+
+- **Dr Moussa ZAN**
+
 ---
 
 *Ce projet démontre la maîtrise complète de la méthodologie d'enquête, de la conception à l'analyse, et son application dans la recherche empirique.* 

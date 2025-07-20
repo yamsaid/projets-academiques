@@ -224,6 +224,10 @@ Ce projet a été réalisé dans le cadre d'une formation en :
 - **Démographie**
 - **Programmation STATA**
 
+## Enseignant 
+
+**Mr Réné ZEMBA, Ingénieur Statisticien Economiste de ENSAE - Dakar**
+
 ---
 
 *Ce projet démontre la maîtrise de STATA et des techniques d'analyse de données complexes pour la recherche en santé publique et démographie.* 

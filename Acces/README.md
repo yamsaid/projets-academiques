@@ -153,7 +153,7 @@ Acces/
 
 ### Module Rapports
 - **Génération** : Création automatique
-- **Formats** : PDF, Excel, Word
+- **Formats** : PDF, Excel
 - **Personnalisation** : Templates
 - **Distribution** : Envoi automatique
 
@@ -215,9 +215,7 @@ Acces/
 
 ### Guides Utilisateur
 - **Manuel d'utilisation** : Guide complet
-- **Tutoriels** : Apprentissage pas à pas
-- **FAQ** : Questions fréquentes
-- **Support** : Aide et assistance
+
 
 ### Documentation Technique
 - **Architecture** : Structure de la base
@@ -232,6 +230,45 @@ Ce projet a été réalisé dans le cadre d'une formation en :
 - **Programmation VBA**
 - **Gestion de projet**
 - **Systèmes d'information**
+
+---
+## Aperçue du rapport 
+
+Une **base de données** est une collection de d’objets (informations) structures stockees dans un support persistance et durable pour des analyses ulterieures. Pour une bonne gestion, les bases de données sont indispensables. Leur conception est faite suivant des etapes allant de la perception du monde reel au modele physique selon le SGBD adopté. 
+
+Notre projet porte sur la gestion d’un reseau de distribution d’eau dans la ville de Ouagadougou. Techonologie (SGBDR) utilisée est Microsoft ACCESS.
+
+### Representation du Modèle Conceptuel de Données (MCD)**
+
+![mcd](/images/acces/mcd.png)
+
+### Le Modèle Logique de Données (MLD)
+
+![mld](/images/acces/mld.png)
+
+### Les rélations
+
+![relation](/images/acces/relation.png)
+
+### La page de connexion
+
+![login](/images/acces/login.png)
+
+### La page d'acceuil
+
+![accueil](/images/acces/accueil.png)
+
+### Quelques fonctionnalités
+
+![Quelques fonctionnalités](/images/acces/fntes.png)
+
+### L'aperçue du reçu de paiement
+
+![Aperçu du reçu](/images/acces/recu.png)
+
+## Enseignant 
+
+- **Mr Réné ZEMBA, Ingénieur Statisticien Economiste de ENSAE - Dakar**
 
 ---
 

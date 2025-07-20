@@ -103,6 +103,15 @@ Cette étude peut informer :
 - Tests économétriques
 - Analyse d'impact en éducation
 
+## Equipe
+
+- **GOUBA Leyla**
+- **YAMEOGO Saïdou**
+
+## Enseignant
+
+- **Dr Israël SAWADOGO, Ingénieur Statisticien Economiste (ISE de ENSAE-Dakar)**
+
 ---
 
 *Ce projet démontre l'application rigoureuse de méthodes économétriques pour l'évaluation d'impact de politiques publiques.* 

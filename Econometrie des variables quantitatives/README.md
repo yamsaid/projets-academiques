@@ -178,6 +178,139 @@ Ce projet a été réalisé dans le cadre d'une formation en :
 - **Analyse de données**
 - **Programmation R**
 
+## Equipe
+
+- **NIAMPA Abdoul Fatah**
+- **SAWADOGO Pengdwendé Orianne-Aurele**
+- **YAMEOGO Saïdou**
+
+## Enseignant
+
+- **Dr Boyam Fabrice YAMEOGO**
+
 ---
 
+# Le résumé du projet : Modélisation de l’indice du prix des parcelles entre 2018 et 2024 à Ouagadougou
+
+*Université Joseph Ki-Zerbo – Institut Supérieur des Sciences de la Population*  
+**Licence Professionnelle en Analyse Statistique – 2e année**  
+**Groupe 4 – Économétrie des Variables Quantitatives**  
+**Réalisé par :** NIAMPA Abdoul Fataho, SAWADOGO Pengdwendé Orianne-Aurele, YAMEOGO Saïdou  
+**Encadrant :** Dr. Boyam Fabrice YAMEOGO  
+**Date :** Juin 2025  
+
+---
+
+## 🎯 Objectif
+
+Estimer un **indice d’évolution des prix des parcelles** dans la ville de Ouagadougou entre 2018 et 2024 à partir des données de la SONATUR, en neutralisant les effets de composition grâce à une **approche hédonique**.
+
+---
+
+## 📦 Données utilisées
+
+- **Source :** Société Nationale d’Aménagement des Terrains Urbains (SONATUR)
+- **Taille :** 1811 observations, 15 variables
+- **Variables clés :** `Cout_m2`, `Superficie`, `Taxe_Jouissance`, `Usage`, `Site`, `Type_option`, etc.
+
+---
+
+## 📊 Analyse descriptive
+
+### Variables quantitatives
+- Fortes **asymétries positives** sur le coût au m², la superficie et la taxe de jouissance.
+- Présence d’**observations incohérentes** : prix nuls, contrat incohérent → supprimées.
+
+### Variables qualitatives
+- Parcelles toutes situées à **Ouagadougou**
+- **Usage principal :** habitation (64.5 %)
+- **Site dominant :** SILMIOUGOU (56.9 %)
+- Certaines variables administratives ("plan établi", "attestation") peu informatives.
+
+---
+
+## ⚙️ Traitements et transformation des données
+
+- Recodage de variables (`Usage_rec`, `Site_rec`) pour réduire la rareté de certaines modalités.
+- Transformation **logarithmique** des variables quantitatives pour réduire l’hétéroscédasticité.
+- Suppression de variables constantes ou redondantes (`COUT` = `Cout_m2 × Superficie`).
+- Vérification de **multicolinéarité** (GVIF^(1/2df) < 2.5 pour toutes les variables retenues).
+
+---
+
+## 🧠 Méthodologie : Approche hédonique
+
+### Spécification du modèle
+
+Modèle de base : 
+
+```log(Cout_m2) = α + βₖXᵢₖ + γₜDᵢₜ + εᵢ
+```
+
+- Variables explicatives : caractéristiques du terrain (superficie, usage, site…), variables temporelles (`Annee`).
+- Vérification des hypothèses classiques (normalité, linéarité, homoscédasticité, etc.).
+
+---
+
+## 🔍 Modélisation
+
+### 1. Modèle linéaire classique
+- **Problèmes détectés** : hétéroscédasticité, non-normalité des résidus, non-linéarité.
+- **Indice estimé (base 2018 = 100)** :
+  - 2018 : 100
+  - 2021 : 98.95
+  - 2022 : 101.65
+  - 2024 : 97.97
+
+### 2. Modèle GAM (Additif généralisé)
+- Utilise une **fonction spline** pour modéliser l'effet non linéaire de la superficie.
+- Meilleur ajustement, mais toujours présence d’asymétrie et hétéroscédasticité.
+
+### 3. Modèle XGBoost avec dummies temporelles
+- **Excellente performance prédictive** :
+  - R² entre 0.87 et 0.99
+  - RMSE très faible (0.01 en 2024)
+- **Test de robustesse** : indice stable malgré perturbation de la superficie (+10 %)
+
+---
+
+## 📈 Indice estimé des prix (modèle XGBoost)
+
+| Année | Indice (base 2018 = 100) | Variation annuelle |
+|-------|---------------------------|---------------------|
+| 2018 | 100.0                     | NA                  |
+| 2019 | 100.4                     | +0.39 %             |
+| 2020 | 97.0                      | -3.42 %             |
+| 2021 | 87.9                      | -9.33 %             |
+| 2022 | 116.1                     | +32.13 %            |
+| 2023 | 80.7                      | -30.48 %            |
+| 2024 | 80.1                      | -0.85 %             |
+
+---
+
+## 🧮 Importance des variables (XGBoost)
+
+| Variable            | Gain   | Fréquence |
+|---------------------|--------|-----------|
+| Superficie          | 0.378  | 0.416     |
+| Taxe_Jouissance     | 0.224  | 0.089     |
+| Type_option         | 0.080  | 0.046     |
+| Variables temporelles (`Annee`) | ~0.03 – 0.04 | -         |
+| Usage_rec, Site_rec | ~0.01 – 0.05 | -     |
+
+---
+
+## 🧾 Conclusion
+
+- L’approche hédonique permet de construire un **indice plus fiable** que la moyenne brute.
+- Le modèle **XGBoost** s’avère le plus performant, capturant bien les non-linéarités et interactions complexes.
+- Les **variations de l’indice** montrent une instabilité du marché foncier entre 2018 et 2024.
+- Les variables **superficie**, **taxe de jouissance** et **type d’option** sont les plus influentes.
+- L’indice obtenu peut servir de **référence stratégique** pour les acteurs publics et privés du secteur foncier.
+
+---
+
+
+
+---
 *Ce projet démontre l'application rigoureuse des méthodes économétriques pour l'analyse des marchés immobiliers et l'aide à la décision.* 

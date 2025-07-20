@@ -7,33 +7,35 @@ Ce repository contient une collection complète de projets académiques réalis�
 ## 📊 Projets Inclus
 
 ### 📈 Analyse Statistique
-- **ANOVA** - Analyse de variance et double différence
-- **R** - Analyse statistique et visualisation
-- **SPSS** - Analyse statistique avancée
-- **STATA** - Analyse économétrique et données PMA
-- **Sondage** - Techniques d'échantillonnage
+- [**ANOVA**](ANOVA/README.md) - Analyse de variance et double différence
+- [**R**](R/README.md) - Analyse statistique et visualisation
+- [**SPSS**](SPSS/README.md) - Analyse statistique avancée
+- [**STATA**](STATA/README.md) - Analyse économétrique et données PMA
+- [**Sondage**](Sondage/README.md) - Techniques d'échantillonnage
 
 ### 🏠 Économétrie
-- **Économétrie des variables quantitatives** - Modélisation des prix immobiliers
-- **Économétrie des variables qualitatives** - Modélisation des choix
-- **Économétrie des séries temporelles** - Modélisation de la volatilité
+- [**Économétrie des variables quantitatives**](Econometrie%20des%20variables%20quantitatives/README.md) - Modélisation des prix immobiliers
+- [**Économétrie des variables qualitatives**](Econometrie%20des%20variables%20qualitatives/README.md) - Modélisation des choix
+- [**Économétrie des séries temporelles**](Econométrie%20des%20séries%20temporelles/README.md) - Modélisation de la volatilité
+- [**Modèle à Variable Instrumentale (VI)**](Modèle%20à%20Variable%20Instrumentale%20(VI)/README.md) - Endogénéité et identification
+- [**Modèle ARCH**](Modèle%20ARCH/README.md) - Modélisation de l'hétéroscédasticité
 
 ### 🗺️ Analyse Spatiale
-- **QGIS** - Analyse spatiale et cartographie
+- [**QGIS**](QGIS/README.md) - Analyse spatiale et cartographie
 
 ### 💻 Développement
-- **bibliotheque** - Application Django de gestion de bibliothèque
-- **Acces** - Base de données et VBA
+- [**bibliotheque**](bibliotheque/README.md) - Application Django de gestion de bibliothèque
+- [**Acces**](Acces/README.md) - Base de données et VBA
 
 ### 📊 Business Intelligence
-- **Excel-Tableau de Bord** - Tableaux de bord et BI
+- [**Excel-Tableau de Bord**](Excel-Tableau%20de%20Bord/README.md) - Tableaux de bord et BI
 
 ### 📱 Collecte de Données
-- **CSPRO** - Application de collecte de données
-- **Pratique d'enquête** - Méthodologie de recherche
+- [**CSPRO**](CSPRO/README.md) - Application de collecte de données
+- [**Pratique d'enquête**](Pratique%20d'enquete/README.md) - Méthodologie de recherche
 
 ### 📈 Analyse Spécialisée
-- **TP d'analyse de Survie** - Analyse de survie
+- [**TP d'analyse de Survie**](TP%20d'analyse%20de%20Survie/README.md) - Analyse de survie
 
 ## 🛠️ Technologies Maîtrisées
 
@@ -58,29 +60,11 @@ Ce repository contient une collection complète de projets académiques réalis�
 - **R Markdown** : Documents dynamiques
 - **Quarto** : Publication scientifique
 
-## 📸 Exemples Visuels
-
-### Graphiques Statistiques
-![Graphique R](images/example_r_plot.png)
-*Exemple de visualisation créée avec R*
-
-### Tableaux de Bord
-![Dashboard Excel](images/example_excel_dashboard.png)
-*Tableau de bord Excel avec Power Query*
-
-### Cartes QGIS
-![Carte QGIS](images/example_qgis_map.png)
-*Analyse spatiale avec QGIS*
-
-### Interface Django
-![Application Django](images/pageAccueilWeb.png)
-*Interface de l'application bibliothèque*
-
 ## 🎯 Compétences Développées
 
 ### Statistiques et Économétrie
 - **Tests statistiques** : ANOVA, régression, tests d'hypothèses
-- **Modélisation** : Régression linéaire, logistique, séries temporelles
+- **Modélisation** : Régression linéaire, logistique, séries temporelles, modèles à variables instrumentales, modèles ARCH
 - **Échantillonnage** : Stratification, grappes, pondération
 - **Analyse de survie** : Kaplan-Meier, modèles de Cox
 
@@ -107,45 +91,7 @@ Ce repository contient une collection complète de projets académiques réalis�
 ### Secteur Privé
 - **Consulting** : Études de marché, évaluation
 - **Finance** : Gestion des risques, modélisation
-- **Industrie** : Contrôle qualité, optimisation
-- **Services** : Satisfaction client, performance
-
-### Recherche Académique
-- **Universités** : Recherche, enseignement
-- **Centres de recherche** : Projets de recherche
-- **Publications** : Articles scientifiques, thèses
-- **Conférences** : Présentations, communications
-
-## 🚀 Améliorations Futures
-
-### Technologies Émergentes
-- **Machine Learning** : Modèles prédictifs avancés
-- **Big Data** : Traitement de grands volumes
-- **Cloud Computing** : Déploiement d'applications
-- **API** : Intégration de données en temps réel
-
-### Développement Personnel
-- **Certifications** : SAS, Tableau, Power BI
-- **Formations** : Cours en ligne, ateliers
-- **Collaborations** : Projets internationaux
-- **Publications** : Articles dans des revues
-
-## 📚 Documentation
-
-Chaque projet contient :
-- **README détaillé** avec objectifs et méthodologie
-- **Code source** commenté et documenté
-- **Rapports** et présentations
-- **Données** et résultats d'analyses
-
-## 🤝 Contact
-
-Pour plus d'informations sur ces projets ou pour des opportunités de collaboration :
-
-- **Email** : [saidouyameogo3@gmail.com]
-- **LinkedIn** : [votre-profil-linkedin]
-- **GitHub** : [votre-profil-github]
 
 ---
 
-*Ce portfolio démontre une expertise complète en analyse de données, statistiques et développement, avec des applications pratiques dans divers domaines professionnels.* 
+*Pour accéder à la documentation détaillée de chaque projet, consultez le README spécifique dans le dossier correspondant.* 

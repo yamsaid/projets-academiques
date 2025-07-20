@@ -242,6 +242,10 @@ Ce projet a été réalisé dans le cadre d'une formation en :
 - **Programmation SPSS**
 - **Analyse de données**
 
+## Enseignant 
+
+**Mr Réné ZEMBA, Ingénieur Statisticien Economiste de ENSAE - Dakar**
+
 ---
 
 *Ce projet démontre la maîtrise de SPSS et des techniques statistiques avancées pour l'analyse de données et la recherche.* 

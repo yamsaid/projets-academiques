@@ -203,6 +203,16 @@ python manage.py runserver
 4. Pousser vers la branche
 5. Ouvrir une Pull Request
 
+## Equipe
+
+- **SAWADOGO Aurèle**
+- **GAMENE Yann**
+- **YAMEOGO Saïdou**
+
+## Enseignant
+
+- **Dr BARO**
+
 ---
 
 *Ce projet démontre la maîtrise du développement web avec Django et l'application des bonnes pratiques de développement.* 

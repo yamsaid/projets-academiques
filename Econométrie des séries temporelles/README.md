@@ -4,13 +4,20 @@
 
 Développement d'analyses économétriques avancées dans les séries temporelles avec une approche multilingue (R et Python) et une documentation complète en LaTeX. Le projet vise à maîtriser les modèles de séries temporelles, la modélisation de la volatilité et la prévision économique.
 
+## Problématique
+
+Le Burkina Faso, pays à vocation essentiellement agricole, a longtemps tiré une part importante de ses recettes d’exportation du coton, surnommé “l’or blanc”. Cette culture représente non seulement une source majeure de revenus pour des milliers de producteurs ruraux, mais aussi un levier clé pour la croissance économique nationale. Pourtant, malgré son rôle stratégique, la production cotonnière au Burkina Faso demeure instable et vulnérable aux aléas de plusieurs facteurs.
+D’une part, les conditions climatiques, notamment les précipitations, influencent fortement les rendements agricoles dans un pays marqué par une agriculture pluviale.
+D’autre part, les variations des prix mondiaux du coton exposent les producteurs aux incerti- tudes du marché international. Enfin, les subventions publiques allouées au secteur (intrants, prix d’achat, infrastructures) apparaissent comme un mécanisme d’amortissement, mais leur régularité et leur eﬀicacité posent également question.
+Dans ce contexte, une interrogation centrale se pose : Dans quelle mesure les précipitations, les prix à l’exportation du coton et les subventions publiques influencent-ils la production cotonnière au Burkina Faso entre 1990 et 2023 ?
+Autrement dit, quelles sont les relations de court et de long terme entre ces variables, et comment peuvent-elles éclairer les choix de politiques agricoles à venir ?
+
 ## 📊 Données Analysées
 
 ### Séries Temporelles Économiques
 - **coton.csv** : Prix du coton au Burkina Faso
 - **data.csv** : Données économiques complémentaires
 - **seriTemp.csv** : Séries temporelles de base
-- **seriTemps.csv** : Séries temporelles étendues
 
 ### Variables d'Intérêt
 - **Prix agricoles** : Évolution des prix du coton
@@ -53,7 +60,6 @@ Econométrie des séries temporelles/
 ├── coton.csv                              # Données prix du coton
 ├── data.csv                               # Données économiques
 ├── seriTemp.csv                           # Séries temporelles
-├── seriTemps.csv                          # Séries temporelles étendues
 ├── test.ipynb                             # Notebook Python
 ├── models.Rproj                           # Projet R
 ├── .RData                                 # Données R sauvegardées
@@ -64,7 +70,6 @@ Econométrie des séries temporelles/
 ├── modelisation.log                       # Fichier de log
 ├── modelisation.docx                      # Document Word
 ├── docs/                                  # Documentation
-├── Exposé Série temp  _ Modèle ARCH/      # Présentation ARCH
 └── modelisation_files/                    # Fichiers de modélisation
 ```
 
@@ -182,12 +187,6 @@ Econométrie des séries temporelles/
 
 ## 📈 Applications Pratiques
 
-### Recherche Académique
-- **Thèses** : Recherche doctorale en économétrie
-- **Articles** : Publications scientifiques
-- **Présentations** : Conférences et séminaires
-- **Collaborations** : Projets de recherche internationaux
-
 ### Secteur Privé
 - **Finance** : Gestion des risques et trading
 - **Assurance** : Tarification des risques
@@ -226,7 +225,6 @@ Econométrie des séries temporelles/
 - **Guide théorique** : Concepts fondamentaux
 - **Exemples pratiques** : Cas d'usage
 - **Bonnes pratiques** : Recommandations
-- **Limitations** : Précautions d'usage
 
 ### Technique
 - **Code R/Python** : Scripts et notebooks
@@ -241,6 +239,16 @@ Ce projet a été réalisé dans le cadre d'une formation en :
 - **Modélisation de la volatilité**
 - **Programmation R et Python**
 - **Analyse de données temporelles**
+
+## Equipe
+
+- **NIKIEMA Moïse**
+- **SAWADOGO Latifatou Eddine Esther**
+- **YAMEOGO Saïdou**
+
+## Enseignant
+
+- **Mr Gaëtan BASSINGA Ingénieur Statisticien Economiste (ISE de ENSAE-Dakar)**
 
 ---
 

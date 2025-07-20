@@ -248,6 +248,123 @@ Ce projet a été réalisé dans le cadre d'une formation en :
 - **Modélisation qualitative**
 - **Programmation R**
 
+## Equipe
+
+- **NIAMPA Abdoul Fatah**
+- **SAWADOGO Pengdwendé Orianne-Aurele**
+- **YAMEOGO Saïdou**
+
+## Enseignant
+
+- **Dr Boyam Fabrice YAMEOGO**
+
+---
+
+# Le résumé du projet : Analyse des déterminants du type de logement des ménages urbains au Burkina Faso
+
+*Université Joseph Ki-Zerbo – Institut Supérieur des Sciences de la Population*  
+**Licence Professionnelle en Analyse Statistique – 2e année**  
+**Groupe 4 – Économétrie des Variables Qualitatives**  
+**Réalisé par :** NIAMPA Abdoul Fataho, SAWADOGO Pengdwendé Orianne-Aurele, YAMEOGO Saïdou  
+**Encadrant :** Dr. Boyam Fabrice YAMEOGO  
+**Date :** Juin 2025  
+
+---
+
+## 🎯 Objectif du rapport
+
+Étudier les facteurs qui influencent le **type de logement** occupé par les ménages urbains au Burkina Faso à partir des données de l’EHCVM (2018), afin de formuler des **recommandations pour l’entreprise ImmoFaso S.A.**
+
+---
+
+## 🧩 Méthodologie
+
+- Utilisation de la **régression logistique multinomiale**.
+- Variable dépendante `type_logement` regroupée en 4 catégories.
+- Sélection de 8 variables explicatives issues de dimensions **économiques, démographiques, géographiques et résidentielles**.
+- Construction de **variables synthétiques** :
+  - Score de confort (ACP),
+  - Score de qualité du logement,
+  - Score socioéconomique (ACM).
+
+---
+
+## 📊 Analyse descriptive
+
+### Variables quantitatives
+- **Revenu** : élevé mais inégal.
+- **Taille du ménage** : moyenne de 5,6 personnes.
+- **Âge du chef de ménage** : moyenne de 46 ans.
+
+### Variables qualitatives
+- **Maison individuelle en dur** : type le plus fréquent.
+- **Disparités régionales** :
+  - Logements modernes dans la région du Centre.
+  - Logements en banco dans les régions moins urbanisées.
+
+---
+
+## ⚙️ Traitement et construction des données
+
+- **Imputation des valeurs manquantes** via `mice` (régression polytomique).
+- **Traitement des valeurs aberrantes** (méthode IQR).
+- **Tests de corrélation** :
+  - **Spearman** pour variables quantitatives.
+  - **V de Cramér** pour qualitatives.
+- **Pas de multicolinéarité** détectée (GVIF < 2).
+
+---
+
+## 🧠 Résultats du modèle logistique multinomial
+
+### Variables significatives
+- Score socioéconomique
+- Qualité du logement
+- Statut d’occupation
+- Dépenses du ménage (log-transformées)
+- Région de résidence
+
+### Performances du modèle
+- **AIC** : 4658.2
+- **Pseudo R² de McFadden** : 0.393
+- **Précision moyenne (validation croisée 5-folds)** : 67.3 %
+
+### Diagnostics
+- Tests LRT et Wald significatifs
+- Résidus centrés, symétriques
+- Pas de multicolinéarité
+
+---
+
+## 💡 Recommandations pour ImmoFaso S.A.
+
+1. **Segmentation du marché** :
+   - Ménages à haut score : logements modernes.
+   - Ménages modestes : logements traditionnels / célibatériums abordables.
+   - Familles nombreuses : maisons en dur spacieuses.
+
+2. **Stratégie régionale** :
+   - Studios au Nord.
+   - Logements traditionnels améliorés au Sahel.
+
+3. **Amélioration du confort** :
+   - Intégration d’équipements modernes.
+   - Solutions hybrides à faible coût.
+
+4. **Statut d’occupation** :
+   - Flexibilité locative.
+   - Programmes d’accession à la propriété.
+
+5. **Approfondissement analytique** :
+   - Enquêtes complémentaires.
+   - Exploration de modèles avancés (forêts aléatoires, interactions...).
+
+---
+
+## 🧾 Conclusion
+
+Le modèle logit multinomial révèle que le **type de logement est influencé par des facteurs économiques, sociaux et géographiques**. Il offre à ImmoFaso S.A. une base solide pour une **stratégie immobilière inclusive**, adaptée aux profils variés des ménages urbains burkinabè.
+
 ---
 
 *Ce projet démontre la maîtrise des modèles économétriques pour variables qualitatives et leur application dans l'analyse des comportements et des choix.* 

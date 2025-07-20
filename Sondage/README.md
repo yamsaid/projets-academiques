@@ -231,6 +231,86 @@ Ce projet a été réalisé dans le cadre d'une formation en :
 - **Programmation SPSS**
 - **Méthodologie de recherche**
 
+## Equipe
+
+- **BALIMA Gwladys**
+- **SAWADOGO Latifatou**
+- **YAMEOGO Saïdou**
+
+## Enseignant
+
+- **Dr Adama NIKIEMA**
+
+# Le résumé du projet : Analyse des dépenses vestimentaires selon le sexe et le milieu de résidence
+
+*Institut Supérieur des Sciences de la Population*  
+**Encadrant :** Dr. Adama NIKIEMA  
+**Membres du groupe :** BALIMA Gwladys, SAWADOGO Latifatou, YAMEOGO Saïdou  
+**Logiciel utilisé :** SPSS  
+
+---
+
+## 🎯 Objectif
+
+Analyser les **dépenses moyennes consacrées aux habits** par les individus d’une localité, en tenant compte du **sexe** et du **milieu de résidence**, à partir de la base de données `Base_oev` issue d’un **sondage aléatoire simple**.
+
+---
+
+## 🧩 Méthodologie
+
+- **Base :** 419 individus, 74 variables.
+- **Variable d’intérêt :** `hc2` (dépenses moyennes en habits).
+- **Pondération :** Variable `poids = 1 / ind_norm` (proba d’inclusion).
+- **Milieu :** variable qualitative (urbain / rural).
+- **Sexe :** variable qualitative.
+
+---
+
+## 📊 Résultats globaux
+
+### Estimation de la moyenne pondérée
+- **Dépense moyenne :** 55 949,35 FCFA
+- **Variance pondérée :** ≈ 5 845 278 944
+- **Écart-type (s) :** 76 454,42 FCFA
+- **Coefficient de variation (cv) :** 1,366 → **très grande dispersion**
+
+**Interprétation :**  
+Les dépenses en habits sont **très inégalement réparties** entre les individus. Certains dépensent beaucoup, d'autres très peu.
+
+---
+
+## 👨‍👩‍👧‍👦 Dépenses selon le sexe
+
+- **Femmes > Hommes** en moyenne.
+- **Test de Levene (homogénéité des variances)** : p-value = 0.0 → variances différentes.
+- **Test t de Student (moyennes)** : p-value = 0.016 < 0.05 → **différence significative**.
+
+✅ **Conclusion :** Les femmes dépensent statistiquement plus que les hommes pour les habits.
+
+---
+
+## 🌍 Dépenses selon le milieu de résidence
+
+- **Urbain > Rural** en moyenne.
+- **Test de Levene** : p-value = 0.0 → variances différentes.
+- **Test de Student** : p-value = 0.0 < 0.05 → **différence significative**.
+
+✅ **Conclusion :** Les citadins dépensent significativement plus que les ruraux en matière d’habillement.
+
+---
+
+## 🧾 Conclusion générale
+
+- Les dépenses vestimentaires varient **significativement selon le sexe et le lieu de résidence**.
+- Les **femmes et les citadins** sont les plus gros consommateurs d’habits.
+- Ces résultats sont utiles pour :
+  - les **entreprises** (marketing ciblé),
+  - les **décideurs politiques** (politiques sociales adaptées).
+
+🔎 **Perspectives :**
+- Étudier l’impact de la **digitalisation** sur les comportements d’achat.
+- Explorer l’effet des **campagnes de sensibilisation** à la gestion des dépenses.
+
 ---
 
 *Ce projet démontre la maîtrise des techniques d'échantillonnage et de l'analyse statistique des données d'enquête pour la recherche et la prise de décision.* 

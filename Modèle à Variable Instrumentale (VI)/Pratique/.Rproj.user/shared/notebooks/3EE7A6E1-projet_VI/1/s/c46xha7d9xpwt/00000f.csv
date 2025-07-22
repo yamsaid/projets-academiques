@@ -1,3 +1,0 @@
-"0","ggplot(base, aes(x = proximite, y = education)) +"
-"0","  geom_point() +"
-"0","  geom_smooth(method = ""lm"")"

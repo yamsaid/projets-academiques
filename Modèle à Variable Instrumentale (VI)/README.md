@@ -46,7 +46,7 @@ Modèle à Variable Instrumentale (VI)/
 ## Equipe 
 
 - **KABORE Adeline**
-- **GOUBA Leyla**
+- **GOUBA Leyla** : leylagouba@gmail.com 
 - **YAMEOGO Saïdou**
 
 ## Enseignant

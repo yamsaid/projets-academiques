@@ -236,8 +236,8 @@ Ce projet a été réalisé dans le cadre d'une formation en :
 
 ## Enseignant 
 
-- **Mr**
+- **Mr Mathias WAONGO Ingénieur Statistique Économiste (ISE) à ENSAE-Dakar**
 
 ---
 
-*Ce projet démontre la maîtrise des outils de collecte de données électroniques et leur application dans la surveillance épidémiologique.* 
+*Ce projet démontre la maîtrise des outils de collecte de données électroniques et leur application dans la surveillance épidémiologique.*

@@ -105,7 +105,7 @@ Cette étude peut informer :
 
 ## Equipe
 
-- **GOUBA Leyla**
+- **GOUBA Leyla** : leylagouba@gmail.com
 - **YAMEOGO Saïdou**
 
 ## Enseignant

@@ -211,7 +211,7 @@ Ce projet a été réalisé dans le cadre d'une formation en :
 
 ## Enseignant
 
-- **Mr**
+- **Mr Issaka**
 
 ---
 

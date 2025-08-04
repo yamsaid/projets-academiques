@@ -33,9 +33,11 @@ Ce repository contient une collection complète de projets académiques réalis�
 ### 📱 Collecte de Données
 - [**CSPRO**](CSPRO/README.md) - Application de collecte de données
 - [**Pratique d'enquête**](Pratique%20d'enquete/README.md) - Méthodologie de recherche
+- [**Formulaire_KOBO_Survey**](Formulaire_KOBO_Survey/README.md) - Conception de formulaires avec KoboToolbox et Survey CTO
 
 ### 📈 Analyse Spécialisée
 - [**TP d'analyse de Survie**](TP%20d'analyse%20de%20Survie/README.md) - Analyse de survie
+- [**Études Qualitatives**](Etudes%20Qualitatives/README.md) - Analyse qualitative avec Atlas.ti
 
 ## 🛠️ Technologies Maîtrisées
 
@@ -53,6 +55,8 @@ Ce repository contient une collection complète de projets académiques réalis�
 ### Outils de Collecte
 - **CSPRO** : Collecte de données électroniques
 - **ODK** : Open Data Kit
+- **KoboToolbox** : Plateforme de collecte de données
+- **Survey CTO** : Collecte de données mobiles
 - **Excel** : Tableaux de bord et BI
 
 ### Documentation
@@ -77,7 +81,8 @@ Ce repository contient une collection complète de projets académiques réalis�
 ### Méthodologie de Recherche
 - **Design d'enquêtes** : Conception de questionnaires
 - **Collecte de données** : Terrain, électronique, validation
-- **Analyse qualitative** : Entretiens, focus groups
+- **Analyse qualitative** : Entretiens, focus groups, codage avec Atlas.ti
+- **Formulaires numériques** : KoboToolbox, Survey CTO, ODK
 - **Documentation** : Rapports, publications, présentations
 
 ## 📈 Applications Professionnelles
@@ -91,6 +96,16 @@ Ce repository contient une collection complète de projets académiques réalis�
 ### Secteur Privé
 - **Consulting** : Études de marché, évaluation
 - **Finance** : Gestion des risques, modélisation
+
+---
+
+## 📧 Contact
+
+**Auteur** : [Votre Nom]  
+**Formation** : Master LPAS2 - Analyse Statistique  
+**Email** : [votre.email@example.com]  
+**LinkedIn** : [linkedin.com/in/votre-profil]  
+**GitHub** : [github.com/votre-username]  
 
 ---
 

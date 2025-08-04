@@ -711,7 +711,7 @@ le pipe permet d'anchainer des operations. Dans les operations qui suivent on a 
 
 ```{r}
 #proposition avec le pipe
-tabg=iriss%>%
+tabg=iriss %>% 
 select(Species, Sepal.Length, Sepal.Width)%>%
 mutate(frac=Sepal.Length/Sepal.Width, exp = frac*100)
 
@@ -822,9 +822,8 @@ setdiff(y,z) 
 ## Fonction distinct
 
 ```{r}
-iriss=data.frame(iris)
+iriss = data.frame(iris)
 iriss %>%
-
 select(Species) %>%
 
 distinct
@@ -882,20 +881,22 @@ line=nycflights13::airlines
 2)     Afficher  uniquement les vols avec un retard au départ (variable dep_delay) compris entre 10 et 15 minutes ;
 
 ```{r}
-vol[vol$dep_delay>=10 & vol$dep_delay<=15,]
+vol[ vol$dep_delay >= 10 & vol$dep_delay <= 15, ]
 ```
 
 3) Afficher les vols qui parcourent la plus grande distance ;
 
 ```{r}
-vol[vol$distance==max(vol$distance),]
+vol[vol$distance == max(vol$distance),]
 ```
 
 #### Filtrer en fonction d'une condition
 
 ```{r}
+
 vols_plus_grande_distance <- flights %>%
   filter(distance == max(distance, na.rm = TRUE))
+
 ```
 
 4)     Afficher toutes les variables de type character de la table flights ;
@@ -907,6 +908,7 @@ Filter(is.character, flights)
 
 flights %>% 
   select(where(is.character))
+
 ```
 
 5)     Réordonner les colonnes de la table airport qui doivent commencer par les variables « name» et « tzone » ;
@@ -994,7 +996,7 @@ str(d)
 
 names(d)
 
-Viiewd))
+Viiewd
 ```
 
 ## Fonction cut

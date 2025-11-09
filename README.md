@@ -101,11 +101,11 @@ Ce repository contient une collection complète de projets académiques réalis�
 
 ## 📧 Contact
 
-**Auteur** : [Votre Nom]  
-**Formation** : Master LPAS2 - Analyse Statistique  
-**Email** : [votre.email@example.com]  
-**LinkedIn** : [linkedin.com/in/votre-profil]  
-**GitHub** : [github.com/votre-username]  
+**Auteur** : YAMEOGO Saïdou  
+**Formation** : Licence Professionnelle en Analyse Statistique  
+**Email** : saidouyameogo3@gmail.com  
+**LinkedIn** : http://www.linkedin.com/in/saidou-yameogo-1684b6336  
+**GitHub** : https://github.com/yamsaid  
 
 ---
 

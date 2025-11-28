@@ -128,7 +128,7 @@ Formulaire_KOBO_Survey/
 
 ## 👥 Auteur
 
-**Équipe LPAS2** - Master en Analyse Statistique
+**Équipe LPAS2**
 
 ---
 
